@@ -113,7 +113,7 @@ public class SpatialMotionsNonLinear extends SimpleApplication {
       
      
       //translation
-     moveMe = 0.33f; //speed
+     moveMe = 0.38f; //speed
      
      remainingDist = spatial.getLocalTranslation().distance(vecAim);
      
