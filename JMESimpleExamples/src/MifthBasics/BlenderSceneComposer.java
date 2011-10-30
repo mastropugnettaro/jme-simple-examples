@@ -93,7 +93,6 @@ public class BlenderSceneComposer extends SimpleApplication {
                 Geometry ndGet = (Geometry) ndmd.getChild(j).clone(false);
                 ndGet.setName(strndscene);
                 ndGet.setLocalTransform(nd.getChild(i).getWorldTransform());
-                ndGet.getLocalScale().z  = -ndGet.getLocalScale().z;
                 ndscene.attachChild(ndGet);   
                  
          }    
