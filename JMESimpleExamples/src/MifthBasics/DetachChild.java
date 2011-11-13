@@ -47,7 +47,7 @@ public class DetachChild extends SimpleApplication {
 
             
         Node ndd = new Node("nddd"+i);  
-        ndd.attachChild(geom_b.clone());
+        ndd.attachChild(geom_b.clone(false));
         ndd.setLocalTranslation((i+3)*5, 0, 0);
         System.out.println(ndd.getName());
         red.attachChild(ndd);    
