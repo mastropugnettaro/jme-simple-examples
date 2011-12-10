@@ -1,4 +1,4 @@
-package MifthBasics;
+package Basics;
 
 
 import com.jme3.app.SimpleApplication;
@@ -14,20 +14,21 @@ import com.jme3.system.AppSettings;
 
 
 
-public class SpatialMotionsLinear extends SimpleApplication {
+public class SpatialMotionsSmooth1 extends SimpleApplication {
 
     public static void main(String[] args) {
-        SpatialMotionsLinear app = new SpatialMotionsLinear();
+        SpatialMotionsSmooth1 app = new SpatialMotionsSmooth1();
         
         //set vSinc on to get stable 60 fps
         AppSettings aps = new AppSettings(true);
         aps.setVSync(true);
         app.setSettings(aps);
         app.start();
-        
     }
 
     Geometry geom;     
+
+
     Vector3f vecAim;
     Vector3f vec1;
     Vector3f vec2;     
@@ -40,7 +41,7 @@ public class SpatialMotionsLinear extends SimpleApplication {
     float ang;
     float moveMe;
     float remainingDist;
-    
+
 
 
     public void vectorz(){
@@ -83,13 +84,12 @@ public class SpatialMotionsLinear extends SimpleApplication {
         
       
       //rotation  
-      angla = tpf * 2.1f; //speed
+      angla = tpf * 3.1f; //speed
 
       vectry = spatial.getWorldRotation();
       front = vectry.mult(Vector3f.UNIT_Z).normalize();
       
       vecB = spatial.getWorldTranslation().subtract(vecAim).setY(spatial.getWorldTranslation().y).normalize();
-      
       
       qRot.lookAt(vecB, Vector3f.UNIT_Y);
       
@@ -97,21 +97,24 @@ public class SpatialMotionsLinear extends SimpleApplication {
       
       if (ang>0.01f) { 
           
-      vectry.slerp(qRot, angla/ang);        
+      vectry.slerp(qRot, angla);        
       spatial.setLocalRotation(vectry);
       }
       else spatial.setLocalRotation(qRot);
       
-//      System.out.println(tpf);
+      System.out.println(ang);
      
       //translation
-     moveMe = tpf * 7f; //speed
-     remainingDist = spatial.getLocalTranslation().distance(vecAim);
+      moveMe = tpf * 3f; //speed
+      remainingDist = spatial.getLocalTranslation().distance(vecAim);
      
-     if (remainingDist > 0.01f) {
-     spatial.setLocalTranslation(FastMath.interpolateLinear(moveMe/remainingDist, spatial.getLocalTranslation(), vecAim));
+     if (remainingDist > 0.1f && !spatial.getWorldTranslation().equals(vecAim)) {
+     spatial.setLocalTranslation(FastMath.interpolateLinear(moveMe, spatial.getLocalTranslation(), vecAim));
      }
-     else spatial.setLocalTranslation(vecAim);
+     else {
+         if (remainingDist <= 0.2f && !spatial.getWorldTranslation().equals(vecAim)) 
+             spatial.setLocalTranslation(vecAim);
+     }
      
     }
      

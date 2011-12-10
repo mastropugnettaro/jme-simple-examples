@@ -1,4 +1,4 @@
-package MifthBasics;
+package Intermediate;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.collision.CollisionResult;
@@ -163,15 +163,16 @@ public void simpleUpdate(float tpf)
       
        remainingDist = cubechar.getLocalTranslation().distance(vecmove);
 
-       if (remainingDist > 0.01f){
+       if (remainingDist > 0.05f && !cubechar.getWorldTranslation().equals(vecmove)){
        vectry2 = vectry.interpolate(vecmove, move/remainingDist);
        cubechar.lookAt(vecmove, Vector3f.UNIT_Y);
        cubechar.setLocalTranslation(vectry2);
        }
       
-      else cubechar.setLocalTranslation(vecmove);
-       
-
+      else {
+           
+          if (remainingDist <= 0.02f && !cubechar.getWorldTranslation().equals(vecmove)) cubechar.setLocalTranslation(vecmove);
+       }
 }
 
 }

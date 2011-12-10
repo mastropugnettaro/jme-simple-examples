@@ -1,4 +1,4 @@
-package MifthBasics;
+package Basics;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapText;

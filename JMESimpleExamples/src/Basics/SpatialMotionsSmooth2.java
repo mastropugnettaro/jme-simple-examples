@@ -1,4 +1,4 @@
-package MifthBasics;
+package Basics;
 
 
 import com.jme3.app.SimpleApplication;
@@ -108,12 +108,14 @@ public class SpatialMotionsSmooth2 extends SimpleApplication {
      moveMe += tpf/10f; //speed
      remainingDist = spatial.getLocalTranslation().distance(vecAim);
      
-     if (remainingDist > 0.1f) {
+     if (remainingDist > 0.1f && !spatial.getWorldTranslation().equals(vecAim)) {
      spatial.setLocalTranslation(FastMath.interpolateLinear(moveMe, spatial.getLocalTranslation(), vecAim));
      }
      else {
-         moveMe = 0;
-         spatial.setLocalTranslation(vecAim);
+         if (remainingDist <= 0.2f && !spatial.getWorldTranslation().equals(vecAim)) {
+             moveMe = 0;
+             spatial.setLocalTranslation(vecAim);
+         }
      }
      System.out.println(moveMe);
     }

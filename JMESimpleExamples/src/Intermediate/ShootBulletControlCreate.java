@@ -1,4 +1,4 @@
-package MifthBasics;
+package Intermediate;
 
 import com.jme3.export.Savable;
 import com.jme3.material.Material;

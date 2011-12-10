@@ -1,63 +1,44 @@
-package MifthBasics;
+package Basics;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
 
-public class RotateNode extends SimpleApplication {
+public class MoveNode3 extends SimpleApplication {
 
     public static void main(String[] args) {
-        RotateNode app = new RotateNode();
+        MoveNode3 app = new MoveNode3();
         app.start();
     }
 
     
     
+          
       Vector3f vecmove = new Vector3f(25, 5, 0);
-      float angla;
-      Geometry geom;    
-      Quaternion vectry;   
-      Quaternion vectry2; 
-      Vector3f vectry3;
+      Geometry geom;     
+      Vector3f vectry;   
+      float move;
       float vecdist2;
-      Quaternion PITCH045;
-      Quaternion quat;
-float xxx = FastMath.DEG_TO_RAD*180f;
-
-Quaternion qqq;
-
-
-
-       public void rotateObj (float tpf) {      
-       
- 
-      vectry = geom.getWorldRotation();
-      qqq = new Quaternion().fromAngles(0, xxx, 0);
-   
-      if (angla < xxx) {
-          
-           angla += tpf * 1.5f; //speed
+      float remainingDist;
       
-       geom.setLocalRotation(new Quaternion().fromAngles(0, angla, 0)); 
-          
-      }
-      else geom.setLocalRotation(qqq);
-       
-   
-    System.out.println(angla);      
-    viewPort.setBackgroundColor(ColorRGBA.Gray);   
-    
+
+      public void move (float tpf) {      
+
+      move += tpf*0.1f; //speed
+      move %= 1f;
+      remainingDist = geom.getLocalTranslation().distance(vecmove); //distance between 2 vectors
+      geom.setLocalTranslation(FastMath.interpolateLinear(move, geom.getLocalTranslation(), vecmove));
+      
+       System.out.println(move);
          }
       
-       
-          
+      
+    
     @Override
     public void simpleInitApp() {
         Box b = new Box(Vector3f.ZERO, 1, 1, 1);
@@ -67,25 +48,29 @@ Quaternion qqq;
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("m_Color", ColorRGBA.Blue);
         geom.setMaterial(mat);
-
+        geom.setLocalTranslation(0,2,1);
         rootNode.attachChild(geom);
         
-       
+        
+
+
+        
         
         flyCam.setMoveSpeed(30);
+        viewPort.setBackgroundColor(ColorRGBA.Gray);   
         
 
         
     }
 
     
-    
+     
       
 @Override
 public void simpleUpdate(float tpf)
 {
           
-          rotateObj(tpf);
+          move(tpf);
        
       
  }

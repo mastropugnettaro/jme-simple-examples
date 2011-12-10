@@ -1,4 +1,4 @@
-package MifthBasics;
+package Basics;
 
 
 import com.jme3.app.SimpleApplication;
@@ -13,12 +13,12 @@ import com.jme3.system.AppSettings;
 
 
 
-public class OpenGL_1 extends SimpleApplication {
+public class OpenGL_3 extends SimpleApplication {
 
     public static void main(String[] args) {
-        OpenGL_1 app = new OpenGL_1();
+        OpenGL_3 app = new OpenGL_3();
         AppSettings aps = new AppSettings(true);
-        aps.setRenderer(AppSettings.LWJGL_OPENGL1);
+        aps.setRenderer(AppSettings.LWJGL_OPENGL3);
         app.setSettings(aps);
         app.start();
     }
