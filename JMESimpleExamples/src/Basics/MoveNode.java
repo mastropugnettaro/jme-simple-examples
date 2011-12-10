@@ -1,18 +1,17 @@
-package MifthBasics;
+package Basics;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
 
-public class MoveNode3 extends SimpleApplication {
+public class MoveNode extends SimpleApplication {
 
     public static void main(String[] args) {
-        MoveNode3 app = new MoveNode3();
+        MoveNode app = new MoveNode();
         app.start();
     }
 
@@ -22,19 +21,29 @@ public class MoveNode3 extends SimpleApplication {
       Vector3f vecmove = new Vector3f(25, 5, 0);
       Geometry geom;     
       Vector3f vectry;   
-      float move;
-      float vecdist2;
+      Vector3f vectry2;
+      float   move;
       float remainingDist;
+      float vecdist2;
+      
       
 
       public void move (float tpf) {      
-
-      move += tpf*0.1f; //speed
-      move %= 1f;
-      remainingDist = geom.getLocalTranslation().distance(vecmove); //distance between 2 vectors
-      geom.setLocalTranslation(FastMath.interpolateLinear(move, geom.getLocalTranslation(), vecmove));
-      
-       System.out.println(move);
+     
+      move = tpf*7.0f;
+      vectry = geom.getLocalTranslation();
+  
+      remainingDist = vectry.distance(vecmove);
+       
+       System.out.println(remainingDist);
+              
+       if (move < remainingDist) {
+           
+           vectry2 = vectry.interpolate(vecmove, move / remainingDist);
+           geom.setLocalTranslation(vectry2);
+       }
+       else geom.setLocalTranslation(vecmove);
+        
          }
       
       

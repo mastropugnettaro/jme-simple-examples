@@ -1,4 +1,4 @@
-package MifthBasics;
+package Intermediate;
 
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.collision.CollisionResults;

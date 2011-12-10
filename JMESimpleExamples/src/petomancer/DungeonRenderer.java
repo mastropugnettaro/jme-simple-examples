@@ -157,6 +157,7 @@ public class DungeonRenderer
             }//if
          }//for
       }//for
+      TangentBinormalGenerator.generate(ground);
       GeometryBatchFactory.optimize(ground);
       TangentBinormalGenerator.generate(ground);
       

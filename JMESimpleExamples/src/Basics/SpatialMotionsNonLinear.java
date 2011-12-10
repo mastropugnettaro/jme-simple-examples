@@ -1,4 +1,4 @@
-package MifthBasics;
+package Basics;
 
 
 import com.jme3.app.SimpleApplication;
@@ -14,10 +14,10 @@ import com.jme3.system.AppSettings;
 
 
 
-public class SpatialMotionsSmooth1 extends SimpleApplication {
+public class SpatialMotionsNonLinear extends SimpleApplication {
 
     public static void main(String[] args) {
-        SpatialMotionsSmooth1 app = new SpatialMotionsSmooth1();
+        SpatialMotionsNonLinear app = new SpatialMotionsNonLinear();
         
         //set vSinc on to get stable 60 fps
         AppSettings aps = new AppSettings(true);
@@ -27,13 +27,12 @@ public class SpatialMotionsSmooth1 extends SimpleApplication {
     }
 
     Geometry geom;     
-
-
     Vector3f vecAim;
     Vector3f vec1;
     Vector3f vec2;     
     Vector3f vec3;  
     float angla;
+    float timerAim;
     Quaternion vectry;
     Vector3f front;
     Vector3f vecB;
@@ -41,7 +40,6 @@ public class SpatialMotionsSmooth1 extends SimpleApplication {
     float ang;
     float moveMe;
     float remainingDist;
-
 
 
     public void vectorz(){
@@ -76,15 +74,25 @@ public class SpatialMotionsSmooth1 extends SimpleApplication {
 
 
     public void transObj (float tpf, Spatial spatial, boolean boo) {
-         
-        //Aim to move
-        if (spatial.getLocalTranslation().equals(vec1) == true) vecAim = vec2;
-        if (spatial.getLocalTranslation().equals(vec2) == true) vecAim = vec3;
-        if (spatial.getLocalTranslation().equals(vec3) == true) vecAim = vec1;
+
         
-      
+        //Aim to move
+        if (spatial.getLocalTranslation().equals(vec1) == true) {
+            vecAim = vec2;
+            timerAim = 0;
+        }
+        if (spatial.getLocalTranslation().equals(vec2) == true) {
+            vecAim = vec3;
+            timerAim = 0;
+        }
+        if (spatial.getLocalTranslation().equals(vec3) == true) {
+            vecAim = vec1;
+            timerAim = 0;
+        }
+    
+        
       //rotation  
-      angla = tpf * 3.1f; //speed
+      angla = tpf * 2f; //speed
 
       vectry = spatial.getWorldRotation();
       front = vectry.mult(Vector3f.UNIT_Z).normalize();
@@ -95,23 +103,38 @@ public class SpatialMotionsSmooth1 extends SimpleApplication {
       
       ang = vecB.angleBetween(front);
       
-      if (ang>0.01f) { 
+      if (ang>0.11) { 
           
-      vectry.slerp(qRot, angla);        
+      vectry.slerp(qRot, angla/ang);        
       spatial.setLocalRotation(vectry);
       }
       else spatial.setLocalRotation(qRot);
       
-      System.out.println(ang);
+      
      
       //translation
-      moveMe = tpf * 3f; //speed
-      remainingDist = spatial.getLocalTranslation().distance(vecAim);
+     moveMe = 0.3f; //speed
      
-     if (remainingDist > 0.1f) {
-     spatial.setLocalTranslation(FastMath.interpolateLinear(moveMe, spatial.getLocalTranslation(), vecAim));
+     remainingDist = spatial.getLocalTranslation().distance(vecAim);
+     
+     if (remainingDist > 0.2f && !spatial.getWorldTranslation().equals(vecAim)) {
+     spatial.move(front.negateLocal().mult(moveMe));
      }
-     else spatial.setLocalTranslation(vecAim);
+     else {
+         if (remainingDist <= 0.2f && !spatial.getWorldTranslation().equals(vecAim)) 
+             spatial.setLocalTranslation(vecAim);
+     }
+     
+        //Timer to change the Aim
+        timerAim += tpf;
+        if (timerAim > 5f && remainingDist > 0.13f) {
+        if (vecAim.equals(vec1)) vecAim = vec2;
+        else if (vecAim.equals(vec2)) vecAim = vec3;
+        else if (vecAim.equals(vec3)) vecAim = vec1;
+        timerAim = 0;    
+        }
+    
+        System.out.println(timerAim);        
      
     }
      
