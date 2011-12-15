@@ -13,6 +13,7 @@ package Intermediate;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.BlenderKey;
 import com.jme3.asset.DesktopAssetManager;
+import com.jme3.asset.ModelKey;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.*;
@@ -72,7 +73,7 @@ public class BlenderSceneComposer extends SimpleApplication {
         
         // Load a blender file. 
         DesktopAssetManager dsk = (DesktopAssetManager) assetManager;        
-        BlenderKey bk = new BlenderKey("Models/blender_test_scene/blender_test_scene.blend");
+        ModelKey bk = new ModelKey("Models/blender_test_scene/blender_test_scene.blend");
         Node nd =  (Node) dsk.loadModel(bk); 
         
         //Create empty Scene Node
