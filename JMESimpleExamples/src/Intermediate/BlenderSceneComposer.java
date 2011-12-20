@@ -11,7 +11,6 @@ package Intermediate;
 
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.asset.BlenderKey;
 import com.jme3.asset.DesktopAssetManager;
 import com.jme3.asset.ModelKey;
 import com.jme3.font.BitmapText;
