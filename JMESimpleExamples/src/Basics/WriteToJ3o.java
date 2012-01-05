@@ -54,8 +54,9 @@ public class WriteToJ3o extends SimpleApplication {
     
     
     
-    
-    File MaFile = new File("assets/Models/writej3o.j3o");
+    String str = new String("assets/Models/writej3o.j3o");
+    str.replaceAll("/", File.separator);
+    File MaFile = new File(str);
     MaFile.setWritable(true);
     MaFile.canWrite();
     MaFile.canRead();
