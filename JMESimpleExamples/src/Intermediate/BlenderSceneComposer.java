@@ -91,7 +91,7 @@ public class BlenderSceneComposer extends SimpleApplication {
          
             if (strndscene.equals(strmd) == true){
                 Geometry ndGet = (Geometry) ndmd.getChild(j).clone(false);
-                ndGet.setName(strndscene);
+                ndGet.setName(nd.getChild(i).getName());
                 ndGet.setLocalTransform(nd.getChild(i).getWorldTransform());
                 ndscene.attachChild(ndGet);   
                  
