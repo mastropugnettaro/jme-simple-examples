@@ -28,21 +28,32 @@ public class ShootBulletControlMove extends AbstractControl implements Savable, 
         spaaMove = arg0;
         geooMove = arg1;
         sbc = arg2;
-        bulletTrans = spaaMove.getWorldTransform().setScale(0.5f,0.5f,0.5f);
+        bulletTrans = spaaMove.getWorldTransform();
+        bulletTrans.setScale(0.5f,0.5f,0.5f);
         geooMove.setLocalTransform(bulletTrans);
-        
-        frontVec = bulletTrans.getRotation().mult(Vector3f.UNIT_Z).normalize();
-        
+
+//Approach 1        
+// frontVec = geooMove.getLocalRotation().getRotationColumn(2).normalize();        
+
+//Approach 2        
+frontVec = bulletTrans.getRotation().mult(Vector3f.UNIT_Z).normalize();
+
     }
     
     @Override
     protected void controlUpdate(float tpf) {
 
         if (work == true) {
-        geooMove.move(frontVec.mult(0.5f));
-                
-        timer2 += tpf*4f;
+   
         
+        timer2 += tpf*3f;
+
+// Approach 1        
+//geooMove.setLocalTranslation(geooMove.getLocalTranslation().add(frontVec.multLocal(timer2)));                
+        
+// Approach 2
+geooMove.move(frontVec.mult(0.9f*timer2));
+
         bv = geooMove.getWorldBound();
         CollisionResults results = new CollisionResults();
         sbc.shoBuRu.enemyNode.collideWith(bv, results);
