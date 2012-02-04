@@ -26,7 +26,7 @@ public class LookAtNode extends SimpleApplication {
         
         xxx = tpf*0.1f;
                 
-        geom.getLocalRotation().lookAt(tempRott.set(cam.getDirection()).multLocal(1f, 0f, 1f), Vector3f.UNIT_Y);
+        geom.getLocalRotation().lookAt(cam.getDirection().multLocal(1f, 0f, 1f), Vector3f.UNIT_Y);
         geom.setLocalRotation(geom.getLocalRotation());
     
          
