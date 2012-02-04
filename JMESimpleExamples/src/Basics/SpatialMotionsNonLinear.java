@@ -95,7 +95,7 @@ public class SpatialMotionsNonLinear extends SimpleApplication {
       angla = tpf * 2f; //speed
 
       vectry = spatial.getWorldRotation();
-      front = vectry.mult(Vector3f.UNIT_Z).normalize();
+      front = vectry.mult(Vector3f.UNIT_Z).normalizeLocal();
       
       vecB = spatial.getWorldTranslation().subtract(vecAim).setY(spatial.getWorldTranslation().y).normalize();
       
@@ -118,7 +118,7 @@ public class SpatialMotionsNonLinear extends SimpleApplication {
      remainingDist = spatial.getLocalTranslation().distance(vecAim);
      
      if (remainingDist > 0.2f && !spatial.getWorldTranslation().equals(vecAim)) {
-     spatial.move(front.negateLocal().mult(moveMe));
+     spatial.move(front.negateLocal().multLocal(moveMe));
      }
      else {
          if (remainingDist <= 0.2f && !spatial.getWorldTranslation().equals(vecAim)) 
