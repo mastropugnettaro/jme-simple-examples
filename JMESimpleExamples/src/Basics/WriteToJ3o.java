@@ -55,7 +55,15 @@ public class WriteToJ3o extends SimpleApplication {
     
     
     String str = new String("assets/Models/writej3o.j3o");
-    str.replaceAll("/", File.separator);
+    
+        // convert to / for windows
+        if (File.separatorChar == '\\'){
+            str = str.replace('\\', '/');
+        }
+        if(!str.endsWith("/")){
+            str += "/";
+        }
+        
     File MaFile = new File(str);
     MaFile.setWritable(true);
     MaFile.canWrite();
