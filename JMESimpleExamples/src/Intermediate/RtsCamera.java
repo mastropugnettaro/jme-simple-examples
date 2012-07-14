@@ -114,7 +114,7 @@ public class RtsCamera extends SimpleApplication {
     Geometry cube = new Geometry(name, box);
     cube.setLocalScale(0.5f,0.5f,1.5f);
     Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("m_Color", ColorRGBA.randomColor());
+    mat1.setColor("Color", ColorRGBA.randomColor());
     cube.setMaterial(mat1);
     return cube;
   }
@@ -124,7 +124,7 @@ public class RtsCamera extends SimpleApplication {
     Box box = new Box(new Vector3f(0, -4, -5), 15, .2f, 15);
     Geometry floor = new Geometry("the Floor", box);
     Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat1.setColor("m_Color", ColorRGBA.Brown);
+    mat1.setColor("Color", ColorRGBA.Brown);
     floor.setMaterial(mat1);
     return floor;
   }
@@ -134,7 +134,7 @@ public class RtsCamera extends SimpleApplication {
     Sphere sphere = new Sphere(30, 30, 0.2f);
     mark = new Geometry("BOOM!", sphere);
     Material mark_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mark_mat.setColor("m_Color", ColorRGBA.Red);
+    mark_mat.setColor("Color", ColorRGBA.Red);
     mark.setMaterial(mark_mat);
     mark.setLocalTranslation(0, -3.8f, 0);
     rootNode.attachChild(mark);
