@@ -66,6 +66,7 @@ geooMove.move(frontVec.mult(0.9f*timer2));
             closest.removeFromParent();
             geooMove.removeControl(this);
             sbc.shotsGroup.detachChild(geooMove);
+            geooMove.removeFromParent();
             geooMove = null;
             work = false;
         }

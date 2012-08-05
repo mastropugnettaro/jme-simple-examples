@@ -30,7 +30,7 @@ public class DetachChild extends SimpleApplication {
         geom_a = new Geometry("Box_A", box_a);
         geom_a.updateModelBound();
         Material mat_a = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_a.setColor("m_Color", ColorRGBA.Blue);
+        mat_a.setColor("Color", ColorRGBA.Blue);
         geom_a.setMaterial(mat_a);
         rootNode.attachChild(geom_a);
         
@@ -38,7 +38,7 @@ public class DetachChild extends SimpleApplication {
         geom_b = new Geometry("Box_B", box_b);
         geom_b.updateModelBound();
         Material mat_b = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_b.setColor("m_Color", ColorRGBA.Red);
+        mat_b.setColor("Color", ColorRGBA.Red);
         geom_b.setMaterial(mat_b);        
         
         Node nd[] = new Node [10];

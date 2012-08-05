@@ -28,7 +28,7 @@ public class GenerateFieldOfInstances extends SimpleApplication {
         geom.updateModelBound();
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("m_Color", ColorRGBA.Red);
+        mat.setColor("Color", ColorRGBA.Red);
         geom.setMaterial(mat);
         geom.setLocalTranslation(0,2,1);
         
@@ -46,7 +46,7 @@ public class GenerateFieldOfInstances extends SimpleApplication {
         
         rootNode.attachChild(instNodes);
         
-        mat.setColor("m_Color", ColorRGBA.Blue);  //Check if material is shared by all objects
+        mat.setColor("Color", ColorRGBA.Blue);  //Check if material is shared by all objects
         
         
         flyCam.setMoveSpeed(30);

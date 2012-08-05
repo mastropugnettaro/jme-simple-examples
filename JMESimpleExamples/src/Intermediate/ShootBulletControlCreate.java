@@ -45,7 +45,7 @@ public class ShootBulletControlCreate extends AbstractControl implements Savable
 
         geoo = new Geometry ("bullet_"+zspaa.getName(), box_bullet); 
         Material mat_bullet = new Material(shoBuRu.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_bullet.setColor("m_Color", ColorRGBA.Red);
+        mat_bullet.setColor("Color", ColorRGBA.Red);
         geoo.setMaterial(mat_bullet);
         
 
