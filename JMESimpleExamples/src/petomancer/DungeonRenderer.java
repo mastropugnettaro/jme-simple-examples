@@ -36,7 +36,7 @@ public class DungeonRenderer
             getViewPort().setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
             
             DirectionalLight dl = new DirectionalLight();
-            dl.setDirection(new Vector3f(0.69305897f, -0.51373863f, 0.5057093f));
+            dl.setDirection(new Vector3f(0.69305897f, -0.51373863f, 0.5057093f).normalizeLocal());
             dl.setColor(new ColorRGBA(0.8f, 0.8f, 0.8f, 0.8f));
             getRootNode().addLight(dl);
             
