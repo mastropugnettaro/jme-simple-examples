@@ -2,6 +2,7 @@ package petomancer;
 
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -16,7 +17,6 @@ import com.jme3.util.TangentBinormalGenerator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3tools.optimize.GeometryBatchFactory;
-import petomancer.dungeon.codeandcoke.Map;
 
 public class DungeonRenderer
 {
@@ -34,7 +34,16 @@ public class DungeonRenderer
          {
             getFlyByCamera().setMoveSpeed(10);
             getViewPort().setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
-            getRootNode().addLight(new DirectionalLight());
+            
+            DirectionalLight dl = new DirectionalLight();
+            dl.setDirection(new Vector3f(0.69305897f, -0.51373863f, 0.5057093f));
+            dl.setColor(new ColorRGBA(0.8f, 0.8f, 0.8f, 0.8f));
+            getRootNode().addLight(dl);
+            
+            AmbientLight amb = new AmbientLight();
+            amb.setColor(new ColorRGBA(1.7f, 1.5f, 1.7f, 1.0f));
+            getRootNode().addLight(amb);
+            
             onInit(this);
          }
       };
@@ -159,7 +168,7 @@ public class DungeonRenderer
       }//for
       TangentBinormalGenerator.generate(ground);
       GeometryBatchFactory.optimize(ground);
-      TangentBinormalGenerator.generate(ground);
+//      TangentBinormalGenerator.generate(ground);
       
       return ground;
    }//renderFloor
