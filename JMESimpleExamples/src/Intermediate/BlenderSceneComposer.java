@@ -46,7 +46,7 @@ public class BlenderSceneComposer extends SimpleApplication {
         geom_a.updateModelBound();
         
         mat_box = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_box.setColor("m_Color", ColorRGBA.Blue);
+        mat_box.setColor("Color", ColorRGBA.Blue);
         geom_a.setMaterial(mat_box);
         ndmd.attachChild(geom_a);
         
@@ -56,7 +56,7 @@ public class BlenderSceneComposer extends SimpleApplication {
         geom_b.updateModelBound();
         
         mat_sphr = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_sphr.setColor("m_Color", ColorRGBA.Red);
+        mat_sphr.setColor("Color", ColorRGBA.Red);
         geom_b.setMaterial(mat_sphr);
         ndmd.attachChild(geom_b);
       
@@ -107,7 +107,7 @@ public class BlenderSceneComposer extends SimpleApplication {
         dsk.clearCache();
   
         
-        mat_sphr.setColor("m_Color", ColorRGBA.Yellow); //check if material is shared
+        mat_sphr.setColor("Color", ColorRGBA.Yellow); //check if material is shared
         
         
         

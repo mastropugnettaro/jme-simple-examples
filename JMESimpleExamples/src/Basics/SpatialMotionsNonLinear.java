@@ -60,7 +60,7 @@ public class SpatialMotionsNonLinear extends SimpleApplication {
         geom.updateModelBound();
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("m_Color", ColorRGBA.Blue);
+        mat.setColor("Color", ColorRGBA.Blue);
         geom.setMaterial(mat);
         geom.setLocalTranslation(vec1);
         rootNode.attachChild(geom);

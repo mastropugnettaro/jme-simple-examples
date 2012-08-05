@@ -36,10 +36,10 @@ public class DrawCollisionBox extends SimpleApplication {
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         
         Material mat_box = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_box.setColor("m_Color", ColorRGBA.Blue);
+        mat_box.setColor("Color", ColorRGBA.Blue);
         
         Material mat_wire = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_wire.setColor("m_Color", ColorRGBA.Cyan);
+        mat_wire.setColor("Color", ColorRGBA.Cyan);
         mat_wire.getAdditionalRenderState().setWireframe(true);
         
         Mesh sphr = new Sphere(10, 10, 1f);
