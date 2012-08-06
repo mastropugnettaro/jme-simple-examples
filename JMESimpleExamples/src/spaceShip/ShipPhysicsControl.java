@@ -47,7 +47,9 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsContr
       Quaternion shipRot = getPhysicsRotation().clone();
       shipRot.slerp(cam.getRotation(), time);        
       setPhysicsRotation(shipRot);
-    }
+    } else {
+          time = 0.001f;
+      }
     
     }
 
