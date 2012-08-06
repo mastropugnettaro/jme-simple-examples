@@ -10,17 +10,19 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
 /**
  *
  * @author mifth
  */
-public class ShipPhysicsControl extends RigidBodyControl implements PhysicsControl, PhysicsTickListener {
+public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickListener, PhysicsControl {
 
     private Camera cam;
     private boolean move = false;
     private float time = 0.0001f;
+    private float angle;
     
     public ShipPhysicsControl(Camera camera, CollisionShape shape, float mass) {
         super(shape, mass);
@@ -34,21 +36,25 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsContr
     }
     
     public void prePhysicsTick(PhysicsSpace space, float f) {
+
+      angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());        
+      System.out.println(angle);
         
         // Ship Movement
         if (move) applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
         
         // Ship Rotation
-      if (!cam.getRotation().equals(getPhysicsRotation())) {
+      if (angle > 0.01f) {
       // Rotate the ship to Cam direction
       time += f * 0.01f;
       if (time > 0.99) time = 0.001f;
-//      float angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(shipControl.getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
+      
       Quaternion shipRot = getPhysicsRotation().clone();
       shipRot.slerp(cam.getRotation(), time);        
       setPhysicsRotation(shipRot);
-    } else {
+    } else if (angle < 0.01f && angle != 0) {
           time = 0.001f;
+          setPhysicsRotation(cam.getRotation());
       }
     
     }
@@ -73,6 +79,10 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsContr
 
     public PhysicsSpace getPhysicsSpace() {
         return space;
+    }  
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }    
     
 }
