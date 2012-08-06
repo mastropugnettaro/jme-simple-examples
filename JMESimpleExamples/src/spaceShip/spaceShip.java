@@ -191,7 +191,7 @@ implements ActionListener, AnalogListener {
 public void simpleUpdate(float tpf)
 {
     // set physics tick for the ship
-    shipControl.prePhysicsTick(bulletAppState.getPhysicsSpace(), tpf);
+    shipControl.prePhysicsTick(bulletAppState.getPhysicsSpace(), bulletAppState.getPhysicsSpace().getAccuracy());
 
  }
 
