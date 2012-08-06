@@ -53,8 +53,11 @@ implements ActionListener, AnalogListener {
         settings.setFrameRate(60);
         
         bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
-        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));
+        bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
+        stateManager.attach(bulletAppState);            
+//        bulletAppState.getPhysicsSpace().setAccuracy(1f/30f);
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
+        
         
         flyCam.setEnabled(false);
 //        flyCam.setMoveSpeed(30);
