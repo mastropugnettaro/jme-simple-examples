@@ -6,6 +6,8 @@ import com.bulletphysics.dynamics.RigidBody;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
@@ -30,7 +32,8 @@ import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
 
 
-public class spaceShip extends SimpleApplication implements ActionListener, AnalogListener{
+public class spaceShip extends SimpleApplication 
+implements ActionListener, AnalogListener {
 
     public static void main(String[] args) {
         spaceShip app = new spaceShip();
@@ -41,8 +44,7 @@ public class spaceShip extends SimpleApplication implements ActionListener, Anal
     Node instNodes = new Node();  
     BulletAppState bulletAppState;
     Node ship;
-    RigidBodyControl shipControl;
-    float time = 0.0001f;
+    ShipPhysicsControl shipControl;
               
     @Override
     public void simpleInitApp() {
@@ -131,12 +133,13 @@ public class spaceShip extends SimpleApplication implements ActionListener, Anal
         
         CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
         colShape.setMargin(0.005f);
-        shipControl = new RigidBodyControl(colShape, 1); 
+        shipControl = new ShipPhysicsControl(cam, colShape, 1); 
         shipControl.setDamping(0.5f, 0.9f);
         shipControl.setFriction(0.5f);
 //        shipControl.setGravity(new Vector3f(0, 0, 0));
         ship.addControl(shipControl);
-        bulletAppState.getPhysicsSpace().add(ship);
+        bulletAppState.getPhysicsSpace().add(shipControl);
+        shipControl.setEnabled(true);
         
     }
     
@@ -184,31 +187,25 @@ public class spaceShip extends SimpleApplication implements ActionListener, Anal
 @Override
 public void simpleUpdate(float tpf)
 {
-    
-    // Rotate the ship to Cam direction
-    time += tpf * 0.01f;
-    if (time > 0.99) time = 0.001f;
-//    float angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(shipControl.getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
-    Quaternion shipRot = shipControl.getPhysicsRotation().clone();
-    shipRot.slerp(cam.getRotation(), time);        
-    shipControl.setPhysicsRotation(shipRot);
-          
+    // set physics tick for the ship
+    shipControl.prePhysicsTick(bulletAppState.getPhysicsSpace(), tpf);
+
  }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-
+        if (isPressed && name == "MoveShip") {
+            shipControl.makeMove(true);
+        } else if (!isPressed && name == "MoveShip") {
+            shipControl.makeMove(false);
+        }
     }
 
     public void onAnalog(String name, float value, float tpf) {
         
-        if (name == "MoveShip") {
-            // Move the Ship
-            shipControl.setLinearVelocity(cam.getDirection().normalizeLocal().multLocal(30f));
-            
-            //The Variant id I use setPhysicsLocation(). Works without collision.
-//            shipControl.setPhysicsLocation(shipControl.getPhysicsLocation().add(cam.getDirection().normalizeLocal().multLocal(0.1f)));            
-        }
+
 
     }
+
+
 
 }
