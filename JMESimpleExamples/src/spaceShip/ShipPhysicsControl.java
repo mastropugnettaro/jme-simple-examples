@@ -57,4 +57,22 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsContr
      //   throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    public void setPhysicsSpace(PhysicsSpace space) {
+        if (space == null) {
+            if (this.space != null) {
+                this.space.removeCollisionObject(this);
+                this.space.removeTickListener(this);
+            }
+            this.space = space;
+        } else {
+            space.addCollisionObject(this);
+            space.addTickListener(this);
+        }
+        this.space = space;
+    }
+
+    public PhysicsSpace getPhysicsSpace() {
+        return space;
+    }    
+    
 }
