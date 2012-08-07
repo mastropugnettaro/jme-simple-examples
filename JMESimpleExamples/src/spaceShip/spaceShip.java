@@ -49,8 +49,8 @@ implements ActionListener, AnalogListener {
     @Override
     public void simpleInitApp() {
         
-        settings.setVSync(true);
-        settings.setFrameRate(60);
+//        settings.setVSync(true);
+//        settings.setFrameRate(60);
         
         bulletAppState = new BulletAppState();
         bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
