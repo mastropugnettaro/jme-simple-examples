@@ -51,13 +51,18 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
         if (time > 0.99) time = 0.001f;
       
         Quaternion shipRot = getPhysicsRotation().clone();
-        shipRot.slerp(cam.getRotation(), time);        
+        shipRot.slerp(cam.getRotation(), time);
         setPhysicsRotation(shipRot);
+
+//        applyTorque(cam.getLeft().multLocal(getPhysicsLocation().clone().multLocal(Vector3f.UNIT_X)));
+//        applyTorque(cam.getUp().multLocal(getPhysicsLocation().clone().multLocal(Vector3f.UNIT_Y)));
+//        applyTorque(cam.getDirection().multLocal(getPhysicsLocation().clone().multLocal(Vector3f.UNIT_Z)));        
+        
        } else if (angle < 0.01f && angle != 0) {
           time = 0.001f;
           setPhysicsRotation(cam.getRotation());
        }
-    
+        
     }
 
     public void physicsTick(PhysicsSpace space, float f) {

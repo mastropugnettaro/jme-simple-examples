@@ -52,17 +52,11 @@ implements ActionListener, AnalogListener {
 //        settings.setVSync(true);
 //        settings.setFrameRate(60);
         
-        bulletAppState = new BulletAppState();
-        bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
-        stateManager.attach(bulletAppState);            
-//        bulletAppState.getPhysicsSpace().setAccuracy(1f/30f);
-        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
-        
-        
         flyCam.setEnabled(false);
 //        flyCam.setMoveSpeed(30);
         viewPort.setBackgroundColor(ColorRGBA.Gray);
         
+        setPhysics();
         UI();
         setAsteroids();
         setShip();
@@ -70,8 +64,19 @@ implements ActionListener, AnalogListener {
         setCam();
         setupKeys();
         
+        
+        
     }
 
+    
+    void setPhysics() {
+        bulletAppState = new BulletAppState();
+        bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
+        stateManager.attach(bulletAppState);            
+//        bulletAppState.getPhysicsSpace().setAccuracy(1f/30f);
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
+        bulletAppState.getPhysicsSpace().enableDebug(assetManager);        
+    }
     
     void UI() {
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
@@ -177,11 +182,11 @@ implements ActionListener, AnalogListener {
             
         }
 
-        bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+
         
         GeometryBatchFactory.optimize(instNodes);  // fps optimization
-        rootNode.attachChild(instNodes);        
-        
+        rootNode.attachChild(instNodes);   
+     
         
     }
     
