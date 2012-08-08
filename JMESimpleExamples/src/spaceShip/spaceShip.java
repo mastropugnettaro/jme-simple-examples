@@ -27,6 +27,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
@@ -169,25 +170,24 @@ implements ActionListener, AnalogListener {
             gm.setLocalTranslation((float) Math.random() * 50.0f,(float) Math.random() * 30.0f - 15.0f,(float)Math.random() * 50.0f + 10.0f );
             gm.rotate(0, (float) Math.random() * (float)Math.PI, 0);
 
-            CollisionShape colShape = new MeshCollisionShape(gm.getMesh());
-            colShape.setMargin(0.005f);
-            RigidBodyControl rigControl = new RigidBodyControl(colShape, 0);
-
-            gm.addControl(rigControl);
-
-            bulletAppState.getPhysicsSpace().add(gm); 
-
             instNodes.attachChild(gm);
             
-            
         }
-
-
         
         GeometryBatchFactory.optimize(instNodes);  // fps optimization
         rootNode.attachChild(instNodes);   
      
-        
+        // setting physics
+        for (Spatial s : instNodes.getChildren()) {
+        Geometry geo = (Geometry) s;
+            CollisionShape colShape = new MeshCollisionShape(geo.getMesh());
+            colShape.setMargin(0.005f);
+            RigidBodyControl rigControl = new RigidBodyControl(colShape, 0);
+
+            geo.addControl(rigControl);
+
+            bulletAppState.getPhysicsSpace().add(geo);     
+       }
     }
     
  
@@ -201,9 +201,9 @@ public void simpleUpdate(float tpf)
  }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (isPressed && name == "MoveShip") {
+        if (isPressed && "MoveShip".equals(name)) {
             shipControl.makeMove(true);
-        } else if (!isPressed && name == "MoveShip") {
+        } else if (!isPressed && "MoveShip".equals(name)) {
             shipControl.makeMove(false);
         }
     }
