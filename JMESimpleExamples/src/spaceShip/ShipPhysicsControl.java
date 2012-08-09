@@ -68,7 +68,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     Vector3f dirCam2 = cam.getLeft();
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
-    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle + 0.1f)* 5f));
+    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle)* 6f));
 
      }
     }
