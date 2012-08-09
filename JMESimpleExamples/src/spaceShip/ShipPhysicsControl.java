@@ -9,6 +9,7 @@ import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -37,32 +38,39 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     
     public void prePhysicsTick(PhysicsSpace space, float f) {
 
+    // Ship Movement
+    if (move) {
+        applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
+    }
+ 
+    float rotationSpeed = 500;
+ 
+    // Ship Rotation
+    angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
+ 
+//    System.out.println(angle);
+    
+    if (angle != 0) {
+    
+    if (angle < 0.03f) {
+        return;
+    }
+ 
+    Vector3f dirSpatial = getPhysicsRotation().clone().mult(Vector3f.UNIT_Z.mult(1));
+    Vector3f dirCam = cam.getDirection();
+    Vector3f cross = dirSpatial.crossLocal(dirCam).normalizeLocal();
+ 
+    Vector3f dirSpatial1 = getPhysicsRotation().clone().mult(Vector3f.UNIT_Y);
+    Vector3f dirCam1 = cam.getUp();
+    Vector3f cross1 = dirSpatial1.crossLocal(dirCam1).normalizeLocal();
+ 
+    Vector3f dirSpatial2 = getPhysicsRotation().clone().mult(Vector3f.UNIT_X.mult(1));
+    Vector3f dirCam2 = cam.getLeft();
+    Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
+ 
+    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle + 0.1f)* 5f));
 
-        
-        // Ship Movement
-        if (move) applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
-        
-        // Ship Rotation
-        angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());        
-//      System.out.println(angle);        
-        if (angle > 0.01f) {
-      //   Rotate the ship to Cam direction
-        time += f * 0.01f;
-        if (time > 0.99) time = 0.001f;
-      
-        Quaternion shipRot = getPhysicsRotation().clone();
-        shipRot.slerp(cam.getRotation(), time);
-        setPhysicsRotation(shipRot);
-
-//        applyTorque(cam.getLeft().multLocal(getPhysicsLocation().clone().multLocal(Vector3f.UNIT_X)));
-//        applyTorque(cam.getUp().multLocal(getPhysicsLocation().clone().multLocal(Vector3f.UNIT_Y)));
-//        applyTorque(cam.getDirection().multLocal(getPhysicsLocation().clone().multLocal(Vector3f.UNIT_Z)));        
-        
-       } else if (angle < 0.01f && angle != 0) {
-          time = 0.001f;
-          setPhysicsRotation(cam.getRotation());
-       }
-        
+     }
     }
 
     public void physicsTick(PhysicsSpace space, float f) {

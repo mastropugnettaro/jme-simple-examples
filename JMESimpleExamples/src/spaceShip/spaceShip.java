@@ -113,7 +113,7 @@ implements ActionListener, AnalogListener {
         chaseCam.setMaxVerticalRotation(FastMath.PI*0.45f);
         
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
-        
+        chaseCam.setLookAtOffset(new Vector3f(0f, 3f, 0f));
         chaseCam.setEnabled(true);
     }
     
