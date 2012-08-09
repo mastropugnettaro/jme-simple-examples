@@ -41,11 +41,12 @@ implements ActionListener, AnalogListener {
         app.start();
     }
 
-    Geometry geom;     
-    Node instNodes = new Node();  
-    BulletAppState bulletAppState;
-    Node ship;
-    ShipPhysicsControl shipControl;
+    private Geometry geom;     
+    private Node instNodes = new Node();  
+    private BulletAppState bulletAppState;
+    private Node ship;
+    private ShipPhysicsControl shipControl;
+    private ChaseCamera chaseCam;
               
     @Override
     public void simpleInitApp() {
@@ -103,7 +104,7 @@ implements ActionListener, AnalogListener {
     }
     
     void setCam() {
-        ChaseCamera chaseCam = new ChaseCamera(cam, ship, inputManager);
+        chaseCam = new ChaseCamera(cam, ship, inputManager);
         chaseCam.setDragToRotate(true);
         chaseCam.setTrailingEnabled(false);
         
@@ -111,9 +112,8 @@ implements ActionListener, AnalogListener {
         
         chaseCam.setMinVerticalRotation(-FastMath.PI*0.45f);
         chaseCam.setMaxVerticalRotation(FastMath.PI*0.45f);
-        
+
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
-        chaseCam.setLookAtOffset(new Vector3f(0f, 3f, 0f));
         chaseCam.setEnabled(true);
     }
     
@@ -195,8 +195,8 @@ implements ActionListener, AnalogListener {
 @Override
 public void simpleUpdate(float tpf)
 {
-    // set physics tick for the ship
-//    shipControl.prePhysicsTick(bulletAppState.getPhysicsSpace(), bulletAppState.getPhysicsSpace().getAccuracy());
+
+    chaseCam.setLookAtOffset(cam.getUp().normalizeLocal().multLocal(4f));
 
  }
 
