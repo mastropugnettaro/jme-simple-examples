@@ -55,7 +55,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
         return;
     }
  
-    Vector3f dirSpatial = getPhysicsRotation().clone().mult(Vector3f.UNIT_Z.mult(1));
+    Vector3f dirSpatial = getPhysicsRotation().clone().mult(Vector3f.UNIT_Z);
     Vector3f dirCam = cam.getDirection();
     Vector3f cross = dirSpatial.crossLocal(dirCam).normalizeLocal();
  
@@ -63,7 +63,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     Vector3f dirCam1 = cam.getUp();
     Vector3f cross1 = dirSpatial1.crossLocal(dirCam1).normalizeLocal();
  
-    Vector3f dirSpatial2 = getPhysicsRotation().clone().mult(Vector3f.UNIT_X.mult(1));
+    Vector3f dirSpatial2 = getPhysicsRotation().clone().mult(Vector3f.UNIT_X);
     Vector3f dirCam2 = cam.getLeft();
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
