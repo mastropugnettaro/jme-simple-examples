@@ -49,8 +49,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
  
 //    System.out.println(angle);
     
-    if (angle != 0) {
-    
+
     if (angle < 0.03f) {
         return;
     }
@@ -69,7 +68,6 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
  
     applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle)* rotationSpeed));
 
-     }
     }
 
     public void physicsTick(PhysicsSpace space, float f) {
