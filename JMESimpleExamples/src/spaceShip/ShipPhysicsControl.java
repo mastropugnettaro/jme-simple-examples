@@ -24,6 +24,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     private boolean move = false;
     private float time = 0.0001f;
     private float angle;
+    private float rotationSpeed = 6f;
     
     public ShipPhysicsControl(Camera camera, CollisionShape shape, float mass) {
         super(shape, mass);
@@ -42,8 +43,6 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     if (move) {
         applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
     }
- 
-    float rotationSpeed = 500;
  
     // Ship Rotation
     angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
@@ -68,7 +67,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     Vector3f dirCam2 = cam.getLeft();
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
-    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle)* 6f));
+    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle)* rotationSpeed));
 
      }
     }
