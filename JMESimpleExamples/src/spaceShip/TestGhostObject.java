@@ -36,6 +36,9 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -90,25 +93,54 @@ public class TestGhostObject extends SimpleApplication {
         
         Geometry geo2 = geo.clone(false);
         geo2.setName("geo2");
-        geo2.setLocalTranslation(geo2.getLocalTranslation().add(new Vector3f(0.5f,0.5f,0.5f)));
-        GhostControl ghost2 = (GhostControl) ghostControl.cloneForSpatial(geo2);
+        geo2.setLocalTranslation(geo2.getLocalTranslation().add(new Vector3f(2f,2f,2f)));
+        CollisionShape shape2 = new BoxCollisionShape(new Vector3f(5f, 5f, 5f));
+        GhostControl ghost2 = new GhostControl(shape2);
         geo2.addControl(ghost2);
         bulletAppState.getPhysicsSpace().add(ghost2);
         rootNode.attachChild(geo2);
 
-    }
-
-    @Override
-    public void simpleUpdate(float tpf) {
-
-        geo.rotate(0f, 0f, -00.1f);
-        List<PhysicsCollisionObject> count = ghostControl.getOverlappingObjects();
+        ghost2.getPhysicsSpace().addCollisionListener(listener);
+//        ghost2.getPhysicsSpace().addTickListener(tick);
         
+    }
+    
+//    PhysicsTickListener tick = new PhysicsTickListener() {
+//
+//        public void prePhysicsTick(PhysicsSpace space, float f) {
+//            geo.rotate(0f, 0f, -00.1f);
+//            rootNode.updateGeometricState();
+//        }
+//
+//        public void physicsTick(PhysicsSpace space, float f) {
+//        
+//        List<PhysicsCollisionObject> count = ghostControl.getOverlappingObjects();
+//        
+//        if (count.size() > 0 && count != null) {
+//            PhysicsCollisionObject x = ghostControl.getOverlapping(0);
+//            Geometry getGeo = (Geometry) x.getUserObject();
+//         System.out.println(getGeo.getName());
+//        }      
+//        }
+//    };
+
+    PhysicsCollisionListener listener = new PhysicsCollisionListener() {
+
+        public void collision(PhysicsCollisionEvent event) {
+        List<PhysicsCollisionObject> count = ghostControl.getOverlappingObjects();        
         if (count.size() > 0 && count != null) {
             PhysicsCollisionObject x = ghostControl.getOverlapping(0);
             Geometry getGeo = (Geometry) x.getUserObject();
          System.out.println(getGeo.getName());
-        }
+        } 
+        geo.rotate(0f, 0f, -00.1f);
+       }
+    };
+    
+    @Override
+    public void simpleUpdate(float tpf) {
+
+
         
     }
 }

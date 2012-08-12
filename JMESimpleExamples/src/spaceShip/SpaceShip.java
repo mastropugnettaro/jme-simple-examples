@@ -33,11 +33,11 @@ import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
 
 
-public class spaceShip extends SimpleApplication 
+public class SpaceShip extends SimpleApplication 
 implements ActionListener, AnalogListener {
 
     public static void main(String[] args) {
-        spaceShip app = new spaceShip();
+        SpaceShip app = new SpaceShip();
         app.start();
     }
 
@@ -47,12 +47,13 @@ implements ActionListener, AnalogListener {
     private Node ship;
     private ShipPhysicsControl shipControl;
     private ChaseCamera chaseCam;
-              
+    private ShipWeaponControl weaponControl;    
+    
     @Override
     public void simpleInitApp() {
         
-//        settings.setVSync(true);
-//        settings.setFrameRate(60);
+        settings.setVSync(true);
+        settings.setFrameRate(60);
         
         flyCam.setEnabled(false);
 //        flyCam.setMoveSpeed(30);
@@ -66,7 +67,8 @@ implements ActionListener, AnalogListener {
         setCam();
         setupKeys();
         
-        
+        weaponControl = new ShipWeaponControl(this, ship);
+        ship.addControl(weaponControl);
         
     }
 
@@ -95,11 +97,14 @@ implements ActionListener, AnalogListener {
     
        //Set up keys and listener to read it
         String[] mappings = new String[]{
-            "MoveShip"
+            "MoveShip",
+            "FireBullets",
+            "FireRocket"
         };
         
         inputManager.addListener(this, mappings);
         inputManager.addMapping("MoveShip", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+         inputManager.addMapping("FireBullets", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
             
     }
     
@@ -141,10 +146,10 @@ implements ActionListener, AnalogListener {
         ship.setMaterial(mat);  
         
         CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
-        colShape.setMargin(0.005f);
+        colShape.setMargin(0.05f);
         shipControl = new ShipPhysicsControl(cam, colShape, 1); 
-        shipControl.setDamping(0.5f, 0.9f);
-        shipControl.setFriction(0.5f);
+        shipControl.setDamping(0.7f, 0.99f);
+        shipControl.setFriction(0.9f);
 //        shipControl.setGravity(new Vector3f(0, 0, 0));
         ship.addControl(shipControl);
         bulletAppState.getPhysicsSpace().add(shipControl);
@@ -195,7 +200,6 @@ implements ActionListener, AnalogListener {
 @Override
 public void simpleUpdate(float tpf)
 {
-
     chaseCam.setLookAtOffset(cam.getUp().normalizeLocal().multLocal(4f));
 
  }
@@ -206,11 +210,16 @@ public void simpleUpdate(float tpf)
         } else if (!isPressed && "MoveShip".equals(name)) {
             shipControl.makeMove(false);
         }
+        
+        if (isPressed && name.equals("FireBullets")) {
+            weaponControl.setFireBullets(true);
+//          Bullet shipbullets = new Bullet(aim, bullet.clone(false));
+        } else if (!isPressed && name.equals("FireBullets")) {
+            weaponControl.setFireBullets(false);
+        }               
     }
 
     public void onAnalog(String name, float value, float tpf) {
-        
-
 
     }
 
