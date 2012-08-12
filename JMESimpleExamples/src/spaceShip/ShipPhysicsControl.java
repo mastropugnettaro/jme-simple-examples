@@ -24,7 +24,7 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     private boolean move = false;
     private float time = 0.0001f;
     private float angle;
-    private float rotationSpeed = 6f;
+    private float rotationSpeed = 17f;
     
     public ShipPhysicsControl(Camera camera, CollisionShape shape, float mass) {
         super(shape, mass);
@@ -50,19 +50,19 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
 //    System.out.println(angle);
     
 
-    if (angle < 0.03f) {
+    if (angle < 0.01f) {
         return;
     }
  
-    Vector3f dirSpatial = getPhysicsRotation().clone().mult(Vector3f.UNIT_Z);
+    Vector3f dirSpatial = getPhysicsRotation().mult(Vector3f.UNIT_Z);
     Vector3f dirCam = cam.getDirection();
     Vector3f cross = dirSpatial.crossLocal(dirCam).normalizeLocal();
  
-    Vector3f dirSpatial1 = getPhysicsRotation().clone().mult(Vector3f.UNIT_Y);
+    Vector3f dirSpatial1 = getPhysicsRotation().mult(Vector3f.UNIT_Y);
     Vector3f dirCam1 = cam.getUp();
     Vector3f cross1 = dirSpatial1.crossLocal(dirCam1).normalizeLocal();
  
-    Vector3f dirSpatial2 = getPhysicsRotation().clone().mult(Vector3f.UNIT_X);
+    Vector3f dirSpatial2 = getPhysicsRotation().mult(Vector3f.UNIT_X);
     Vector3f dirCam2 = cam.getLeft();
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
