@@ -90,7 +90,7 @@ public class SpaceShip extends SimpleApplication {
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
-        ch.setText("MiddleMouse, RightMouse"); // crosshairs
+        ch.setText("LeftMouse, MiddleMouse, RightMouse"); // crosshairs
         ch.setColor(new ColorRGBA(1f,0.8f,0.1f,1f));
         ch.setLocalTranslation(settings.getWidth()*0.3f,settings.getHeight()*0.1f,0);
         guiNode.attachChild(ch);        
