@@ -26,25 +26,46 @@ public class Bullet extends AbstractControl {
 
     private Geometry bullet;
     private GhostControl ghost;
-    private Vector3f vecMove;
+    private Vector3f vecMove, bornPlace;
+    private BulletAppState state;
+    private boolean work = true;
     
-    public Bullet(Vector3f path, Geometry bullet, BulletAppState state, CollisionShape shape) {
+    public Bullet(Vector3f bornPlace, Geometry bullet, BulletAppState state, CollisionShape shape) {
 
         this.bullet = bullet;
-
-        vecMove = bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(2f);        
+        this.bullet.setUserData("Type", "Bullet");
+        this.state = state;
+        this.bornPlace = bornPlace;
+        
+        vecMove = bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(5f);        
         
         ghost = new GhostControl(shape);
         this.bullet.addControl(ghost);
-        state.getPhysicsSpace().add(ghost);
+        this.state.getPhysicsSpace().add(ghost);
         
     }
 
-
+    protected void destroy() {
+        state.getPhysicsSpace().remove(ghost);
+        bullet.removeControl(ghost);
+        work = false;
+        bullet.removeFromParent();
+        bullet.removeControl(this);
+        bullet = null;
+        
+    }
 
     @Override
     protected void controlUpdate(float tpf) {
-            bullet.move(vecMove);                            
+        if(work) {    
+            float distance = bornPlace.distance(bullet.getLocalTranslation());
+            if(distance > 100f) {
+                destroy();
+                return;
+            }
+            
+             bullet.move(vecMove);                            
+        }
     }
 
     @Override

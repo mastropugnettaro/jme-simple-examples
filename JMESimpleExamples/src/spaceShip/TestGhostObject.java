@@ -90,15 +90,17 @@ public class TestGhostObject extends SimpleApplication {
         CollisionShape shape = new BoxCollisionShape(new Vector3f(1, 1, 1));
         ghostControl = new GhostControl(shape);
         geo.addControl(ghostControl);
+        ghostControl.setCollisionGroup(0);
         bulletAppState.getPhysicsSpace().add(ghostControl);
         
         Geometry geo2 = geo.clone(false);
         geo2.setName("geo2");
-        geo2.setLocalTranslation(geo2.getLocalTranslation().add(new Vector3f(2f,2f,2f)));
-        CollisionShape shape2 = new BoxCollisionShape(new Vector3f(5f, 5f, 5f));
+        geo2.setLocalTranslation(geo2.getLocalTranslation().add(new Vector3f(0.7f,0.7f,0.7f)));
+        CollisionShape shape2 = new BoxCollisionShape(new Vector3f(1f, 1f, 1f));
         GhostControl ghost2 = new GhostControl(shape2);
         geo2.addControl(ghost2);
         bulletAppState.getPhysicsSpace().add(ghost2);
+        ghost2.setCollisionGroup(1);
         rootNode.attachChild(geo2);
 
         bulletAppState.getPhysicsSpace().addCollisionListener(listener);
@@ -138,14 +140,12 @@ public class TestGhostObject extends SimpleApplication {
             Geometry getGeo = (Geometry) x.getUserObject();
 //         System.out.println(getGeo.getName());
         } 
-        geo.rotate(0f, 0f, -00.1f);
        }
     };
     
     @Override
     public void simpleUpdate(float tpf) {
+       geo.rotate(0f, 0f, -00.1f);
 
-
-        
     }
 }
