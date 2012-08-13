@@ -29,25 +29,18 @@ public class Bullet extends AbstractControl {
     private Vector3f vecMove;
     
     public Bullet(Vector3f path, Geometry bullet, BulletAppState state, CollisionShape shape) {
+
         this.bullet = bullet;
 
+        vecMove = bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(2f);        
         
         ghost = new GhostControl(shape);
         this.bullet.addControl(ghost);
         state.getPhysicsSpace().add(ghost);
-
-        ghost.getPhysicsSpace().addCollisionListener(listener);  
-        vecMove = bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(2f);
         
     }
 
-    PhysicsCollisionListener listener = new PhysicsCollisionListener() {
 
-        public void collision(PhysicsCollisionEvent event) {
-//           System.out.println("eeeee");
-
-        }
-    };
 
     @Override
     protected void controlUpdate(float tpf) {

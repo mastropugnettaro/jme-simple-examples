@@ -6,6 +6,8 @@ package spaceShip;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -27,7 +29,7 @@ import com.jme3.scene.shape.Box;
  *
  * @author mifth
  */
-public class ShipWeaponControl extends  AbstractControl implements Savable, Cloneable {
+public class ShipWeaponControl extends  AbstractControl implements Savable, Cloneable, PhysicsCollisionListener  {
 
     
     private Geometry bullet;
@@ -38,6 +40,7 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
     private Node shipNode;
     private SimpleApplication asm;
     private CollisionShape shape;
+    private BulletAppState bulletApp;
     
     public ShipWeaponControl(SimpleApplication asm, Node ship) {
         
@@ -54,6 +57,12 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
         bullet.setMaterial(mat_bullet);
         
         this.asm.getRootNode().attachChild(bullets);
+                // add ourselves as collision listener
+        
+        bulletApp = asm.getStateManager().getState(BulletAppState.class);
+        
+        bulletApp.getPhysicsSpace().addCollisionListener(this);
+        
     }
     
     boolean getFireBullets() {
@@ -74,7 +83,7 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
             Geometry newBullet = bullet.clone(false);
             newBullet.setLocalRotation(shipNode.getControl(RigidBodyControl.class).getPhysicsRotation());
             newBullet.setLocalTranslation(shipNode.getControl(RigidBodyControl.class).getPhysicsLocation());
-            newBullet.addControl(new Bullet(aim, newBullet, asm.getStateManager().getState(BulletAppState.class), shape));
+            newBullet.addControl(new Bullet(aim, newBullet, bulletApp, shape));
             asm.getRootNode().attachChild(newBullet);
             bulletTimer = 0f;
       } 
@@ -90,6 +99,10 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
 
     public Control cloneForSpatial(Spatial spatial) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void collision(PhysicsCollisionEvent event) {
+System.out.println("eeeefdfff");
     }
 
 }

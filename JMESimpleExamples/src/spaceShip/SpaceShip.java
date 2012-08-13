@@ -33,8 +33,7 @@ import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
 
 
-public class SpaceShip extends SimpleApplication 
-implements ActionListener, AnalogListener {
+public class SpaceShip extends SimpleApplication {
 
     public static void main(String[] args) {
         SpaceShip app = new SpaceShip();
@@ -65,10 +64,11 @@ implements ActionListener, AnalogListener {
         setShip();
         setLight();
         setCam();
-        setupKeys();
         
         weaponControl = new ShipWeaponControl(this, ship);
         ship.addControl(weaponControl);
+        
+        Mappings mappings = new Mappings(this, ship);
         
     }
 
@@ -90,22 +90,6 @@ implements ActionListener, AnalogListener {
         ch.setColor(new ColorRGBA(1f,0.8f,0.1f,1f));
         ch.setLocalTranslation(settings.getWidth()*0.3f,settings.getHeight()*0.1f,0);
         guiNode.attachChild(ch);        
-    }
-    
-    
-    void setupKeys() {
-    
-       //Set up keys and listener to read it
-        String[] mappings = new String[]{
-            "MoveShip",
-            "FireBullets",
-            "FireRocket"
-        };
-        
-        inputManager.addListener(this, mappings);
-        inputManager.addMapping("MoveShip", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
-         inputManager.addMapping("FireBullets", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-            
     }
     
     void setCam() {
@@ -205,24 +189,8 @@ public void simpleUpdate(float tpf)
  }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (isPressed && "MoveShip".equals(name)) {
-            shipControl.makeMove(true);
-        } else if (!isPressed && "MoveShip".equals(name)) {
-            shipControl.makeMove(false);
-        }
-        
-        if (isPressed && name.equals("FireBullets")) {
-            weaponControl.setFireBullets(true);
-//          Bullet shipbullets = new Bullet(aim, bullet.clone(false));
-        } else if (!isPressed && name.equals("FireBullets")) {
-            weaponControl.setFireBullets(false);
-        }               
+             
     }
-
-    public void onAnalog(String name, float value, float tpf) {
-
-    }
-
 
 
 }
