@@ -49,6 +49,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
@@ -100,7 +101,7 @@ public class TestGhostObject extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(ghost2);
         rootNode.attachChild(geo2);
 
-        ghost2.getPhysicsSpace().addCollisionListener(listener);
+        bulletAppState.getPhysicsSpace().addCollisionListener(listener);
 //        ghost2.getPhysicsSpace().addTickListener(tick);
         
     }
@@ -127,11 +128,15 @@ public class TestGhostObject extends SimpleApplication {
     PhysicsCollisionListener listener = new PhysicsCollisionListener() {
 
         public void collision(PhysicsCollisionEvent event) {
+            
+            Spatial sp = event.getNodeA();
+            System.out.println(sp);
+            
         List<PhysicsCollisionObject> count = ghostControl.getOverlappingObjects();        
         if (count.size() > 0 && count != null) {
             PhysicsCollisionObject x = ghostControl.getOverlapping(0);
             Geometry getGeo = (Geometry) x.getUserObject();
-         System.out.println(getGeo.getName());
+//         System.out.println(getGeo.getName());
         } 
         geo.rotate(0f, 0f, -00.1f);
        }
