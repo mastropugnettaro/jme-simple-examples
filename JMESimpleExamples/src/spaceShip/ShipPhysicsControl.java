@@ -4,13 +4,13 @@
  */
 package spaceShip;
 
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
@@ -18,7 +18,7 @@ import com.jme3.renderer.Camera;
  *
  * @author mifth
  */
-public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickListener, PhysicsControl {
+public class ShipPhysicsControl extends RigidBodyControl {
 
     private Camera cam;
     private boolean move = false;
@@ -26,9 +26,13 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     private float angle;
     private float rotationSpeed = 17f;
     
-    public ShipPhysicsControl(Camera camera, CollisionShape shape, float mass) {
+    public ShipPhysicsControl(Camera camera, CollisionShape shape, float mass, BulletAppState aps) {
         super(shape, mass);
         cam = camera;
+//        space = aps.getPhysicsSpace();
+//        aps.getPhysicsSpace().addCollisionObject(collision);
+        aps.getPhysicsSpace().addTickListener(physics);        
+        
     }
     
     void makeMove(boolean boo) {
@@ -37,8 +41,12 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
         else if (!boo) move = false;
     }
     
-    public void prePhysicsTick(PhysicsSpace space, float f) {
+    
+//    PhysicsCollisionObject collision = new PhysicsCollisionObject() {};
+    
+    PhysicsTickListener physics = new PhysicsTickListener() {
 
+        public void prePhysicsTick(PhysicsSpace space, float f) {
     // Ship Movement
     if (move) {
         applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
@@ -67,33 +75,12 @@ public class ShipPhysicsControl extends RigidBodyControl implements PhysicsTickL
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
     applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle)* rotationSpeed));
-
-    }
-
-    public void physicsTick(PhysicsSpace space, float f) {
-     //   throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    public void setPhysicsSpace(PhysicsSpace space) {
-        if (space == null) {
-            if (this.space != null) {
-                this.space.removeCollisionObject(this);
-                this.space.removeTickListener(this);
-            }
-            this.space = space;
-        } else {
-            space.addCollisionObject(this);
-            space.addTickListener(this);
         }
-        this.space = space;
-    }
 
-    public PhysicsSpace getPhysicsSpace() {
-        return space;
-    }  
-    
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }    
+        public void physicsTick(PhysicsSpace space, float f) {
+
+        }
+    };
+
     
 }

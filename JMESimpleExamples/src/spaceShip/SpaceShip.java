@@ -1,13 +1,9 @@
 package spaceShip;
 
 
-import Basics.*;
-import com.bulletphysics.dynamics.RigidBody;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
@@ -15,15 +11,12 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.MouseInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -40,6 +33,7 @@ public class SpaceShip extends SimpleApplication {
         AppSettings aps = new AppSettings(true);
         aps.setVSync(true);
         aps.setFrameRate(60);
+        aps.setResolution(800, 600);
         app.setSettings(aps);
         app.start();
     }
@@ -136,7 +130,7 @@ public class SpaceShip extends SimpleApplication {
         
         CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
         colShape.setMargin(0.05f);
-        shipControl = new ShipPhysicsControl(cam, colShape, 1); 
+        shipControl = new ShipPhysicsControl(cam, colShape, 1, bulletAppState); 
         shipControl.setDamping(0.7f, 0.99f);
         shipControl.setFriction(0.9f);
 //        shipControl.setGravity(new Vector3f(0, 0, 0));
