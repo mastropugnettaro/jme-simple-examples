@@ -79,11 +79,11 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
       if (fire) {
         bulletTimer += tpf;
         
-        if (bulletTimer > 0.1f) {
+        if (bulletTimer > 0.07f) {
             Geometry newBullet = bullet.clone(false);
             newBullet.setLocalRotation(shipNode.getControl(RigidBodyControl.class).getPhysicsRotation());
             newBullet.setLocalTranslation(shipNode.getControl(RigidBodyControl.class).getPhysicsLocation());
-            newBullet.addControl(new Bullet(aim, newBullet, bulletApp, shape));
+            newBullet.addControl(new Bullet(newBullet.getLocalTranslation().clone(), newBullet, bulletApp, shape));
             asm.getRootNode().attachChild(newBullet);
             bulletTimer = 0f;
       } 
@@ -102,7 +102,30 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
     }
 
     public void collision(PhysicsCollisionEvent event) {
-System.out.println("eeeefdfff");
-    }
+
+        
+        if ((event.getNodeA() != null && event.getNodeB() != null)){
+        Spatial A = event.getNodeA();
+        Spatial B = event.getNodeB();
+//        System.out.println(A + " and " + B);
+//                System.out.println(event.getLocalPointA());
+        Geometry geoBullet;
+        
+        // Destroy Bullets if they collide with Asteroids
+        if((A.getUserData("Type").equals("Bullet") ||
+           B.getUserData("Type").equals("Bullet")) &&
+               (A.getUserData("Type").equals("Asteroid") ||
+           B.getUserData("Type").equals("Asteroid"))) {
+            
+            if(A.getUserData("Type").equals("Bullet")) geoBullet = (Geometry) A;
+            else geoBullet = (Geometry) B;
+            
+            if(A.getUserData("Type").equals("Asteroid") ||
+            B.getUserData("Type").equals("Asteroid")) {
+               geoBullet.getControl(Bullet.class).destroy(); 
+            }
+          }
+        }
+      }  
 
 }

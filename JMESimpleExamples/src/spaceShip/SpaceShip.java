@@ -37,6 +37,10 @@ public class SpaceShip extends SimpleApplication {
 
     public static void main(String[] args) {
         SpaceShip app = new SpaceShip();
+        AppSettings aps = new AppSettings(true);
+        aps.setVSync(true);
+        aps.setFrameRate(60);
+        app.setSettings(aps);
         app.start();
     }
 
@@ -51,8 +55,8 @@ public class SpaceShip extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         
-        settings.setVSync(true);
-        settings.setFrameRate(60);
+//        settings.setVSync(true);
+//        settings.setFrameRate(60);
         
         flyCam.setEnabled(false);
 //        flyCam.setMoveSpeed(30);
@@ -124,6 +128,7 @@ public class SpaceShip extends SimpleApplication {
         
         ship = new Node("ship");
         ship.attachChild(geomShip);
+        ship.setUserData("Type", "Ship");
         rootNode.attachChild(ship);
         
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -165,17 +170,19 @@ public class SpaceShip extends SimpleApplication {
         
         GeometryBatchFactory.optimize(instNodes);  // fps optimization
         rootNode.attachChild(instNodes);   
-     
+        instNodes.setUserData("Type", "Asteroid");
+
         // setting physics
         for (Spatial s : instNodes.getChildren()) {
-        Geometry geo = (Geometry) s;
+            Geometry geo = (Geometry) s;
+            geo.setUserData("Type", "Asteroid");
             CollisionShape colShape = new MeshCollisionShape(geo.getMesh());
             colShape.setMargin(0.005f);
             RigidBodyControl rigControl = new RigidBodyControl(colShape, 0);
 
             geo.addControl(rigControl);
-
-            bulletAppState.getPhysicsSpace().add(geo);     
+            
+            bulletAppState.getPhysicsSpace().add(rigControl);     
        }
     }
     
