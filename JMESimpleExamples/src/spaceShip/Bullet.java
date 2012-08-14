@@ -12,21 +12,27 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.export.Savable;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Line;
 import java.util.List;
 
 /**
  *
  * @author mifth
  */
-public class Bullet extends AbstractControl {
+public class Bullet extends AbstractControl implements Savable, Cloneable {
 
     private Geometry bullet;
     private GhostControl ghost;
@@ -34,22 +40,19 @@ public class Bullet extends AbstractControl {
     private BulletAppState state;
     private boolean work = true;
     private float bulletLength;
+    private float hit = 1000f;
+    private Spatial sp;
     
     public Bullet(Vector3f bornPlace, Geometry bullet, BulletAppState state, CollisionShape shape, SimpleApplication asm) {
 
         this.bullet = bullet;
         this.bullet.setUserData("Type", "Bullet");
         this.state = state;
-        this.bornPlace = bornPlace;
+        this.bornPlace = bornPlace.clone();
         
         vecMove = bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(7f);        
         bulletLength = 100f;
         
-        ghost = new GhostControl(shape);
-        this.bullet.addControl(ghost);
-        this.state.getPhysicsSpace().add(ghost);
-        
-
 //        // testRay
 //        Geometry geoRay = new Geometry("line", new Line(bullet.getLocalTranslation().clone(), bullet.getLocalTranslation().add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength))));
 //        Material mat_bullet = new Material(asm.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
@@ -57,31 +60,61 @@ public class Bullet extends AbstractControl {
 //        geoRay.setMaterial(mat_bullet);
 //        asm.getRootNode().attachChild(geoRay);
         
-        List<PhysicsRayTestResult> rayTest = this.state.getPhysicsSpace().rayTest(bullet.getLocalTranslation().clone(), bullet.getLocalTranslation().add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength)));
+        List<PhysicsRayTestResult> rayTest = this.state.getPhysicsSpace().rayTest(this.bornPlace.add(bornPlace.mult(Vector3f.UNIT_Z).normalizeLocal()), this.bornPlace.add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength)));
         if (rayTest.size() > 0) {
-            PhysicsRayTestResult getObject = rayTest.get(0);
+            for (Object obj : rayTest) {
+            PhysicsRayTestResult getObject = (PhysicsRayTestResult) obj;
+            float fl = getObject.getHitFraction();
             PhysicsCollisionObject collisionObject = getObject.getCollisionObject();
-            Spatial sp = (Spatial) collisionObject.getUserObject();
-
-            System.out.println(sp);
+            Spatial spThis = (Spatial) collisionObject.getUserObject();
             
+            if (fl < hit && !spThis.getUserData("Type").equals("Ship")) {
+                hit = fl;
+                sp = spThis;
+            } 
+            
+            }
+
+            System.out.println(rayTest.size());
+            
+          if (!sp.getUserData("Type").equals("Bullet") && !sp.getUserData("Type").equals("Ship") 
+                  && !sp.getUserData("Type").equals("Shit")) { 
+              
+//            float hit = getObject.getHitFraction();            
+            System.out.println(hit);
+        Vector3f vecHit = this.bornPlace.add(bullet.getLocalRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength * hit));    
+        // Setup Bullet
+        Box b = new Box(Vector3f.ZERO, 0.7f, 0.7f, 0.7f);
+        bullet = new Geometry("Box", b);
+        Material mat_bullet = new Material(asm.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_bullet.setColor("Color", ColorRGBA.Orange);
+        bullet.setMaterial(mat_bullet);  
+        Geometry geotest = new Geometry(null, b);
+        geotest.setMaterial(mat_bullet);
+        geotest.setLocalTranslation(vecHit);
+        geotest.setUserData("Type", "Shit");
+        asm.getRootNode().attachChild(geotest);                  
+          contactPoint = vecHit;    
+              
             // Find CollisionPoint
             CollisionResults results = new CollisionResults();
-            Ray ray = new Ray(bullet.getLocalTranslation().clone(), bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal());
-            sp.collideWith(ray, results);
+            Ray ray = new Ray(this.bornPlace, bullet.getWorldRotation().mult(Vector3f.UNIT_Z).normalizeLocal());
+            Geometry nd = (Geometry) sp;
+            nd.collideWith(ray, results);
              if (results.size() > 0) {
           // The closest collision point is what was truly hit:
           CollisionResult closest = results.getClosestCollision();
-            contactPoint = closest.getContactPoint();
-                    }
-
-        }        
+//            contactPoint = closest.getContactPoint().clone();
+//            geotest.setLocalTranslation(contactPoint);
+            System.out.println(contactPoint);
+               }
+             }
+           }        
         
     }
 
     protected void destroy() {
-        state.getPhysicsSpace().remove(ghost);
-        bullet.removeControl(ghost);
+
         work = false;
         bullet.removeFromParent();
         bullet.removeControl(this);
@@ -98,13 +131,13 @@ public class Bullet extends AbstractControl {
                 System.out.println("eeyyyyy");
             float contactPointDistance = bornPlace.distance(contactPoint);
             
-             if (distance > contactPointDistance) {
+             if (distance >= contactPointDistance) {
                 destroy();
                 return;                
              }
             }
             
-            if(distance > bulletLength) {
+            if(distance >= bulletLength) {
                 destroy();
                 return;
             }
