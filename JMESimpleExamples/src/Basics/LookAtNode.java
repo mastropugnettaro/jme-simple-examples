@@ -16,12 +16,13 @@ public class LookAtNode extends SimpleApplication {
     }
 
     Geometry geom;
-    Quaternion rot=new Quaternion();;
+    Quaternion rot=new Quaternion();
  
     
         public void move (float tpf) {
                 
-        geom.getLocalRotation().lookAt(cam.getDirection().multLocal(1f, 0f, 1f), Vector3f.UNIT_Y);
+        rot = geom.getLocalRotation();
+        rot.lookAt(cam.getDirection().multLocal(1f, 0f, 1f), Vector3f.UNIT_Y);
         geom.setLocalRotation(geom.getLocalRotation());
           
 }
