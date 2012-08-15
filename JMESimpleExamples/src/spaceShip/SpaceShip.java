@@ -24,6 +24,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
+import spaceShip.NPCPhysicsControl;
 
 
 public class SpaceShip extends SimpleApplication {
@@ -31,8 +32,8 @@ public class SpaceShip extends SimpleApplication {
     public static void main(String[] args) {
         SpaceShip app = new SpaceShip();
         AppSettings aps = new AppSettings(true);
-        aps.setVSync(true);
-        aps.setFrameRate(60);
+        aps.setVSync(false);
+//        aps.setFrameRate(60);
         aps.setResolution(800, 600);
         app.setSettings(aps);
         app.start();
@@ -62,6 +63,10 @@ public class SpaceShip extends SimpleApplication {
         setShip();
         setLight();
         setCam();
+        
+        for (int i = 0; i < 50; i++) {         
+            setEnemies();
+        }
         
         weaponControl = new ShipWeaponControl(this, ship);
         ship.addControl(weaponControl);
@@ -140,6 +145,34 @@ public class SpaceShip extends SimpleApplication {
         
     }
     
+    void setEnemies() {
+        
+        Box b = new Box(Vector3f.ZERO, 0.5f, 0.5f, 1);
+        Geometry geomShip = new Geometry("Box", b);
+        
+        Node enemy = new Node("ship");
+        enemy.attachChild(geomShip);
+        enemy.setUserData("Type", "Ship");
+        rootNode.attachChild(enemy);
+        
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        enemy.setMaterial(mat);  
+
+        // path
+        NPCPath path = new NPCPath(rootNode, enemy, assetManager);
+           
+        CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
+        colShape.setMargin(0.05f);
+        NPCPhysicsControl npcControl = new NPCPhysicsControl(colShape, 1, bulletAppState, this, path);
+        npcControl.setDamping(0.8f, 0.9f);
+        npcControl.setFriction(0.9f);
+//        shipControl.setGravity(new Vector3f(0, 0, 0));
+        enemy.addControl(npcControl);
+        npcControl.setPhysicsLocation(path.getPath());
+        bulletAppState.getPhysicsSpace().add(npcControl);
+        npcControl.setEnabled(true);
+        
+    }    
      
     void  setAsteroids() {
 
@@ -155,7 +188,7 @@ public class SpaceShip extends SimpleApplication {
         
             Geometry gm = geom.clone(false);
             gm.setName("instance"+i);
-            gm.setLocalTranslation((float) Math.random() * 50.0f,(float) Math.random() * 30.0f - 15.0f,(float)Math.random() * 50.0f + 10.0f );
+            gm.setLocalTranslation((float) Math.random() * 70.0f,(float) Math.random() * 70.0f - 15.0f,(float)Math.random() * 50.0f + 50.0f );
             gm.rotate(0, (float) Math.random() * (float)Math.PI, 0);
 
             instNodes.attachChild(gm);

@@ -22,7 +22,6 @@ public class ShipPhysicsControl extends RigidBodyControl {
 
     private Camera cam;
     private boolean move = false;
-    private float time = 0.0001f;
     private float angle;
     private float rotationSpeed = 17f;
     
@@ -74,7 +73,7 @@ public class ShipPhysicsControl extends RigidBodyControl {
     Vector3f dirCam2 = cam.getLeft();
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
-    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult((angle)* rotationSpeed));
+    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult(angle* rotationSpeed));
         }
 
         public void physicsTick(PhysicsSpace space, float f) {
