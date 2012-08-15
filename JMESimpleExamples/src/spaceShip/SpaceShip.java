@@ -32,8 +32,8 @@ public class SpaceShip extends SimpleApplication {
     public static void main(String[] args) {
         SpaceShip app = new SpaceShip();
         AppSettings aps = new AppSettings(true);
-        aps.setVSync(false);
-//        aps.setFrameRate(60);
+        aps.setVSync(true);
+        aps.setFrameRate(60);
         aps.setResolution(800, 600);
         app.setSettings(aps);
         app.start();
