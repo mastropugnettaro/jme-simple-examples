@@ -60,13 +60,12 @@ public class SpaceShip extends SimpleApplication {
         setPhysics();
         UI();
         setAsteroids();
+        setEnemies();
         setShip();
         setLight();
         setCam();
         
-        for (int i = 0; i < 50; i++) {         
-            setEnemies();
-        }
+
         
         weaponControl = new ShipWeaponControl(this, ship);
         ship.addControl(weaponControl);
@@ -124,6 +123,7 @@ public class SpaceShip extends SimpleApplication {
         
         Box b = new Box(Vector3f.ZERO, 0.5f, 0.5f, 1);
         Geometry geomShip = new Geometry("Box", b);
+        geomShip.setUserData("Type", "Ship");
         
         ship = new Node("ship");
         ship.attachChild(geomShip);
@@ -146,33 +146,13 @@ public class SpaceShip extends SimpleApplication {
     }
     
     void setEnemies() {
-        
-        Box b = new Box(Vector3f.ZERO, 0.5f, 0.5f, 1);
-        Geometry geomShip = new Geometry("Box", b);
-        
-        Node enemy = new Node("ship");
-        enemy.attachChild(geomShip);
-        enemy.setUserData("Type", "Ship");
-        rootNode.attachChild(enemy);
-        
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        enemy.setMaterial(mat);  
-
-        // path
-        NPCPath path = new NPCPath(rootNode, enemy, assetManager);
-           
-        CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
-        colShape.setMargin(0.05f);
-        NPCPhysicsControl npcControl = new NPCPhysicsControl(colShape, 1, bulletAppState, this, path);
-        npcControl.setDamping(0.8f, 0.9f);
-        npcControl.setFriction(0.9f);
-//        shipControl.setGravity(new Vector3f(0, 0, 0));
-        enemy.addControl(npcControl);
-        npcControl.setPhysicsLocation(path.getPath());
-        bulletAppState.getPhysicsSpace().add(npcControl);
-        npcControl.setEnabled(true);
-        
-    }    
+        Node enemyNode = new  Node("enemies");
+        EnemyManager enMan = new EnemyManager(enemyNode, bulletAppState, assetManager);
+        for (int i = 0; i < 50; i++) {         
+            enMan.createEnemy();
+        }
+        rootNode.attachChild(enemyNode);        
+    }
      
     void  setAsteroids() {
 

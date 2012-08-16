@@ -46,21 +46,18 @@ public class ShipPhysicsControl extends RigidBodyControl {
     PhysicsTickListener physics = new PhysicsTickListener() {
 
         public void prePhysicsTick(PhysicsSpace space, float f) {
+            
+    angle = cam.getRotation().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
+//    System.out.println(angle);
+    
     // Ship Movement
     if (move) {
         applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
     }
  
     // Ship Rotation
-    angle = cam.getRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
- 
-//    System.out.println(angle);
-    
 
-    if (angle < 0.01f) {
-        return;
-    }
- 
+    if (angle >= 0.01f) {
     Vector3f dirSpatial = getPhysicsRotation().mult(Vector3f.UNIT_Z);
     Vector3f dirCam = cam.getDirection();
     Vector3f cross = dirSpatial.crossLocal(dirCam).normalizeLocal();
@@ -74,6 +71,9 @@ public class ShipPhysicsControl extends RigidBodyControl {
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
     applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult(angle* rotationSpeed));
+    }
+ 
+
         }
 
         public void physicsTick(PhysicsSpace space, float f) {
