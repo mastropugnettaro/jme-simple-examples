@@ -68,7 +68,7 @@ public class Bullet extends AbstractControl implements Savable, Cloneable {
             PhysicsCollisionObject collisionObject = getObject.getCollisionObject();
             Spatial spThis = (Spatial) collisionObject.getUserObject();
             
-            if (fl < hit && !spThis.getUserData("Type").equals("Ship")) {
+            if (fl < hit && !spThis.getUserData("Type").equals("Player")) {
                 hit = fl;
                 sp = spThis;
             } 
@@ -77,7 +77,7 @@ public class Bullet extends AbstractControl implements Savable, Cloneable {
 
             System.out.println(rayTest.size());
             
-          if (!sp.getUserData("Type").equals("Bullet") && !sp.getUserData("Type").equals("Ship") 
+          if (!sp.getUserData("Type").equals("Bullet") && !sp.getUserData("Type").equals("Player") 
                   && !sp.getUserData("Type").equals("Shit")) { 
               
 //            float hit = getObject.getHitFraction();            

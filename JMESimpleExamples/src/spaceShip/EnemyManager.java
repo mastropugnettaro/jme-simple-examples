@@ -8,6 +8,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.export.Savable;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
@@ -45,7 +46,7 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
         Geometry geomShip = new Geometry("Box", b);
         geomShip.setUserData("Type", "Enemy");
         
-        Node enemy = new Node("ship");
+        Node enemy = new Node("enemy");
         enemy.attachChild(geomShip);
         enemy.setUserData("Type", "Enemy");
         enemyNode.attachChild(enemy);
@@ -53,19 +54,20 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
         Material mat = new Material(asm, "Common/MatDefs/Light/Lighting.j3md");
         enemy.setMaterial(mat);  
 
-        // path
-        NPCPath path = new NPCPath(enemyNode, enemy, asm);
-           
         CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
         colShape.setMargin(0.05f);
-        NPCPhysicsControl npcControl = new NPCPhysicsControl(colShape, 1, bulletAppState, path);
+        ShipPhysicsControl npcControl = new ShipPhysicsControl(colShape, 1, bulletAppState);
         npcControl.setDamping(0.7f, 0.9f);
-        npcControl.setFriction(0.9f);
+        npcControl.setFriction(0.8f);
 //        shipControl.setGravity(new Vector3f(0, 0, 0));
         enemy.addControl(npcControl);
-        npcControl.setPhysicsLocation(path.getPath());
         bulletAppState.getPhysicsSpace().add(npcControl);
-        npcControl.setEnabled(true);
+        
+        // path
+        NPCControl path = new NPCControl(enemyNode, enemy, asm, npcControl);
+        enemy.addControl(path); 
+        
+
         
     }    
     
