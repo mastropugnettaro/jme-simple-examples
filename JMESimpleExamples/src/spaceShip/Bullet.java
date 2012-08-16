@@ -96,18 +96,6 @@ public class Bullet extends AbstractControl implements Savable, Cloneable {
         asm.getRootNode().attachChild(geotest);                  
           contactPoint = vecHit;    
               
-            // Find CollisionPoint
-            CollisionResults results = new CollisionResults();
-            Ray ray = new Ray(this.bornPlace, bullet.getWorldRotation().mult(Vector3f.UNIT_Z).normalizeLocal());
-            Geometry nd = (Geometry) sp;
-            nd.collideWith(ray, results);
-             if (results.size() > 0) {
-          // The closest collision point is what was truly hit:
-          CollisionResult closest = results.getClosestCollision();
-//            contactPoint = closest.getContactPoint().clone();
-//            geotest.setLocalTranslation(contactPoint);
-            System.out.println(contactPoint);
-               }
              }
            }        
         
