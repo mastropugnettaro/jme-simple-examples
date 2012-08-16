@@ -4,7 +4,6 @@ package spaceShip;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -24,7 +23,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
-import spaceShip.NPCPhysicsControl;
 
 
 public class SpaceShip extends SimpleApplication {
@@ -43,9 +41,8 @@ public class SpaceShip extends SimpleApplication {
     private Node instNodes = new Node();  
     private BulletAppState bulletAppState;
     private Node ship;
-    private ShipPhysicsControl shipControl;
     private ChaseCamera chaseCam;
-    private ShipWeaponControl weaponControl;    
+
     
     @Override
     public void simpleInitApp() {
@@ -61,16 +58,9 @@ public class SpaceShip extends SimpleApplication {
         UI();
         setAsteroids();
         setEnemies();
-        setShip();
+        setPlayer();
         setLight();
         setCam();
-        
-
-        
-        weaponControl = new ShipWeaponControl(this, ship);
-        ship.addControl(weaponControl);
-        
-        Mappings mappings = new Mappings(this, ship);
         
     }
 
@@ -119,30 +109,11 @@ public class SpaceShip extends SimpleApplication {
         rootNode.addLight(al);           
     }
     
-    void setShip() {
-        
-        Box b = new Box(Vector3f.ZERO, 0.5f, 0.5f, 1);
-        Geometry geomShip = new Geometry("Box", b);
-        geomShip.setUserData("Type", "Ship");
-        
-        ship = new Node("ship");
-        ship.attachChild(geomShip);
-        ship.setUserData("Type", "Ship");
+
+    void setPlayer() {
+        ship = new Node("Player");
+        ship.addControl(new PlayerControl(cam, ship, bulletAppState, assetManager, this));
         rootNode.attachChild(ship);
-        
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        ship.setMaterial(mat);  
-        
-        CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
-        colShape.setMargin(0.05f);
-        shipControl = new ShipPhysicsControl(cam, colShape, 1, bulletAppState); 
-        shipControl.setDamping(0.7f, 0.99f);
-        shipControl.setFriction(0.9f);
-//        shipControl.setGravity(new Vector3f(0, 0, 0));
-        ship.addControl(shipControl);
-        bulletAppState.getPhysicsSpace().add(shipControl);
-        shipControl.setEnabled(true);
-        
     }
     
     void setEnemies() {

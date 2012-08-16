@@ -16,29 +16,27 @@ import com.jme3.scene.Node;
 
 
 
-public class Mappings {
+public class PlayerMappings {
 
     private SimpleApplication asm;
     private Node ship;
-    private ShipPhysicsControl shipControl;
+    private PlayerControl playerControl;
     private ShipWeaponControl weaponControl;  
-    private InputManager inputManager;
     
-    public Mappings (SimpleApplication asm, Node ship) {
+    public PlayerMappings (SimpleApplication asm, Node ship, PlayerControl playerControl) {
         
         
         this.asm = asm;
         this.ship = ship;
-        shipControl = this.ship.getControl(ShipPhysicsControl.class);
+        this.playerControl = playerControl;
         weaponControl = this.ship.getControl(ShipWeaponControl.class);
-        setupKeys(asm.getInputManager());
+        setupKeys(this.asm.getInputManager());
         
     }
     
     
     
     private void setupKeys(InputManager inputManager){
-        this.inputManager = inputManager;
      
        //Set up keys and listener to read it
         String[] mappings = new String[]{
@@ -65,10 +63,10 @@ public class Mappings {
     
     ActionListener acl = new ActionListener() {
       public void onAction(String name, boolean isPressed, float tpf) {
-        if (isPressed && "MoveShip".equals(name)) {
-            shipControl.makeMove(true);
-        } else if (!isPressed && "MoveShip".equals(name)) {
-            shipControl.makeMove(false);
+        if (isPressed && name.equals("MoveShip")) {
+            playerControl.makeMove(true);
+        } else if (!isPressed && name.equals("MoveShip")) {
+            playerControl.makeMove(false);
         }
         
         if (isPressed && name.equals("FireBullets")) {

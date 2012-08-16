@@ -11,6 +11,7 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
@@ -20,57 +21,68 @@ import com.jme3.renderer.Camera;
  */
 public class ShipPhysicsControl extends RigidBodyControl {
 
-    private Camera cam;
-    private boolean move = false;
-    private float angle;
-    private float rotationSpeed = 17f;
+    private float rotateSpeed, moveSpeed;
+    private Quaternion viewDir;
+    private Vector3f moveDir;
     
-    public ShipPhysicsControl(Camera camera, CollisionShape shape, float mass, BulletAppState aps) {
+    public ShipPhysicsControl(CollisionShape shape, float mass, BulletAppState aps) {
         super(shape, mass);
-        cam = camera;
-//        space = aps.getPhysicsSpace();
-//        aps.getPhysicsSpace().addCollisionObject(collision);
+        
+        moveSpeed = 1f;
+        rotateSpeed = 1f;
+        
         aps.getPhysicsSpace().addTickListener(physics);        
-        
+    }
+
+    
+    public void setMoveSpeed(float value) {
+        moveSpeed = value;
     }
     
-    void makeMove(boolean boo) {
-        
-        if (boo) move = true;
-        else if (!boo) move = false;
+    public void setRotateSpeed(float value) {
+        rotateSpeed = value;
+    }    
+
+    public void setFlyDirection(Vector3f direction) {
+        moveDir = direction;
     }
-    
-    
-//    PhysicsCollisionObject collision = new PhysicsCollisionObject() {};
+
+    public void setViewDirection(Quaternion viewDirection) {
+        viewDir = viewDirection;
+    }    
     
     PhysicsTickListener physics = new PhysicsTickListener() {
 
         public void prePhysicsTick(PhysicsSpace space, float f) {
             
-    angle = cam.getRotation().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
+//    angle = cam.getRotation().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(getPhysicsRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal());
 //    System.out.println(angle);
     
     // Ship Movement
-    if (move) {
-        applyCentralForce(cam.getDirection().normalizeLocal().multLocal(30f));
+    if (moveDir != null) {
+        applyCentralForce(moveDir.mult(moveSpeed));
+        moveDir = null;
     }
  
     // Ship Rotation
 
-    if (angle >= 0.01f) {
+    if (viewDir != null) {
     Vector3f dirSpatial = getPhysicsRotation().mult(Vector3f.UNIT_Z);
-    Vector3f dirCam = cam.getDirection();
+    Vector3f dirCam = viewDir.mult(Vector3f.UNIT_Z);
     Vector3f cross = dirSpatial.crossLocal(dirCam).normalizeLocal();
  
     Vector3f dirSpatial1 = getPhysicsRotation().mult(Vector3f.UNIT_Y);
-    Vector3f dirCam1 = cam.getUp();
+    Vector3f dirCam1 = viewDir.mult(Vector3f.UNIT_Y);
     Vector3f cross1 = dirSpatial1.crossLocal(dirCam1).normalizeLocal();
  
     Vector3f dirSpatial2 = getPhysicsRotation().mult(Vector3f.UNIT_X);
-    Vector3f dirCam2 = cam.getLeft();
+    Vector3f dirCam2 = viewDir.mult(Vector3f.UNIT_X);
     Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
  
-    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult(angle* rotationSpeed));
+    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult(rotateSpeed));
+    
+    viewDir = null;
+    
     }
  
 
