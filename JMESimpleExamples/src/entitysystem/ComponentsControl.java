@@ -10,17 +10,17 @@ import java.util.HashMap;
  *
  * @author mifth
  */
-public class ComponentControl {
+public class ComponentsControl {
     
     private static HashMap <Class<?>, Object> components = new HashMap<Class<?>, Object>();        
     private long ID;
     private EntityManager entityManager;
     
-    public ComponentControl(long ID, EntityManager entityManager) {
+    public ComponentsControl(long ID, EntityManager entityManager) {
         this.ID = ID;
     }
     
-    public long getEntityID(ComponentControl compControl) {
+    public long getEntityID(ComponentsControl compControl) {
         return ID;
     }
     
