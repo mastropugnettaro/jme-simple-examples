@@ -12,13 +12,13 @@ import com.jme3.math.Vector3f;
  *
  * @author mifth
  */
-public final class ComponentTransform {
+public final class TransformComponent {
 
     private Transform transform;
     private Vector3f location, scale;
     private Quaternion rotation;
 
-    public ComponentTransform(Transform trans) {
+    public TransformComponent(Transform trans) {
         this.transform = trans;
         this.location = trans.getTranslation();
         this.rotation = trans.getRotation();
