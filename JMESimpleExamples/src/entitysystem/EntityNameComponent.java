@@ -8,11 +8,11 @@ package entitysystem;
  *
  * @author mifth
  */
-public class ComponentEntityName {
+public class EntityNameComponent {
     
     private String name;    
     
-    public ComponentEntityName(String name) {
+    public EntityNameComponent(String name) {
         this.name = name;
     }
     
