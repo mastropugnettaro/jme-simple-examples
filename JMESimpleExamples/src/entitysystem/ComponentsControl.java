@@ -5,6 +5,7 @@
 package entitysystem;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.util.HashMap;
  */
 public class ComponentsControl {
     
-    private static HashMap <Class<?>, Object> components = new HashMap<Class<?>, Object>();        
+    private static ConcurrentHashMap <Class<?>, Object> components = new ConcurrentHashMap <Class<?>, Object>();        
     private long ID;
     private EntityManager entityManager;
     
