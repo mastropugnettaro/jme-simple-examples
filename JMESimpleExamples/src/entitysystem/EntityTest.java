@@ -5,7 +5,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -24,6 +23,7 @@ public class EntityTest extends SimpleApplication {
               
     private Node camTrackHelper;
     private EntityManager entityManager = new EntityManager();
+    private EntitySpatials spatials = new EntitySpatials();
     
     @Override
     public void simpleInitApp() {
@@ -53,8 +53,8 @@ public class EntityTest extends SimpleApplication {
         TransformComponent transform = new TransformComponent(selectedSp.getLocalTransform());
         components.setComponent(transform);
         
-        SpatialsControl spatialControl = entityManager.addSpatialControl(selectedSp, ent);
-        spatialControl.setType(SpatialsControl.SpatialType.Node);
+        EntitySpatialsControl spatialControl = spatials.addSpatialControl(selectedSp, ent);
+        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
         spatialControl.recurseNode();
         
         System.out.println(selectedSp.getUserData("EntityID"));
