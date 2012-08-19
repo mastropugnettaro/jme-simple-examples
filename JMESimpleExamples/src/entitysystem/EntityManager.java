@@ -3,14 +3,15 @@ package entitysystem;
 
 import com.jme3.scene.Spatial;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public final class EntityManager {
 
     private static long idx = 0;
 
-    private static HashMap <Long, ComponentsControl> componentControl = new HashMap<Long, ComponentsControl>();
-    private static HashMap <Long, SpatialsControl> spatialControl = new HashMap<Long, SpatialsControl>();
+    private static ConcurrentHashMap <Long, ComponentsControl> componentControl = new ConcurrentHashMap <Long, ComponentsControl>();
+    private static ConcurrentHashMap <Long, SpatialsControl> spatialControl = new ConcurrentHashMap <Long, SpatialsControl>();
 
     public static long createEntity() {
         idx++;
