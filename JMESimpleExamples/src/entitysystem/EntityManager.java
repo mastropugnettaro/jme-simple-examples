@@ -8,7 +8,6 @@ import java.util.HashMap;
 public final class EntityManager {
 
     private static long idx = 0;
-    //TODO: DB
 
     private static HashMap <Long, ComponentControl> componentControl = new HashMap<Long, ComponentControl>();
     private static HashMap <Long, EntitySpatialControl> spatialControl = new HashMap<Long, EntitySpatialControl>();
