@@ -28,13 +28,13 @@ public final class EntitySpatialControl extends AbstractControl {
     private Spatial spatial;
     private List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
     private SpatialType type;
-    private Entity entity;
     private EntityManager entManager;
+    private long ID;
 
-    public EntitySpatialControl(Spatial sp, Entity entity, EntityManager entManager) {
+    public EntitySpatialControl(Spatial sp, long ID, EntityManager entManager) {
 
+        this.ID = ID;
         this.entManager = entManager;
-        this.entity = entity;
         spatial = sp;
         spatial.addControl(this);
 
@@ -67,7 +67,6 @@ public final class EntitySpatialControl extends AbstractControl {
     //Read the node child to find geomtry and stored it to the map for later access as submesh
     public void recurseNode(){
         Node nd_temp = (Node) spatial;
-        long ID = entity.getId();
         nd_temp.setUserData("EntityID", ID);
         
         for (int i = 0; i < nd_temp.getChildren().size(); i++){

@@ -10,46 +10,52 @@ public final class EntityManager {
     private static long idx = 0;
     //TODO: DB
 
-    private static HashMap <Long, Entity> entities = new HashMap<Long, Entity>();
-    private static HashMap <Entity, EntitySpatialControl> spatialControl = new HashMap<Entity, EntitySpatialControl>();
+    private static HashMap <Long, ComponentControl> componentControl = new HashMap<Long, ComponentControl>();
+    private static HashMap <Long, EntitySpatialControl> spatialControl = new HashMap<Long, EntitySpatialControl>();
 
-    public static Entity createEntity() {
-         Entity ent = new Entity(idx++);
-         entities.put(idx, ent);
-         return ent;
+    public static long createEntity() {
+        idx++;
+        return idx;
     }
 
-    public Entity getEntity(long ID) {
-        return entities.get(ID);
+    public ComponentControl addComponentControl(long ID) {
+        ComponentControl component = new ComponentControl(ID, this);
+        componentControl.put(ID, component);
+        return component;
     }
+
+    public ComponentControl getComponentControl(long ID) {
+        return componentControl.get(ID);
+    }        
+
+    private void removeComponentControl(long ID) {
+        componentControl.get(ID).clearComponents();
+        componentControl.remove(ID);
+    }        
     
-    
-    public EntitySpatialControl addSpatialControl(Spatial sp, Entity ent) {
-         EntitySpatialControl spControl = new EntitySpatialControl(sp, ent, this);
-         spatialControl.put(ent, spControl);
+    public EntitySpatialControl addSpatialControl(Spatial sp, long ID) {
+         EntitySpatialControl spControl = new EntitySpatialControl(sp, ID, this);
+         spatialControl.put(ID, spControl);
          return spControl;
     }    
     
-    public EntitySpatialControl getSpatialControl(Entity ent) {
-        return spatialControl.get(ent);
+    public EntitySpatialControl getSpatialControl(long ID) {
+        return spatialControl.get(ID);
     }    
 
-    public void removeSpatialControl(Entity ent) {
-        spatialControl.remove(ent);
+    private void removeSpatialControl(long ID) {
+        spatialControl.get(ID).destroy();
+        spatialControl.remove(ID);
     }    
     
     
-    public void removeEntity(Entity ent) {
+    public void removeEntity(long ID) {
         // remove spatial control
-        EntitySpatialControl sp = spatialControl.get(ent);
-        removeSpatialControl(ent);
-        sp.destroy();
-        sp = null;
+        removeSpatialControl(ID);
         
         // remove entity
-        entities.remove(ent.getId());
-        ent.clearComponents();
-        ent = null;
+        removeComponentControl(ID);
     }
+
     
 }
