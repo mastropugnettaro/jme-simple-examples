@@ -33,7 +33,7 @@ for (int i=0; i<500 ; i++) {
         Box b = new Box(Vector3f.ZERO, 1, 1, 1);
         Geometry geo = new Geometry("Box", b);
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mat.getAdditionalRenderState().setWireframe(true);
+//        mat.getAdditionalRenderState().setWireframe(true);
         geo.setMaterial(mat);
         Node selectedSp = new Node();
         selectedSp.attachChild(geo);        
