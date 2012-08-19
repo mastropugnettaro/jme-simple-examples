@@ -45,7 +45,7 @@ public class EntityTest extends SimpleApplication {
         // setup Entity
         long ent = entityManager.createEntity();                
         
-        ComponentControl components = entityManager.addComponentControl(ent);
+        ComponentsControl components = entityManager.addComponentControl(ent);
         
         ComponentEntityName name = new ComponentEntityName("ent" + i);
         components.setComponent(name);
@@ -53,8 +53,8 @@ public class EntityTest extends SimpleApplication {
         ComponentTransform transform = new ComponentTransform(selectedSp.getLocalTransform());
         components.setComponent(transform);
         
-        EntitySpatialControl spatialControl = entityManager.addSpatialControl(selectedSp, ent);
-        spatialControl.setType(EntitySpatialControl.SpatialType.Node);
+        SpatialControl spatialControl = entityManager.addSpatialControl(selectedSp, ent);
+        spatialControl.setType(SpatialControl.SpatialType.Node);
         spatialControl.recurseNode();
         
         System.out.println(selectedSp.getUserData("EntityID"));

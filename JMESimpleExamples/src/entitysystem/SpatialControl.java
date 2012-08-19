@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author mifth
  */
-public final class EntitySpatialControl extends AbstractControl {
+public final class SpatialControl extends AbstractControl {
 
     private Spatial spatial;
     private List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
@@ -31,7 +31,7 @@ public final class EntitySpatialControl extends AbstractControl {
     private EntityManager entManager;
     private long ID;
 
-    public EntitySpatialControl(Spatial sp, long ID, EntityManager entManager) {
+    public SpatialControl(Spatial sp, long ID, EntityManager entManager) {
 
         this.ID = ID;
         this.entManager = entManager;

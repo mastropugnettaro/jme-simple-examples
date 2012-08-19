@@ -9,21 +9,21 @@ public final class EntityManager {
 
     private static long idx = 0;
 
-    private static HashMap <Long, ComponentControl> componentControl = new HashMap<Long, ComponentControl>();
-    private static HashMap <Long, EntitySpatialControl> spatialControl = new HashMap<Long, EntitySpatialControl>();
+    private static HashMap <Long, ComponentsControl> componentControl = new HashMap<Long, ComponentsControl>();
+    private static HashMap <Long, SpatialControl> spatialControl = new HashMap<Long, SpatialControl>();
 
     public static long createEntity() {
         idx++;
         return idx;
     }
 
-    public ComponentControl addComponentControl(long ID) {
-        ComponentControl component = new ComponentControl(ID, this);
+    public ComponentsControl addComponentControl(long ID) {
+        ComponentsControl component = new ComponentsControl(ID, this);
         componentControl.put(ID, component);
         return component;
     }
 
-    public ComponentControl getComponentControl(long ID) {
+    public ComponentsControl getComponentControl(long ID) {
         return componentControl.get(ID);
     }        
 
@@ -32,13 +32,13 @@ public final class EntityManager {
         componentControl.remove(ID);
     }        
     
-    public EntitySpatialControl addSpatialControl(Spatial sp, long ID) {
-         EntitySpatialControl spControl = new EntitySpatialControl(sp, ID, this);
+    public SpatialControl addSpatialControl(Spatial sp, long ID) {
+         SpatialControl spControl = new SpatialControl(sp, ID, this);
          spatialControl.put(ID, spControl);
          return spControl;
     }    
     
-    public EntitySpatialControl getSpatialControl(long ID) {
+    public SpatialControl getSpatialControl(long ID) {
         return spatialControl.get(ID);
     }    
 
