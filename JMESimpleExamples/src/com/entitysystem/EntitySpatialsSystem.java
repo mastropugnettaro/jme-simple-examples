@@ -4,6 +4,7 @@
  */
 package com.entitysystem;
 
+import com.entitysystem.ComponentsControl;
 import com.jme3.scene.Spatial;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,25 +14,25 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 
-public class EntitySpatials {
+public final class EntitySpatialsSystem {
     
     private static ConcurrentHashMap <Long, EntitySpatialsControl> spatialControl = new ConcurrentHashMap <Long, EntitySpatialsControl>();    
 
-    public EntitySpatials() {
+    public EntitySpatialsSystem() {
         
     }
     
-    public EntitySpatialsControl addSpatialControl(Spatial sp, long ID) {
-         EntitySpatialsControl spControl = new EntitySpatialsControl(sp, ID);
+    public static EntitySpatialsControl addSpatialControl(Spatial sp, long ID, ComponentsControl control) {
+         EntitySpatialsControl spControl = new EntitySpatialsControl(sp, ID, control);
          spatialControl.put(ID, spControl);
          return spControl;
     }    
     
-    public EntitySpatialsControl getSpatialControl(long ID) {
+    public static EntitySpatialsControl getSpatialControl(long ID) {
         return spatialControl.get(ID);
     }    
 
-    public void removeSpatialControl(long ID) {
+    public static void removeSpatialControl(long ID) {
         spatialControl.get(ID).destroy();
         spatialControl.remove(ID);
     }    

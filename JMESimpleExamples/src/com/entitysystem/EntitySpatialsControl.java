@@ -8,6 +8,7 @@ import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
+import com.jme3.math.Transform;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
@@ -23,23 +24,27 @@ import java.util.List;
  *
  * @author mifth
  */
-public final class EntitySpatialsControl extends AbstractControl {
+public class EntitySpatialsControl extends AbstractControl {
 
-    private Spatial spatial;
-    private List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
-    private SpatialType type;
-    private EntityManager entManager;
-    private long ID;
+    private static Spatial spatial;
+    private static List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
+    private static SpatialType type;
+//    private static EntityManager entManager;
+    private static long ID;
+    private static ComponentsControl components;
+    private static ComponentsUpdater updater;
 
-    public EntitySpatialsControl(Spatial sp, long ID) {
+    public EntitySpatialsControl(Spatial sp, long ID, ComponentsControl components) {
 
         this.ID = ID;
+        this.components = components;
         spatial = sp;
         spatial.addControl(this);
+        updater = new ComponentsUpdater(components);
 
     }
 
-    public enum SpatialType {
+    public static enum SpatialType {
         Node,
         LightNode,
         BatchNode,
@@ -47,7 +52,7 @@ public final class EntitySpatialsControl extends AbstractControl {
         GuiNode
     }    
     
-    public void setType(SpatialType type) {
+    public static void setType(SpatialType type) {
         if (type.equals(SpatialType.Node)) type = SpatialType.Node;
         else if (type.equals(SpatialType.BatchNode)) type = SpatialType.BatchNode;
         else if (type.equals(SpatialType.CameraNode)) type = SpatialType.CameraNode;
@@ -55,16 +60,20 @@ public final class EntitySpatialsControl extends AbstractControl {
         else if (type.equals(SpatialType.LightNode)) type = SpatialType.LightNode;
     }
     
-    public SpatialType getType() {
+    public static SpatialType getType() {
         return type;
     }
     
-    public Spatial getGeneralNode() {
+    public static Spatial setGeneralNode(Spatial sp) {
+        return spatial = sp;
+    }
+    
+    public static Spatial getGeneralNode() {
         return spatial;
     }    
     
     //Read the node child to find geomtry and stored it to the map for later access as submesh
-    public void recurseNode(){
+    public static void recurseNode(){
         Node nd_temp = (Node) spatial;
         nd_temp.setUserData("EntityID", ID);
         
@@ -83,7 +92,7 @@ public final class EntitySpatialsControl extends AbstractControl {
         }
     }
 
-    public Geometry getChildMesh(String name){
+    public static Geometry getChildMesh(String name){
         for (Geometry mc : mapChildMeshes) {
             if(name.equals(mc.getName())){
                 return mc;
@@ -92,7 +101,7 @@ public final class EntitySpatialsControl extends AbstractControl {
         return null;
     }
     
-    public List<Geometry> getChildMeshes(){
+    public static List<Geometry> getChildMeshes(){
         return mapChildMeshes;
     }
     
@@ -106,7 +115,11 @@ public final class EntitySpatialsControl extends AbstractControl {
     
     @Override
     protected void controlUpdate(float tpf) {
-
+        
+        if (updater.getDoUpdate()) {
+        spatial.setLocalTransform(updater.getUpdateTransform());
+        }
+        System.out.println(ID);
     }
 
     @Override

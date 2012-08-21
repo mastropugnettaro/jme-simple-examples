@@ -15,24 +15,27 @@ public final class EntityManager {
         return idx;
     }
 
-    public ComponentsControl addComponentControl(long ID) {
-        ComponentsControl component = new ComponentsControl(ID, this);
-        componentControl.put(ID, component);
+    public static ComponentsControl addComponentControl(long ID) {
+       ComponentsControl component = componentControl.get(ID);
+        if (component == null) {
+            component = new ComponentsControl(ID);
+            componentControl.put(ID, component);
+        }
         return component;
     }
 
-    public ComponentsControl getComponentControl(long ID) {
+    public static ComponentsControl getComponentControl(long ID) {
         return componentControl.get(ID);
     }        
 
-    private void removeComponentControl(long ID) {
+    private static void removeComponentControl(long ID) {
         componentControl.get(ID).clearComponents();
         componentControl.remove(ID);
     }        
     
     
     
-    public void removeEntity(long ID) {
+    public static void  removeEntity(long ID) {
         // remove entity
         removeComponentControl(ID);
     }

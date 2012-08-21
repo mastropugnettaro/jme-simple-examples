@@ -15,9 +15,9 @@ public class ComponentsControl {
     
     private static ConcurrentHashMap <Class<?>, Object> components = new ConcurrentHashMap <Class<?>, Object>();        
     private long ID;
-    private EntityManager entityManager;
+
     
-    public ComponentsControl(long ID, EntityManager entityManager) {
+    public ComponentsControl(long ID) {
         this.ID = ID;
     }
     
