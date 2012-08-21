@@ -57,7 +57,7 @@ public class EntityTest extends SimpleApplication {
         
         // Check for different transform of entity
         Transform tr = new Transform();
-        Vector3f loc = new Vector3f((float) Math.random() * 5.0f,(float) Math.random() * 5.0f,(float)Math.random() * 5.0f);
+        Vector3f loc = new Vector3f((float) Math.random() * 1.0f,(float) Math.random() * 1.0f,(float)Math.random() * 1.0f);
         tr.setTranslation(loc);
 //        selectedSp.setLocalTransform(tr);
         
