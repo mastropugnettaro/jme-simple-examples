@@ -5,10 +5,12 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import com.jme3.system.AppSettings;
 
 
 
@@ -17,13 +19,16 @@ public class EntityTest extends SimpleApplication {
 
     public static void main(String[] args) {
         EntityTest app = new EntityTest();
+        AppSettings aps = new AppSettings(true);
+        aps.setVSync(false);
+        app.setSettings(aps);
         app.start();
     }
 
               
     private Node camTrackHelper;
     private EntityManager entityManager = new EntityManager();
-    private EntitySpatials spatials = new EntitySpatials();
+    private EntitySpatialsSystem spatials = new EntitySpatialsSystem();
     
     @Override
     public void simpleInitApp() {
@@ -50,10 +55,23 @@ public class EntityTest extends SimpleApplication {
         EntityNameComponent name = new EntityNameComponent("ent" + i);
         components.setComponent(name);
         
-        TransformComponent transform = new TransformComponent(selectedSp.getLocalTransform());
-        components.setComponent(transform);
+        // Check for different transform of entity
+        Transform tr = new Transform();
+        Vector3f loc = new Vector3f((float) Math.random() * 30.0f,(float) Math.random() * 10.0f,(float)Math.random() * 10.0f);
+        tr.setTranslation(loc);
+//        selectedSp.setLocalTransform(tr);
         
-        EntitySpatialsControl spatialControl = spatials.addSpatialControl(selectedSp, ent);
+        TransformComponent transform = new TransformComponent(tr);
+        components.setComponent(transform);
+
+        
+        boolean boo = false;
+        if (i < 100) boo = true;
+        
+        UpdateStateComponent update = new UpdateStateComponent(boo, 0);
+        components.setComponent(update);
+        
+        EntitySpatialsControl spatialControl = spatials.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
         spatialControl.recurseNode();
         

@@ -12,7 +12,7 @@ import com.jme3.math.Vector3f;
  *
  * @author mifth
  */
-public final class TransformComponent {
+public class TransformComponent {
 
     private Transform transform;
     private Vector3f location, scale;
