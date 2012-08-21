@@ -64,10 +64,9 @@ public class EntityTest extends SimpleApplication {
         TransformComponent transform = new TransformComponent(tr);
         components.setComponent(transform);
 
-        
+        // we will get 100 updated entities! Their transform will be updated every frame.
         boolean boo = false;
         if (i < 100) boo = true;
-        
         UpdateStateComponent update = new UpdateStateComponent(boo, 0);
         components.setComponent(update);
         
