@@ -29,7 +29,7 @@ public class ComponentsUpdater {
         if (doUpdate == true) {
             TransformComponent tr = (TransformComponent) components.getComponent(TransformComponent.class);
           if (tr != null) {
-            transform = tr.getTransform().clone();
+            transform = tr.getTransform();
           }
          }
 //        System.out.println(transform);
