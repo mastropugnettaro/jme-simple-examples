@@ -26,13 +26,13 @@ import java.util.List;
  */
 public class EntitySpatialsControl extends AbstractControl {
 
-    private static Spatial spatial;
-    private static List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
-    private static SpatialType type;
+    private Spatial spatial;
+    private List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
+    private SpatialType type;
 //    private static EntityManager entManager;
-    private static long ID;
-    private static ComponentsControl components;
-    private static ComponentsUpdater updater;
+    private long ID;
+    private ComponentsControl components;
+    private ComponentsUpdater updater;
 
     public EntitySpatialsControl(Spatial sp, long ID, ComponentsControl components) {
 
@@ -52,7 +52,7 @@ public class EntitySpatialsControl extends AbstractControl {
         GuiNode
     }    
     
-    public static void setType(SpatialType type) {
+    public void setType(SpatialType type) {
         if (type.equals(SpatialType.Node)) type = SpatialType.Node;
         else if (type.equals(SpatialType.BatchNode)) type = SpatialType.BatchNode;
         else if (type.equals(SpatialType.CameraNode)) type = SpatialType.CameraNode;
@@ -60,20 +60,20 @@ public class EntitySpatialsControl extends AbstractControl {
         else if (type.equals(SpatialType.LightNode)) type = SpatialType.LightNode;
     }
     
-    public static SpatialType getType() {
+    public SpatialType getType() {
         return type;
     }
     
-    public static Spatial setGeneralNode(Spatial sp) {
+    public Spatial setGeneralNode(Spatial sp) {
         return spatial = sp;
     }
     
-    public static Spatial getGeneralNode() {
+    public Spatial getGeneralNode() {
         return spatial;
     }    
     
     //Read the node child to find geomtry and stored it to the map for later access as submesh
-    public static void recurseNode(){
+    public void recurseNode(){
         Node nd_temp = (Node) spatial;
         nd_temp.setUserData("EntityID", ID);
         
@@ -92,7 +92,7 @@ public class EntitySpatialsControl extends AbstractControl {
         }
     }
 
-    public static Geometry getChildMesh(String name){
+    public Geometry getChildMesh(String name){
         for (Geometry mc : mapChildMeshes) {
             if(name.equals(mc.getName())){
                 return mc;
@@ -101,7 +101,7 @@ public class EntitySpatialsControl extends AbstractControl {
         return null;
     }
     
-    public static List<Geometry> getChildMeshes(){
+    public List<Geometry> getChildMeshes(){
         return mapChildMeshes;
     }
     
@@ -119,7 +119,7 @@ public class EntitySpatialsControl extends AbstractControl {
         if (updater.getDoUpdate()) {
         spatial.setLocalTransform(updater.getUpdateTransform());
         }
-        System.out.println(ID);
+//        System.out.println(ID);
     }
 
     @Override
