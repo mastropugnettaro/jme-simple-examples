@@ -24,10 +24,10 @@ import java.util.List;
  *
  * @author mifth
  */
-public class EntitySpatialsControl extends AbstractControl {
+public final class EntitySpatialsControl extends AbstractControl {
 
     private Spatial spatial;
-    private List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
+    private static List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
     private SpatialType type;
 //    private static EntityManager entManager;
     private long ID;
