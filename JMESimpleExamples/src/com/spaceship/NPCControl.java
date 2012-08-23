@@ -49,7 +49,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
         this.asm = asm;
 
         this.shipControl = shipControl;
-        shipControl.setMoveSpeed(25f);
+        shipControl.setMoveSpeed(50f);
         shipControl.setRotateSpeed(12f);
         rotateSpeed = 12f;
 
