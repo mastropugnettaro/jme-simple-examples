@@ -57,8 +57,9 @@ public class SpaceShip extends SimpleApplication {
         setPhysics();
         UI();
         setAsteroids();
-        setEnemies();
         setPlayer();
+        setEnemies();
+        
         setLight();
         setCam();
         
@@ -113,6 +114,7 @@ public class SpaceShip extends SimpleApplication {
     void setPlayer() {
         ship = new Node("Player");
         ship.addControl(new PlayerControl(cam, ship, bulletAppState, assetManager, this));
+        ship.addControl(new AimingControl(this, ship));
         rootNode.attachChild(ship);
     }
     
@@ -120,7 +122,8 @@ public class SpaceShip extends SimpleApplication {
         Node enemyNode = new  Node("enemies");
         EnemyManager enMan = new EnemyManager(enemyNode, bulletAppState, assetManager);
         for (int i = 0; i < 50; i++) {         
-            enMan.createEnemy();
+            Node enemy = enMan.createEnemy();
+            if (i < 1) ship.getControl(AimingControl.class).addToSelection(enemy);
         }
         rootNode.attachChild(enemyNode);        
     }
