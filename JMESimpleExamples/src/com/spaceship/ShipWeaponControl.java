@@ -83,7 +83,7 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
             Geometry newBullet = bullet.clone(false);
             newBullet.setLocalRotation(shipNode.getControl(RigidBodyControl.class).getPhysicsRotation().clone());
             newBullet.setLocalTranslation(shipNode.getControl(RigidBodyControl.class).getPhysicsLocation().clone());
-            newBullet.addControl(new Bullet(newBullet.getLocalTranslation(), newBullet, bulletApp, shape, asm));
+            newBullet.addControl(new BulletControl(newBullet.getLocalTranslation(), newBullet, bulletApp, shape, asm));
             asm.getRootNode().attachChild(newBullet);
             bulletTimer = 0f;
       } 

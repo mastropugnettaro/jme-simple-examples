@@ -40,7 +40,7 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
     
     }
     
-    void createEnemy() {
+    public Node createEnemy() {
         
         Box b = new Box(Vector3f.ZERO, 0.5f, 0.5f, 1);
         Geometry geomShip = new Geometry("Box", b);
@@ -67,7 +67,7 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
         NPCControl path = new NPCControl(enemyNode, enemy, asm, npcControl);
         enemy.addControl(path); 
         
-
+        return enemy;
         
     }    
     
