@@ -65,10 +65,7 @@ public class EntityTest extends SimpleApplication {
         components.setComponent(transform);
 
         // we will get 100 updated entities! Their transform will be updated every frame.
-        boolean boo = false;
-        if (i < 100) boo = true;
-        UpdateStateComponent update = new UpdateStateComponent(boo, 0);
-        components.setComponent(update);
+        if (i < 100) components.setToUpdate(false);
         
         EntitySpatialsControl spatialControl = spatials.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);

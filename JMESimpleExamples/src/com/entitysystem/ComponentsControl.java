@@ -15,6 +15,7 @@ public class ComponentsControl {
     
     private ConcurrentHashMap <Class<?>, Object> components = new ConcurrentHashMap <Class<?>, Object>();        
     private long ID;
+    private boolean isUpdated = true;
 
     
     public ComponentsControl(long ID) {
@@ -24,6 +25,14 @@ public class ComponentsControl {
     public long getEntityID(ComponentsControl compControl) {
         return ID;
     }
+    
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    public void setToUpdate(boolean bool) {
+        isUpdated = bool;
+    }    
     
     public Object getComponent(Class controlType) {
         return components.get(controlType);
