@@ -32,7 +32,6 @@ public final class EntitySpatialsControl extends AbstractControl {
 //    private static EntityManager entManager;
     private long ID;
     private ComponentsControl components;
-    private ComponentsUpdater updater;
 
     public EntitySpatialsControl(Spatial sp, long ID, ComponentsControl components) {
 
@@ -40,7 +39,7 @@ public final class EntitySpatialsControl extends AbstractControl {
         this.components = components;
         spatial = sp;
         spatial.addControl(this);
-        updater = new ComponentsUpdater(components);
+
 
     }
 
@@ -116,8 +115,10 @@ public final class EntitySpatialsControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         
-        if (updater.getDoUpdate()) {
-        spatial.setLocalTransform(updater.getUpdateTransform());
+        if (!components.isUpdated()) {
+        TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
+        spatial.setLocalTransform(transform.getTransform().clone());
+        components.setToUpdate(false);
         }
 //        System.out.println(ID);
     }

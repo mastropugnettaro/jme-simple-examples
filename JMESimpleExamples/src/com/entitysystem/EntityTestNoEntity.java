@@ -41,6 +41,10 @@ for (int i=0; i<500 ; i++) {
         geo.setMaterial(mat);
         Node selectedSp = new Node();
         selectedSp.attachChild(geo);        
+        
+        Vector3f loc = new Vector3f((float) Math.random() * 1.0f,(float) Math.random() * 1.0f,(float)Math.random() * 1.0f);
+        selectedSp.setLocalTranslation(loc);        
+        
         rootNode.attachChild(selectedSp);      
 }
 
