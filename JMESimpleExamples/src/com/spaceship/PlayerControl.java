@@ -57,7 +57,7 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
         
         setShip();
         
-        shipControl.setMoveSpeed(30f);
+        shipControl.setMoveSpeed(60f);
         rotateSpeed = 17f;
         
         weaponControl = new ShipWeaponControl(asm, ship);

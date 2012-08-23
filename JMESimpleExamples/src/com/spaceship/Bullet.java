@@ -83,18 +83,20 @@ public class Bullet extends AbstractControl implements Savable, Cloneable {
 //            float hit = getObject.getHitFraction();            
             System.out.println(hit);
         Vector3f vecHit = this.bornPlace.add(bullet.getLocalRotation().clone().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength * hit));    
-        // Setup Bullet
+        
+        
+        // Setup Hit
         Box b = new Box(Vector3f.ZERO, 0.7f, 0.7f, 0.7f);
-        bullet = new Geometry("Box", b);
+        
+        Geometry expl = new Geometry("Box", b);
         Material mat_bullet = new Material(asm.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat_bullet.setColor("Color", ColorRGBA.Orange);
-        bullet.setMaterial(mat_bullet);  
-        Geometry geotest = new Geometry(null, b);
-        geotest.setMaterial(mat_bullet);
-        geotest.setLocalTranslation(vecHit);
-        geotest.setUserData("Type", "Shit");
-        asm.getRootNode().attachChild(geotest);                  
-          contactPoint = vecHit;    
+        expl.setMaterial(mat_bullet);  
+        asm.getRootNode().attachChild(expl);    
+        expl.setLocalTranslation(vecHit);
+        expl.setUserData("Type", "Shit");        
+        
+        contactPoint = vecHit;    
               
              }
            }        
