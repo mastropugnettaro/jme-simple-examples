@@ -132,7 +132,7 @@ public class AimingControl extends AbstractControl {
             float worldDistance = player.getWorldTranslation().distance(aim.getWorldTranslation());
             float screenDistance = centerCam.distance(new Vector2f(screenPos.getX(), screenPos.getY()));
 
-            System.out.println(screenPos.getZ());
+//            System.out.println(screenPos.getZ());
             if (screenDistance <= (cam.getHeight() * 0.5) * 0.6f
                     && screenPos.getZ() < 1f) {
                 ch.setText("Selected: " + aim.getName());
