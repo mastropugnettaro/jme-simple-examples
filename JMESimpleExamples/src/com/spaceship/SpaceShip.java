@@ -59,10 +59,10 @@ public class SpaceShip extends SimpleApplication {
         setAsteroids();
         setPlayer();
         setEnemies();
-        
+
         setLight();
         setCam();
-        
+        PlayerMappings mappings = new PlayerMappings(this, ship, (PlayerControl)ship.getControl(PlayerControl.class), chaseCam);
     }
 
     
@@ -79,7 +79,7 @@ public class SpaceShip extends SimpleApplication {
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
-        ch.setText("LeftMouse, MiddleMouse, RightMouse"); // crosshairs
+        ch.setText("W, E, Space, LeftMouse, MiddleMouse, RightMouse"); // crosshairs
         ch.setColor(new ColorRGBA(1f,0.8f,0.1f,1f));
         ch.setLocalTranslation(settings.getWidth()*0.3f,settings.getHeight()*0.1f,0);
         guiNode.attachChild(ch);        
@@ -123,7 +123,7 @@ public class SpaceShip extends SimpleApplication {
         EnemyManager enMan = new EnemyManager(enemyNode, bulletAppState, assetManager);
         for (int i = 0; i < 50; i++) {         
             Node enemy = enMan.createEnemy();
-            if (i < 1) ship.getControl(AimingControl.class).addToSelection(enemy);
+            ship.getControl(AimingControl.class).addToSelection(enemy); // add to aiming
         }
         rootNode.attachChild(enemyNode);        
     }
