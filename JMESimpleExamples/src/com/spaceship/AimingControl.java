@@ -41,6 +41,7 @@ public class AimingControl extends AbstractControl {
     private Spatial aim;
     private BitmapText ch;
     private Vector2f centerCam;
+    private float distanceToRemove;
 
     public AimingControl(SimpleApplication app, Node player) {
 
@@ -50,7 +51,7 @@ public class AimingControl extends AbstractControl {
         this.player = player;
 
         centerCam = new Vector2f(cam.getWidth() / 2, cam.getHeight() / 2);
-
+        distanceToRemove = 300f;
 
         BitmapFont guiFont = asm.loadFont("Interface/Fonts/Default.fnt");
         ch = new BitmapText(guiFont, false);
@@ -83,8 +84,9 @@ public class AimingControl extends AbstractControl {
 
             // Possible AIM Searching
             if (aim == null
+                    && spScreenPos.getZ() < 1f
                     && spScreenDistance <= (cam.getHeight() * 0.5) * 0.6f
-                    && spScreenPos.getZ() < 1000f) {
+                    && spScreenPos.getZ() < distanceToRemove) {
 
                 if (aimPossible == null) {
                     aimPossible = sp;
@@ -96,9 +98,10 @@ public class AimingControl extends AbstractControl {
                 }
 
             } else if (aim != null
+                    && spScreenPos.getZ() < 1f
                     && spScreenDistance <= (cam.getHeight() * 0.5) * 0.6f
                     && !sp.equals(aim)
-                    && spScreenPos.getZ() < 1000f) {
+                    && spScreenPos.getZ() < distanceToRemove) {
                 float aimPosibleWorldDistance = player.getWorldTranslation().distance(aim.getWorldTranslation());
                 if (spWorldDistance < aimPosibleWorldDistance) {
                     aimPossible = sp;
@@ -129,7 +132,9 @@ public class AimingControl extends AbstractControl {
             float worldDistance = player.getWorldTranslation().distance(aim.getWorldTranslation());
             float screenDistance = centerCam.distance(new Vector2f(screenPos.getX(), screenPos.getY()));
 
-            if (screenDistance <= (cam.getHeight() * 0.5) * 0.6f) {
+            System.out.println(screenPos.getZ());
+            if (screenDistance <= (cam.getHeight() * 0.5) * 0.6f
+                    && screenPos.getZ() < 1f) {
                 ch.setText("Selected: " + aim.getName());
                 ch.setLocalTranslation(cam.getScreenCoordinates(aim.getLocalTranslation()));
                 app.getGuiNode().attachChild(ch);
@@ -138,7 +143,7 @@ public class AimingControl extends AbstractControl {
                 app.getGuiNode().detachChild(ch);
             }
 
-            if (worldDistance > 1000f) {
+            if (worldDistance > distanceToRemove) {
                 aim = null;
             }
         } else if (aim == null) {
