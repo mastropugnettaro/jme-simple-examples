@@ -67,32 +67,85 @@ public class AimingControl extends AbstractControl {
         list.remove(sp);
     }
 
-    @Override
-    protected void controlUpdate(float tpf) {
-        timer += tpf * 3f;
+    public void setAim() {
 
+        Spatial aimPossible = null;
 
-        if (timer > 5f) {
+//        Vector3f aimScreenPos = cam.getScreenCoordinates(aim.getWorldTranslation());
+//        float aimWorldDistance = player.getWorldTranslation().distance(aim.getWorldTranslation());        
+//        float aimScreenDistance = centerCam.distance(new Vector2f(aimScreenPos.getX(), aimScreenPos.getY()));                     
 
-//            boolean found = false;
+        for (Spatial sp : list) {
 
-            for (Spatial sp : list) {
-                aim = sp;
+            Vector3f spScreenPos = cam.getScreenCoordinates(sp.getWorldTranslation());
+            float spWorldDistance = player.getWorldTranslation().distance(sp.getWorldTranslation());
+            float spScreenDistance = centerCam.distance(new Vector2f(spScreenPos.getX(), spScreenPos.getY()));
+
+            // Possible AIM Searching
+            if (aim == null
+                    && spScreenDistance <= (cam.getHeight() * 0.5) * 0.6f
+                    && spScreenPos.getZ() < 1000f) {
+
+                if (aimPossible == null) {
+                    aimPossible = sp;
+                } else if (aimPossible != null) {
+                    float aimPosibleWorldDistance = player.getWorldTranslation().distance(aimPossible.getWorldTranslation());
+                    if (spWorldDistance < aimPosibleWorldDistance) {
+                        aimPossible = sp;
+                    }
+                }
+
+            } else if (aim != null
+                    && spScreenDistance <= (cam.getHeight() * 0.5) * 0.6f
+                    && !sp.equals(aim)
+                    && spScreenPos.getZ() < 1000f) {
+                float aimPosibleWorldDistance = player.getWorldTranslation().distance(aim.getWorldTranslation());
+                if (spWorldDistance < aimPosibleWorldDistance) {
+                    aimPossible = sp;
+                }
             }
         }
+
+        // set Aim
+        if (aimPossible != null) {
+            aim = aimPossible;
+        }
+    }
+
+    public Spatial getAim() {
+        return aim;
+    }
+
+    @Override
+    protected void controlUpdate(float tpf) {
+//        timer += tpf * 3f;
+//
+//        if (timer > 5f) {
+//            timer = 0;
+//        }
 
         if (aim != null) {
             Vector3f screenPos = cam.getScreenCoordinates(aim.getWorldTranslation());
             float worldDistance = player.getWorldTranslation().distance(aim.getWorldTranslation());
             float screenDistance = centerCam.distance(new Vector2f(screenPos.getX(), screenPos.getY()));
 
-            if (screenDistance < 70f) {
-                ch.setText(aim.getName());
-                ch.setLocalTranslation(cam.getScreenCoordinates(aim.getLocalTranslation().add(0, 2, 0)));
+            if (screenDistance <= (cam.getHeight() * 0.5) * 0.6f) {
+                ch.setText("Selected: " + aim.getName());
+                ch.setLocalTranslation(cam.getScreenCoordinates(aim.getLocalTranslation()));
                 app.getGuiNode().attachChild(ch);
 
-            } else app.getGuiNode().detachChild(ch);
+            } else {
+                app.getGuiNode().detachChild(ch);
+            }
+
+            if (worldDistance > 1000f) {
+                aim = null;
+            }
+        } else if (aim == null) {
+            app.getGuiNode().detachChild(ch);
         }
+
+
     }
 
     @Override

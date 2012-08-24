@@ -63,8 +63,6 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
         weaponControl = new ShipWeaponControl(asm, ship);
         ship.addControl(weaponControl);
         
-        PlayerMappings mappings = new PlayerMappings(this.asm, this.ship, this);
-        
     }
 
     
