@@ -100,8 +100,8 @@ public class SpaceShip extends SimpleApplication {
 
         chaseCam.setSmoothMotion(true);
         chaseCam.setChasingSensitivity(50f);
-        chaseCam.setRotationSensitivity(15f);
-        chaseCam.setZoomSensitivity(10f);
+        chaseCam.setRotationSensitivity(30f);
+        chaseCam.setZoomSensitivity(30f);
         
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
         chaseCam.setEnabled(true);
