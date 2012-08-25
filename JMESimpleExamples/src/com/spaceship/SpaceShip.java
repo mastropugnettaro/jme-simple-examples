@@ -41,7 +41,7 @@ public class SpaceShip extends SimpleApplication {
     private Node instNodes = new Node();  
     private BulletAppState bulletAppState;
     private Node ship;
-    private ChaseCamera chaseCam;
+    private MyChaseCamera chaseCam;
 
     
     @Override
@@ -86,7 +86,7 @@ public class SpaceShip extends SimpleApplication {
     }
     
     void setCam() {
-        chaseCam = new ChaseCamera(cam, ship, inputManager);
+        chaseCam = new MyChaseCamera(cam, ship, inputManager);
         chaseCam.setDragToRotate(true);
         chaseCam.setTrailingEnabled(false);
         
@@ -94,7 +94,15 @@ public class SpaceShip extends SimpleApplication {
         
         chaseCam.setMinVerticalRotation(-FastMath.PI*0.45f);
         chaseCam.setMaxVerticalRotation(FastMath.PI*0.45f);
+        
+        chaseCam.setMinDistance(10f);
+        chaseCam.setMaxDistance(20f);
 
+        chaseCam.setSmoothMotion(true);
+        chaseCam.setChasingSensitivity(50f);
+        chaseCam.setRotationSensitivity(15f);
+        chaseCam.setZoomSensitivity(10f);
+        
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
         chaseCam.setEnabled(true);
     }
