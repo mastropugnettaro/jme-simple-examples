@@ -42,7 +42,7 @@ for (int i=0; i<500 ; i++) {
         Node selectedSp = new Node();
         selectedSp.attachChild(geo);        
         
-        Vector3f loc = new Vector3f((float) Math.random() * 1.0f,(float) Math.random() * 1.0f,(float)Math.random() * 1.0f);
+        Vector3f loc = new Vector3f((float) Math.random() * 10.0f,(float) Math.random() * 10.0f,(float)Math.random() * 10.0f);
         selectedSp.setLocalTranslation(loc);        
         
         rootNode.attachChild(selectedSp);      

@@ -41,7 +41,7 @@ public class SpaceShip extends SimpleApplication {
     private Node instNodes = new Node();  
     private BulletAppState bulletAppState;
     private Node ship;
-    private MyChaseCamera chaseCam;
+    private ChaseCamera chaseCam;
 
     
     @Override
@@ -70,7 +70,7 @@ public class SpaceShip extends SimpleApplication {
         bulletAppState = new BulletAppState();
         bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
         stateManager.attach(bulletAppState);            
-//        bulletAppState.getPhysicsSpace().setAccuracy(1f/30f);
+        bulletAppState.getPhysicsSpace().setAccuracy(1f/45f);
         bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
         bulletAppState.getPhysicsSpace().enableDebug(assetManager);        
     }
@@ -86,7 +86,7 @@ public class SpaceShip extends SimpleApplication {
     }
     
     void setCam() {
-        chaseCam = new MyChaseCamera(cam, ship, inputManager);
+        chaseCam = new ChaseCamera(cam, ship, inputManager);
         chaseCam.setDragToRotate(true);
         chaseCam.setTrailingEnabled(false);
         
@@ -98,11 +98,12 @@ public class SpaceShip extends SimpleApplication {
         chaseCam.setMinDistance(10f);
         chaseCam.setMaxDistance(20f);
 
-        chaseCam.setSmoothMotion(true);
-        chaseCam.setChasingSensitivity(50f);
-        chaseCam.setRotationSensitivity(30f);
-        chaseCam.setZoomSensitivity(30f);
-        
+//        chaseCam.setSmoothMotion(true);
+//        chaseCam.setChasingSensitivity(50f);
+//        chaseCam.setRotationSensitivity(30f);
+//        chaseCam.setZoomSensitivity(30f);
+////        chaseCam.setTrailingEnabled(true);
+////        chaseCam.setChasingEnabled(false);
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
         chaseCam.setEnabled(true);
     }
@@ -180,6 +181,7 @@ public class SpaceShip extends SimpleApplication {
 @Override
 public void simpleUpdate(float tpf)
 {
+    System.nanoTime();
     chaseCam.setLookAtOffset(cam.getUp().normalizeLocal().multLocal(4f));
 
  }

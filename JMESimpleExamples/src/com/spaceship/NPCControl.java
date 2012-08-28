@@ -54,7 +54,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
         rotateSpeed = 12f;
 
         generateNewPath();
-        debugPathModel();
+//        debugPathModel();
 
         shipControl.setPhysicsLocation(randomVec);
 

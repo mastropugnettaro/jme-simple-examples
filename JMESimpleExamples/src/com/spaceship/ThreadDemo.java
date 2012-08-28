@@ -2,7 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package spaceShip;
+package com.spaceship;
+
+
+
+
 
 /**
  *
@@ -10,16 +14,16 @@ package spaceShip;
  */
 public class ThreadDemo {
    public static void main(String args[]) {
-        NewThread t = new NewThread(); // create a new thread
+        ThreadTest t = new ThreadTest(); // create a new thread
 
-//      try {
+      try {
          for(int i = 500; i > 0; i--) {
            System.out.println("Main Thread: " + i);
-//           Thread.sleep(1000);
+           Thread.sleep(1000);
          }
-//      } catch (InterruptedException e) {
-//         System.out.println("Main thread interrupted.");
-//      }
+      } catch (InterruptedException e) {
+         System.out.println("Main thread interrupted.");
+      }
       System.out.println("Main thread exiting.");
    }
 }

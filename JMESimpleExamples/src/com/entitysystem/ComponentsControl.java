@@ -30,7 +30,7 @@ public class ComponentsControl {
         return isUpdated;
     }
 
-    public void setToUpdate(boolean bool) {
+    public void setUpdate(boolean bool) {
         isUpdated = bool;
     }    
     

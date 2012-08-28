@@ -65,7 +65,6 @@ public class ShipPhysicsControl extends RigidBodyControl {
     }
  
     // Ship Rotation
-
     if (viewDir != null) {
     Vector3f dirSpatial = getPhysicsRotation().mult(Vector3f.UNIT_Z);
     Vector3f dirCam = viewDir.mult(Vector3f.UNIT_Z);

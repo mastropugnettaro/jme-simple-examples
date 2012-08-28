@@ -118,7 +118,7 @@ public final class EntitySpatialsControl extends AbstractControl {
         if (!components.isUpdated()) {
         TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
         spatial.setLocalTransform(transform.getTransform().clone());
-        components.setToUpdate(false);
+        components.setUpdate(false);
         }
 //        System.out.println(ID);
     }

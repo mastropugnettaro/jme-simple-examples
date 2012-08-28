@@ -57,15 +57,15 @@ public class EntityTest extends SimpleApplication {
         
         // Check for different transform of entity
         Transform tr = new Transform();
-        Vector3f loc = new Vector3f((float) Math.random() * 1.0f,(float) Math.random() * 1.0f,(float)Math.random() * 1.0f);
+        Vector3f loc = new Vector3f((float) Math.random() * 10.0f,(float) Math.random() * 10.0f,(float)Math.random() * 10.0f);
         tr.setTranslation(loc);
 //        selectedSp.setLocalTransform(tr);
         
         TransformComponent transform = new TransformComponent(tr);
         components.setComponent(transform);
 
-        // we will get 100 updated entities! Their transform will be updated every frame.
-        if (i < 100) components.setToUpdate(false);
+        // Update components
+        components.setUpdate(false);
         
         EntitySpatialsControl spatialControl = spatials.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);

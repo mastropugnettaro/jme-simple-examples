@@ -2,16 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package spaceShip;
+package com.spaceship;
 
 /**
  *
  * @author mifth
  */
  // Create a new thread.
-public class NewThread implements Runnable {
+public class ThreadTest implements Runnable {
    Thread t;
-   NewThread() {
+   ThreadTest() {
       // Create a new, second thread
       t = new Thread(this, "Demo Thread");
       System.out.println("Child thread: " + t);

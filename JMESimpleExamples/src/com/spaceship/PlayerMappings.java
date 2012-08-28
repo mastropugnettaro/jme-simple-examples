@@ -25,10 +25,10 @@ public class PlayerMappings {
     private Node ship;
     private PlayerControl playerControl;
     private ShipWeaponControl weaponControl;  
-    private MyChaseCamera chase;
+    private ChaseCamera chase;
     
     public PlayerMappings (SimpleApplication asm, Node ship, 
-            PlayerControl playerControl, MyChaseCamera chase) {
+            PlayerControl playerControl, ChaseCamera chase) {
         
         
         this.asm = asm;
