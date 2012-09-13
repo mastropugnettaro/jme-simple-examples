@@ -100,7 +100,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
                 randomMoveVec = true;
             } else if ( event.getNodeB().equals(enemyShip) && event.getNodeA().getName().indexOf("enemy") == 0){
                 randomMoveVec = true;
-            }
+            } else randomMoveVec = false;
             
         }
     };    
@@ -119,7 +119,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
          }
         } else if (doMove && randomMoveVec == true) {
             shipControl.setFlyDirection(new Vector3f((float) Math.random() * 1f,(float) Math.random() * 1f,(float)Math.random() * 1f ).normalizeLocal());
-            randomMoveVec = false;
+//            randomMoveVec = false;
         }
 
         if (doRotate) {
