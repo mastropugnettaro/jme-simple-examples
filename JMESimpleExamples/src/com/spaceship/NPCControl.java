@@ -60,7 +60,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
         rotateSpeed = 12f;
 
         generateNewPath();
-//        debugPathModel();
+        debugPathModel();
 
         shipControl.setPhysicsLocation(randomVec);
         this.bulletAppState.getPhysicsSpace().addCollisionListener(PhysList);
@@ -80,7 +80,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
 
     private void debugPathModel() {
 
-        Box b = new Box(Vector3f.ZERO, 0.2f, 0.2f, 0.2f);
+        Box b = new Box(Vector3f.ZERO, 0.1f, 0.1f, 0.1f);
         Geometry bullet = new Geometry("Box", b);
         Material mat_bullet = new Material(asm, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_bullet.setColor("Color", ColorRGBA.Cyan);
