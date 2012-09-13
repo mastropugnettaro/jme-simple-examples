@@ -61,6 +61,7 @@ public class ShipPhysicsControl extends RigidBodyControl {
     // Ship Movement
     if (moveDir != null) {
         applyCentralForce(moveDir.mult(moveSpeed));
+//        setLinearVelocity(moveDir.mult(moveSpeed));  // another approach of movement        
         moveDir = null;
     }
  
