@@ -57,14 +57,14 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
         CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
         colShape.setMargin(0.05f);
         ShipPhysicsControl npcControl = new ShipPhysicsControl(colShape, 1, bulletAppState);
-        npcControl.setDamping(0.7f, 0.9f);
-        npcControl.setFriction(0.8f);
+        npcControl.setDamping(0.9f, 0.9f);
+        npcControl.setFriction(0.9f);
 //        shipControl.setGravity(new Vector3f(0, 0, 0));
         enemy.addControl(npcControl);
         bulletAppState.getPhysicsSpace().add(npcControl);
         
         // path
-        NPCControl path = new NPCControl(enemyNode, enemy, asm, npcControl);
+        NPCControl path = new NPCControl(enemyNode, enemy, asm, npcControl, bulletAppState);
         enemy.addControl(path); 
         
         return enemy;

@@ -5,6 +5,9 @@
 package com.spaceship;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
@@ -37,26 +40,31 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
     private Node generalNode, enemyShip;
     private Geometry geotest;
     private Vector3f randomVec = new Vector3f();
+    private boolean randomMoveVec = false;
     private Vector3f pathVec;
     private Quaternion qua = new Quaternion();    
     private AssetManager asm;
     private float rotateSpeed;
-
+    private BulletAppState bulletAppState;
+    
     public NPCControl(Node parentNode, Node enemy, 
-            AssetManager asm, ShipPhysicsControl shipControl) {
+            AssetManager asm, ShipPhysicsControl shipControl, BulletAppState bulletAppState) {
         this.enemyShip = enemy;
         this.generalNode = parentNode;
         this.asm = asm;
+        this.bulletAppState = bulletAppState;
 
         this.shipControl = shipControl;
-        shipControl.setMoveSpeed(50f);
-        shipControl.setRotateSpeed(12f);
+        shipControl.setMoveSpeed(60f);
+        shipControl.setRotateSpeed(30f);
         rotateSpeed = 12f;
 
         generateNewPath();
         debugPathModel();
 
         shipControl.setPhysicsLocation(randomVec);
+        this.bulletAppState.getPhysicsSpace().addCollisionListener(PhysList);
+        
 
     }
 
@@ -84,6 +92,19 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
         generalNode.attachChild(geotest);
     }
 
+    
+  PhysicsCollisionListener PhysList = new PhysicsCollisionListener() {
+
+        public void collision(PhysicsCollisionEvent event) {
+            if ( event.getNodeA().equals(enemyShip) && event.getNodeB().getName().indexOf("enemy") == 0){
+                randomMoveVec = true;
+            } else if ( event.getNodeB().equals(enemyShip) && event.getNodeA().getName().indexOf("enemy") == 0){
+                randomMoveVec = true;
+            }
+            
+        }
+    };    
+    
     @Override
     protected void controlUpdate(float tpf) {
 
@@ -91,11 +112,14 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
         pathVec = randomVec.subtract(shipControl.getPhysicsLocation().clone());
 
         // Enemy Movement
-        if (doMove) {
+        if (doMove && randomMoveVec == false) {
             shipControl.setFlyDirection(shipControl.getPhysicsRotation().mult(Vector3f.UNIT_Z).normalizeLocal());
           if (distance < 9f) {
             shipControl.setFlyDirection(pathVec.normalize());
          }
+        } else if (doMove && randomMoveVec == true) {
+            shipControl.setFlyDirection(new Vector3f((float) Math.random() * 1f,(float) Math.random() * 1f,(float)Math.random() * 1f ).normalizeLocal());
+            randomMoveVec = false;
         }
 
         if (doRotate) {
@@ -104,7 +128,8 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
             qua.lookAt(pathVec, Vector3f.UNIT_Y);
             angle = pathVec.normalize().angleBetween(shipControl.getPhysicsRotation().mult(Vector3f.UNIT_Z).normalizeLocal());
             shipControl.setViewDirection(qua);
-            shipControl.setRotateSpeed(rotateSpeed * angle);
+            if (angle > 0.5f) shipControl.setRotateSpeed(rotateSpeed);
+            else if (angle <= 0.5f) shipControl.setRotateSpeed(rotateSpeed * angle);
         }
         
         if (distance < 3f) {
