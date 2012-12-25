@@ -84,11 +84,10 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
 
         shipControl.setDamping(0.9f, 0.99f);
         shipControl.setFriction(0.9f);
-//        shipControl.setGravity(new Vector3f(0, 0, 0));
         ship.addControl(shipControl);
         bulletAppState.getPhysicsSpace().add(shipControl);
         shipControl.setEnabled(true);
-        
+        shipControl.setGravity(new Vector3f(0, 0, 0));        
     }    
     
     void makeMove(boolean boo) {

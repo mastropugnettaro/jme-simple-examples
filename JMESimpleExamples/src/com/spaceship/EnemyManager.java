@@ -59,13 +59,13 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
         ShipPhysicsControl npcControl = new ShipPhysicsControl(colShape, 1, bulletAppState);
         npcControl.setDamping(0.9f, 0.9f);
         npcControl.setFriction(0.9f);
-//        shipControl.setGravity(new Vector3f(0, 0, 0));
         enemy.addControl(npcControl);
         bulletAppState.getPhysicsSpace().add(npcControl);
         
         // path
         NPCControl path = new NPCControl(enemyNode, enemy, asm, npcControl, bulletAppState);
         enemy.addControl(path); 
+        npcControl.setGravity(new Vector3f(0, 0, 0));
         
         return enemy;
         
