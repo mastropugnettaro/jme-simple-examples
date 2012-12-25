@@ -71,7 +71,7 @@ public class SpaceShip extends SimpleApplication {
         bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
         stateManager.attach(bulletAppState);            
         bulletAppState.getPhysicsSpace().setAccuracy(1f/45f);
-        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
+//        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
         bulletAppState.getPhysicsSpace().enableDebug(assetManager);        
     }
     
