@@ -115,7 +115,7 @@ public class SpaceShip extends SimpleApplication {
         rootNode.addLight(dl);    
         
         AmbientLight al = new AmbientLight();
-        al.setColor(new ColorRGBA(1.0f,1.0f,1.7f,1));
+        al.setColor(new ColorRGBA(1.5f,1.7f,2.7f,1));
         rootNode.addLight(al);           
     }
     
@@ -158,7 +158,7 @@ public class SpaceShip extends SimpleApplication {
             
         }
         
-        GeometryBatchFactory.optimize(instNodes);  // fps optimization
+        instNodes = (Node) GeometryBatchFactory.optimize(instNodes);  // fps optimization
         rootNode.attachChild(instNodes);   
         instNodes.setUserData("Type", "Asteroid");
 

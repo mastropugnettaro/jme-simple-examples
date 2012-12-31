@@ -41,7 +41,7 @@ public class DungeonRenderer
             getRootNode().addLight(dl);
             
             AmbientLight amb = new AmbientLight();
-            amb.setColor(new ColorRGBA(1.7f, 1.5f, 1.7f, 1.0f));
+            amb.setColor(new ColorRGBA(3.7f, 3.5f, 3.9f, 1.0f));
             getRootNode().addLight(amb);
             
             onInit(this);
@@ -167,7 +167,7 @@ public class DungeonRenderer
          }//for
       }//for
       TangentBinormalGenerator.generate(ground);
-      GeometryBatchFactory.optimize(ground);
+      ground = (Node) GeometryBatchFactory.optimize(ground);
 //      TangentBinormalGenerator.generate(ground);
       
       return ground;
