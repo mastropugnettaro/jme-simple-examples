@@ -65,25 +65,25 @@ public class ShipPhysicsControl extends RigidBodyControl {
         moveDir = null;
     }
  
-    // Ship Rotation
-    if (viewDir != null) {
-    Vector3f dirSpatial = getPhysicsRotation().mult(Vector3f.UNIT_Z);
-    Vector3f dirCam = viewDir.mult(Vector3f.UNIT_Z);
-    Vector3f cross = dirSpatial.crossLocal(dirCam).normalizeLocal();
- 
-    Vector3f dirSpatial1 = getPhysicsRotation().mult(Vector3f.UNIT_Y);
-    Vector3f dirCam1 = viewDir.mult(Vector3f.UNIT_Y);
-    Vector3f cross1 = dirSpatial1.crossLocal(dirCam1).normalizeLocal();
- 
-    Vector3f dirSpatial2 = getPhysicsRotation().mult(Vector3f.UNIT_X);
-    Vector3f dirCam2 = viewDir.mult(Vector3f.UNIT_X);
-    Vector3f cross2 = dirSpatial2.crossLocal(dirCam2).normalizeLocal();
- 
-    applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().mult(rotateSpeed));
-    
-    viewDir = null;
-    
-    }
+        // Ship Rotation
+        if (viewDir != null) {
+            Vector3f dirSpatial = getPhysicsRotation().mult(Vector3f.UNIT_Z);
+            Vector3f dirCam = viewDir.mult(Vector3f.UNIT_Z);
+            Vector3f cross = dirSpatial.cross(dirCam);
+
+            Vector3f dirSpatial1 = getPhysicsRotation().mult(Vector3f.UNIT_Y);
+            Vector3f dirCam1 = viewDir.mult(Vector3f.UNIT_Y);
+            Vector3f cross1 = dirSpatial1.cross(dirCam1);
+
+            Vector3f dirSpatial2 = getPhysicsRotation().mult(Vector3f.UNIT_X);
+            Vector3f dirCam2 = viewDir.mult(Vector3f.UNIT_X);
+            Vector3f cross2 = dirSpatial2.cross(dirCam2);
+
+            applyTorque(cross.add(cross1).add(cross2).normalizeLocal().mult(rotateSpeed));
+//            setAngularVelocity(cross.add(cross1).add(cross2).normalizeLocal().mult(rotateSpeed));
+
+            viewDir = null;
+        }
  
 
         }

@@ -58,7 +58,7 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
         setShip();
         
         shipControl.setMoveSpeed(60f);
-        rotateSpeed = 30f;
+        rotateSpeed = 50f;
         
         weaponControl = new ShipWeaponControl(asm, ship);
         ship.addControl(weaponControl);
@@ -82,8 +82,8 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
         colShape.setMargin(0.05f);
         shipControl = new ShipPhysicsControl(colShape, 1, bulletAppState); 
 
-        shipControl.setDamping(0.9f, 0.99f);
-        shipControl.setFriction(0.9f);
+        shipControl.setDamping(0.75f, 0.9999f);
+        shipControl.setFriction(0.2f);
         ship.addControl(shipControl);
         bulletAppState.getPhysicsSpace().add(shipControl);
         shipControl.setEnabled(true);
