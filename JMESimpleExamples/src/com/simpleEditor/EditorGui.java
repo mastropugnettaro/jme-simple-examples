@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.editor;
+package com.simpleEditor;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -43,8 +43,6 @@ public class EditorGui extends AbstractAppState implements ScreenController {
     super.initialize(stateManager, app);
     application=(SimpleApplication)app;
     
-      
-       
      NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(application.getAssetManager(), 
                                         application.getInputManager(),
                                         application.getAudioRenderer(),
@@ -80,7 +78,7 @@ public class EditorGui extends AbstractAppState implements ScreenController {
     }
 
     public void printGo() {
-        System.out.println("XXXXXX");
+        System.out.println("Changed Background");
         
         application.getViewPort().setBackgroundColor(ColorRGBA.randomColor());
         screen.getFocusHandler().resetFocusElements();

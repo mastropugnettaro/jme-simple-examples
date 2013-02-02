@@ -1,51 +1,66 @@
-package com.editor;
-
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.simpleEditor;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
+import com.jme3.app.FlyCamAppState;
+import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+import com.jme3.input.FlyByCamera;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState.BlendMode;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue.Bucket;
-import com.jme3.renderer.queue.RenderQueue.ShadowMode;
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial.CullHint;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Line;
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.screen.Screen;
 
-
-
-public class EditorBasicScene extends SimpleApplication{
-
-    public static void main(String[] args) {
-        EditorBasicScene app = new EditorBasicScene();
-        app.start();
-    }
-
-              
+/**
+ *
+ * @author mifth
+ */
+public class EditorBaseParts {
+    
+    private Application app;
+    private AssetManager assetManager;
+    private Node rootNode;
+    private Node guiNode;
     private Node camTrackHelper;
-
-    @Override
-    public void simpleInitApp() {
+    private Camera cam;
+    private ViewPort viewPort;
+    private FlyByCamera flyCam;
+    
+public EditorBaseParts(Application app) {
+    
+        this.app = app;
+        cam = app.getCamera();
+        viewPort = app.getViewPort();
+        assetManager = app.getAssetManager();
+        rootNode = (Node) app.getViewPort().getScenes().get(0);
+        guiNode = (Node) app.getGuiViewPort().getScenes().get(0);
+        flyCam = app.getStateManager().getState(FlyCamAppState.class).getCamera();
+        flyCam.setEnabled(false);
         
         createSimpleGui();
         setLight();
-        setCamTrack();
-        EditorCameraSets camSettings = new EditorCameraSets(cam, camTrackHelper, inputManager);
+        setCamTracker();
+        EditorCameraSets camSettings = new EditorCameraSets(cam, camTrackHelper, app.getInputManager());
         createGrid();
 
         EditorGui gui = new EditorGui();
-        stateManager.attach(gui); 
+        app.getStateManager().attach(gui); 
         
         
         // Selected Spatial for a while
@@ -58,35 +73,12 @@ public class EditorBasicScene extends SimpleApplication{
         selectedSp.attachChild(geo);        
         rootNode.attachChild(selectedSp);  
         
-        selectedSp.addControl(new EditorTool((Application)this, selectedSp));
-//        EditorTool edt = new EditorTool(this, selectedSp);
+        selectedSp.addControl(new EditorTool(app, selectedSp));
+//        EditorTool edt = new EditorTool(this, selectedSp);    
+}
     
-    }
-
-    
-
-    
-    @Override
-    public void simpleUpdate(float tpf) {
-       
+    private void setCamTracker() {
         
-//        nifty.resolutionChanged();        
-//        niftyDisplay.reshape(viewPort, cam.getWidth(), cam.getHeight());
-//        nifty.update();
-//        nifty.enableAutoScaling(cam.getWidth(), cam.getHeight());
-        
-
-//        
-//        System.out.println(cam.getWidth() + "x" + cam.getHeight());
-        
-        
-    }    
-    
-    
-    
-    private void setCamTrack() {
-        
-        flyCam.setEnabled(false);
         
         camTrackHelper  = new Node("camTrackHelper");
         
@@ -97,9 +89,9 @@ public class EditorBasicScene extends SimpleApplication{
         gxAxis.setModelBound(new BoundingBox());
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", new ColorRGBA(1.0f, 0.0f, 0.0f, 0.1f));
-        mat1.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        gxAxis.setQueueBucket(Bucket.Transparent);
-        gxAxis.setShadowMode(ShadowMode.Off);
+        mat1.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
+        gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gxAxis.setMaterial(mat1);
 //        gxAxis.setCullHint(CullHint.Never);
         
@@ -113,9 +105,9 @@ public class EditorBasicScene extends SimpleApplication{
         gyAxis.setModelBound(new BoundingBox());
         Material mat2 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat2.setColor("Color", new ColorRGBA(0.0f, 0.0f, 1.0f, 0.1f));
-        mat2.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        gyAxis.setQueueBucket(Bucket.Transparent);        
-        gyAxis.setShadowMode(ShadowMode.Off);
+        mat2.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        gyAxis.setQueueBucket(RenderQueue.Bucket.Transparent);        
+        gyAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gyAxis.setMaterial(mat2);
 //        gzAxis.setCullHint(CullHint.Never);
         camTrackHelper.attachChild(gyAxis);               
@@ -128,9 +120,9 @@ public class EditorBasicScene extends SimpleApplication{
         gzAxis.setModelBound(new BoundingBox());
         Material mat3 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat3.setColor("Color", new ColorRGBA(0.0f, 1.0f, 0.0f, 0.1f));
-        mat3.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        gxAxis.setQueueBucket(Bucket.Transparent);        
-        gzAxis.setShadowMode(ShadowMode.Off);
+        mat3.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);        
+        gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gzAxis.setMaterial(mat3);
 //        gzAxis.setCullHint(CullHint.Never);
         camTrackHelper.attachChild(gzAxis);       
@@ -148,9 +140,7 @@ public class EditorBasicScene extends SimpleApplication{
         dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
         dl.setColor(new ColorRGBA(1,1,1,1));
         rootNode.addLight(dl);        
-      
-        
-        flyCam.setMoveSpeed(30);
+
         viewPort.setBackgroundColor(ColorRGBA.Gray);   
     }
     
@@ -163,7 +153,7 @@ public class EditorBasicScene extends SimpleApplication{
         ch.setSize(guiFont.getCharSet().getRenderedSize());
         ch.setText("W,A,S,D,Q,Z, MiddleMouseButton, RightMouseButton, Scroll"); // crosshairs
         ch.setColor(new ColorRGBA(1f,0.8f,0.1f,0.3f));
-        ch.setLocalTranslation(settings.getWidth()*0.1f,settings.getHeight()*0.1f,0);
+        ch.setLocalTranslation(viewPort.getCamera().getWidth()*0.1f,viewPort.getCamera().getHeight()*0.1f,0);
         guiNode.attachChild(ch);         
 
     }
@@ -176,9 +166,9 @@ public class EditorBasicScene extends SimpleApplication{
         Material floor_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         floor_mat.getAdditionalRenderState().setWireframe(true);
         floor_mat.setColor("Color", new ColorRGBA(0.3f, 0.3f, 0.3f, 0.1f));
-        floor_mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        g.setShadowMode(ShadowMode.Off);
-        g.setQueueBucket(Bucket.Transparent);
+        floor_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        g.setShadowMode(RenderQueue.ShadowMode.Off);
+        g.setQueueBucket(RenderQueue.Bucket.Transparent);
         g.setMaterial(floor_mat);
         g.center().move(new Vector3f(0f,0f,0f));
         gridNode.attachChild(g);
@@ -190,11 +180,11 @@ public class EditorBasicScene extends SimpleApplication{
         gxAxis.setModelBound(new BoundingBox());
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", new ColorRGBA(1.0f, 0.2f, 0.2f, 0.2f));
-        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        gxAxis.setQueueBucket(Bucket.Transparent);
-        gxAxis.setShadowMode(ShadowMode.Off);
+        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
+        gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gxAxis.setMaterial(mat);
-        gxAxis.setCullHint(CullHint.Never);
+        gxAxis.setCullHint(Spatial.CullHint.Never);
         
         gridNode.attachChild(gxAxis);
 
@@ -205,15 +195,15 @@ public class EditorBasicScene extends SimpleApplication{
         gzAxis.setModelBound(new BoundingBox());
         mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", new ColorRGBA(0.2f, 1.0f, 0.2f, 0.2f));
-        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        gxAxis.setQueueBucket(Bucket.Transparent);        
-        gzAxis.setShadowMode(ShadowMode.Off);
+        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);        
+        gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gzAxis.setMaterial(mat);
-        gzAxis.setCullHint(CullHint.Never);
+        gzAxis.setCullHint(Spatial.CullHint.Never);
         gridNode.attachChild(gzAxis);
 
         rootNode.attachChild(gridNode);
         
-    }
-
+    }    
+    
 }

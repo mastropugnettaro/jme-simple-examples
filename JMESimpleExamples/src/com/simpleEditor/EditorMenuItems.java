@@ -1,4 +1,4 @@
-package com.editor;
+package com.simpleEditor;
 
 import com.jme3.app.Application;
 import java.awt.Container;
