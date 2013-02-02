@@ -28,15 +28,13 @@ public class EditorCameraMoveControl extends AbstractControl implements Savable,
     private Vector3f  camMove, camMoveX, camMoveY;
     private float mouseDist;
     private Camera camera;
-    private AppSettings settings;
     
-    public EditorCameraMoveControl (Node camHelper, InputManager input, Camera cam, AppSettings aps) {
+    public EditorCameraMoveControl (Node camHelper, InputManager input, Camera cam) {
         
         
         spatial = camHelper;
         inputMan = input;
         camera = cam;
-        settings = aps;
         
         initControl();
         

@@ -32,49 +32,53 @@ import com.jme3.scene.shape.Line;
  * @author mifth
  */
 public class EditorBaseParts {
-    
+
     private Application app;
     private AssetManager assetManager;
     private Camera sceneCamera;
     private ViewPort viewPort;
     private FlyByCamera flyCam;
-
     // Global Nodes
     private Node rootNode, guiNode;
     private Node layerNode_1, layerNode_2, layerNode_3, layerNode_4, layerNode_5, layerNode_6,
             layerNode_7, layerNode_8, layerNode_9, layerNode_10, layerNode_11, layerNode_12, layerNode_13,
             layerNode_14, layerNode_15, layerNode_16, layerNode_17, layerNode_18, layerNode_19, layerNode_20;
     private Node selectableNode, hidedNode;
-    private Node camTrackHelper;    
-    
-public EditorBaseParts(Application app) {
-    
+    private Node camTrackHelper;
+
+    public EditorBaseParts(Application app) {
+
         this.app = app;
         sceneCamera = app.getCamera();
         viewPort = app.getViewPort();
         assetManager = app.getAssetManager();
-        
+
         rootNode = (Node) app.getViewPort().getScenes().get(0);
         guiNode = (Node) app.getGuiViewPort().getScenes().get(0);
-        
-        
+
+
         flyCam = app.getStateManager().getState(FlyCamAppState.class).getCamera();
         flyCam.setEnabled(false);
-        
+
         setGlobalNodes();
+
+        rootNode.attachChild(new Node("empty"));
+        rootNode.attachChild(camTrackHelper);
+        rootNode.attachChild(selectableNode);
+
+        EditorMappings mappings = new EditorMappings(this.app);
+
         setCamTracker();
         EditorCameraSets camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());
-        
+
+
         createSimpleGui();
         setLight();
 
         createGrid();
         EditorGui gui = new EditorGui();
-        app.getStateManager().attach(gui); 
+        app.getStateManager().attach(gui);
 
-        
-       
-        
         // Selected Spatial for a while
         Box b = new Box(Vector3f.ZERO, 1, 1, 1);
         Geometry geo = new Geometry("Box", b);
@@ -82,28 +86,28 @@ public EditorBaseParts(Application app) {
 //        mat.getAdditionalRenderState().setWireframe(true);
         geo.setMaterial(mat);
         Node selectedSp = new Node();
-        selectedSp.attachChild(geo);        
-        rootNode.attachChild(selectedSp);  
+        selectedSp.attachChild(geo);
+        rootNode.attachChild(selectedSp);
 
 
-             rootNode.attachChild(camTrackHelper);        
-        rootNode.attachChild(selectableNode);    
-        EditorTool tool =  new EditorTool(app, selectedSp);
+
+
+
+        EditorTool tool = new EditorTool(app, selectedSp);
         selectableNode.addControl(tool);
 //        EditorTool edt = new EditorTool(this, selectedSp);    
-}
-
+    }
 
     private void setGlobalNodes() {
 
         selectableNode = new Node("selectableNode");
-        
 
-        camTrackHelper  = new Node("camTrackHelper");        
-        
-        
+
+        camTrackHelper = new Node("camTrackHelper");
+
+
         hidedNode = new Node("hidedNode");
-        
+
         layerNode_1 = new Node("layerNode_1");
         layerNode_2 = new Node("layerNode_2");
         layerNode_3 = new Node("layerNode_3");
@@ -124,11 +128,11 @@ public EditorBaseParts(Application app) {
         layerNode_18 = new Node("layerNode_18");
         layerNode_19 = new Node("layerNode_19");
         layerNode_20 = new Node("layerNode_20");
-                
+
     }
 
     private void setCamTracker() {
-                
+
         // Red line for X axis
         final Line xAxis = new Line(new Vector3f(0f, 0f, 0f), new Vector3f(0.05f, 0f, 0f));
         xAxis.setLineWidth(2f);
@@ -141,10 +145,10 @@ public EditorBaseParts(Application app) {
         gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gxAxis.setMaterial(mat1);
 //        gxAxis.setCullHint(CullHint.Never);
-        
+
         camTrackHelper.attachChild(gxAxis);
 
-        
+
         // Blue line for Y axis
         final Line yAxis = new Line(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0.05f, 0f));
         yAxis.setLineWidth(2f);
@@ -153,13 +157,13 @@ public EditorBaseParts(Application app) {
         Material mat2 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat2.setColor("Color", new ColorRGBA(0.0f, 0.0f, 1.0f, 0.5f));
         mat2.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gyAxis.setQueueBucket(RenderQueue.Bucket.Transparent);        
+        gyAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
         gyAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gyAxis.setMaterial(mat2);
 //        gzAxis.setCullHint(CullHint.Never);
-        camTrackHelper.attachChild(gyAxis);               
-        
-        
+        camTrackHelper.attachChild(gyAxis);
+
+
         // Blue line for Z axis
         final Line zAxis = new Line(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.05f));
         zAxis.setLineWidth(2f);
@@ -168,47 +172,45 @@ public EditorBaseParts(Application app) {
         Material mat3 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat3.setColor("Color", new ColorRGBA(0.0f, 1.0f, 0.0f, 0.5f));
         mat3.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);        
+        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
         gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gzAxis.setMaterial(mat3);
 //        gzAxis.setCullHint(CullHint.Never);
-        camTrackHelper.attachChild(gzAxis);       
-        
+        camTrackHelper.attachChild(gzAxis);
+
 //        CameraNode camnode = new CameraNode("this", cam);
 ////        camnode.attachChild(camTrackHelper);
 //        rootNode.attachChild(camnode);
 
     }
-    
+
     private void setLight() {
-        
+
         DirectionalLight dl = new DirectionalLight();
         dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
-        dl.setColor(new ColorRGBA(1,1,1,1));
-        rootNode.addLight(dl);        
+        dl.setColor(new ColorRGBA(1, 1, 1, 1));
+        rootNode.addLight(dl);
 
-        viewPort.setBackgroundColor(ColorRGBA.Gray);   
+        viewPort.setBackgroundColor(ColorRGBA.Gray);
     }
-    
 
-    
     private void createSimpleGui() {
 
         BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
         ch.setText("W,A,S,D,Q,Z, MiddleMouseButton, RightMouseButton, Scroll"); // crosshairs
-        ch.setColor(new ColorRGBA(1f,0.8f,0.1f,0.3f));
-        ch.setLocalTranslation(viewPort.getCamera().getWidth()*0.1f,viewPort.getCamera().getHeight()*0.1f,0);
-        guiNode.attachChild(ch);         
+        ch.setColor(new ColorRGBA(1f, 0.8f, 0.1f, 0.3f));
+        ch.setLocalTranslation(viewPort.getCamera().getWidth() * 0.1f, viewPort.getCamera().getHeight() * 0.1f, 0);
+        guiNode.attachChild(ch);
 
     }
-    
-    private void createGrid(){
+
+    private void createGrid() {
         Node gridNode = new Node("gridNode");
-        
+
         //Create a grid plane
-        Geometry g = new Geometry("GRID", new Grid(101, 101, 1f) );
+        Geometry g = new Geometry("GRID", new Grid(101, 101, 1f));
         Material floor_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         floor_mat.getAdditionalRenderState().setWireframe(true);
         floor_mat.setColor("Color", new ColorRGBA(0.3f, 0.3f, 0.3f, 0.1f));
@@ -216,7 +218,7 @@ public EditorBaseParts(Application app) {
         g.setShadowMode(RenderQueue.ShadowMode.Off);
         g.setQueueBucket(RenderQueue.Bucket.Transparent);
         g.setMaterial(floor_mat);
-        g.center().move(new Vector3f(0f,0f,0f));
+        g.center().move(new Vector3f(0f, 0f, 0f));
         gridNode.attachChild(g);
 
         // Red line for X axis
@@ -231,7 +233,7 @@ public EditorBaseParts(Application app) {
         gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gxAxis.setMaterial(mat);
         gxAxis.setCullHint(Spatial.CullHint.Never);
-        
+
         gridNode.attachChild(gxAxis);
 
         // Blue line for Z axis
@@ -242,14 +244,13 @@ public EditorBaseParts(Application app) {
         mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", new ColorRGBA(0.2f, 1.0f, 0.2f, 0.2f));
         mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);        
+        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
         gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gzAxis.setMaterial(mat);
         gzAxis.setCullHint(Spatial.CullHint.Never);
         gridNode.attachChild(gzAxis);
 
         rootNode.attachChild(gridNode);
-        
-    }    
-    
+
+    }
 }

@@ -50,7 +50,7 @@ public class Editor {
     protected static Application app;    
     protected static AppSettings settings;
     private static EditorBaseParts baseParts;
-    protected static EditorMappings mappings;
+//    protected static EditorMappings mappings;
     
     public Editor() {
         
@@ -177,7 +177,7 @@ public class Editor {
         mItems.panelButtonz(canvasPanelOpt1);
 
         baseParts = new EditorBaseParts(app);
-        mappings = new EditorMappings();          
+//        mappings = new EditorMappings();          
     }
 
     public static void createCanvas(String appClass){

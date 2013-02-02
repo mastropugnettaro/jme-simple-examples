@@ -4,6 +4,7 @@
  */
 package com.simpleEditor;
 
+import com.jme3.app.Application;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
@@ -13,16 +14,18 @@ import com.jme3.scene.Node;
 
 
 
-public class EditorMappings extends Editor implements AnalogListener, ActionListener{
+public class EditorMappings implements AnalogListener, ActionListener{
 
     
     private Node root, camHelper;
     private EditorCameraMoveControl camMoveControl;
+    private Application app;
     
-    public EditorMappings () {
+    public EditorMappings (Application app) {
         
+        this.app = app;
         setupKeys();
-        root = (Node) app.getViewPort().getScenes().get(0);            
+        root = (Node) this.app.getViewPort().getScenes().get(0);            
         camHelper = (Node) root.getChild("camTrackHelper");        
         
 
@@ -55,9 +58,9 @@ public class EditorMappings extends Editor implements AnalogListener, ActionList
         if (name.equals("MoveCameraHelper") && isPressed){
 //            System.out.println("MoveCamera");
             
-            settings.setHeight(app.getViewPort().getCamera().getHeight());
-            settings.setWidth(app.getViewPort().getCamera().getWidth());
-            camMoveControl = new EditorCameraMoveControl(camHelper, app.getInputManager(), app.getViewPort().getCamera(), settings);
+//            settings.setHeight(app.getViewPort().getCamera().getHeight());
+//            settings.setWidth(app.getViewPort().getCamera().getWidth());
+            camMoveControl = new EditorCameraMoveControl(camHelper, app.getInputManager(), app.getViewPort().getCamera());
             camHelper.addControl(camMoveControl);
         } else if (name.equals("MoveCameraHelper") && !isPressed) {
             camHelper.removeControl(camMoveControl);
