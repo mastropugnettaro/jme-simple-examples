@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.editor;
+package com.simpleEditor;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -25,7 +25,7 @@ public class EditorCameraMoveControl extends AbstractControl implements Savable,
     private Node spatial;
     private InputManager inputMan;
     private Vector2f startPosMouse, endPosMouse, ceneterScr;
-    private Vector3f  spatMove, camMoveX, camMoveY;
+    private Vector3f  camMove, camMoveX, camMoveY;
     private float mouseDist;
     private Camera camera;
     private AppSettings settings;
@@ -63,24 +63,16 @@ public class EditorCameraMoveControl extends AbstractControl implements Savable,
         
         
         camMoveX = camera.getLeft();
-        if (endPosMouse.x > ceneterScr.x) camMoveX.negateLocal();
+        camMoveX.negateLocal();
         camMoveX.normalizeLocal();
                 
         camMoveY = camera.getUp();
-        if (endPosMouse.y < ceneterScr.y) camMoveY.negateLocal();        
+//         camMoveY.negateLocal();        
         camMoveY.normalizeLocal();
         
+//        System.out.println(endPosMouse);
         
-        float coefficient = (endPosMouse.y-ceneterScr.y) / (settings.getHeight()*0.5f);
-        if (endPosMouse.y < ceneterScr.y) coefficient= -coefficient;
-        
-//        spatMove = camMoveX.add(camMoveY).normalizeLocal();
-        spatMove = camMoveX.interpolate(camMoveY, coefficient);
-        
-        System.out.println(coefficient);
-        
-        spatial.move(spatMove.multLocal(tpf*(mouseDist*0.1f)));
-        
+        spatial.move(camMoveX.mult((endPosMouse.x - ceneterScr.x) / camera.getWidth()).addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / camera.getHeight())).normalizeLocal().multLocal(mouseDist*0.001f));
         
     }
 

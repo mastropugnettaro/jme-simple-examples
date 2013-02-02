@@ -1,4 +1,4 @@
-package com.editor; 
+package com.simpleEditor; 
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -38,18 +38,19 @@ public class Editor {
     
     private static JmeCanvasContext context;
     protected static Canvas canvas;
-    protected static Application app;
     protected static JFrame frame;
     protected static Container canvasPanel1, canvasPanel2, canvasPanelOpt1, canvasPanelOpt2;
     protected  static JScrollPane logScrollPane;
     private static Container currentPanel;
     protected static JTabbedPane tabbedPane, tabbedPaneOpt;
-    private static final String appClass = EditorBasicScene.class.getName();
+    private static final String appClass = EmptyScene.class.getName();
     protected static JMenu menuTortureMethods;    
     protected static JTextArea LogArea;
+
+    protected static Application app;    
     protected static AppSettings settings;
-    
-    
+    private static EditorBaseParts baseParts;
+    protected static EditorMappings mappings;
     
     public Editor() {
         
@@ -174,9 +175,9 @@ public class Editor {
         EditorMenuItems mItems = new EditorMenuItems();
         mItems.menuButtonz();
         mItems.panelButtonz(canvasPanelOpt1);
-        
-        EditorMappings mappings = new EditorMappings();
-        
+
+        baseParts = new EditorBaseParts(app);
+        mappings = new EditorMappings();          
     }
 
     public static void createCanvas(String appClass){
@@ -188,6 +189,7 @@ public class Editor {
         // Get the current screen size
 	Dimension scrnsize = toolkit.getScreenSize();
         
+        settings.setVSync(true);
         settings.setWidth(scrnsize.width - 400);
         settings.setHeight(scrnsize.height - 300);
 
@@ -212,6 +214,7 @@ public class Editor {
         context = (JmeCanvasContext) app.getContext();
         canvas = context.getCanvas();
         canvas.setSize(settings.getWidth(), settings.getHeight());
+        
     }
 
     public static void startApp(){

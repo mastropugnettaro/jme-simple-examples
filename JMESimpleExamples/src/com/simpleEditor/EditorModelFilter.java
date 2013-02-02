@@ -1,4 +1,4 @@
-package com.editor;
+package com.simpleEditor;
 
 import java.io.File;
 import javax.swing.filechooser.*;

@@ -8,14 +8,14 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
 
-public class DrawText extends SimpleApplication {
+public class Draw_Gui_TextandMesh extends SimpleApplication {
 
     public static void main(String[] args) {
-        DrawText app = new DrawText();
+        Draw_Gui_TextandMesh app = new Draw_Gui_TextandMesh();
         app.start();
     }
 
-    Geometry geom;
+    Geometry geom, geom2;
     BitmapText ch;
     
     
@@ -45,6 +45,9 @@ public class DrawText extends SimpleApplication {
     ch.setText(geom.getName()); // crosshairs
     ch.setColor(new ColorRGBA(1f,0.8f,0.3f,0.8f));
     guiNode.attachChild(ch);
+    geom2 = geom.clone();
+    geom2.scale(10f);
+    guiNode.attachChild(geom2);
     
     
     
@@ -60,6 +63,7 @@ public class DrawText extends SimpleApplication {
 public void simpleUpdate(float tpf)
 {
           
+      geom2.setLocalTranslation(cam.getScreenCoordinates(geom.getLocalTranslation().add(0, 2.1f, 0)));
       ch.setLocalTranslation(cam.getScreenCoordinates(geom.getLocalTranslation().add(0, 2, 0)));
        
       
