@@ -62,7 +62,6 @@ public class EditorBaseParts {
 
         setGlobalNodes();
 
-        rootNode.attachChild(new Node("empty"));
         rootNode.attachChild(camTrackHelper);
         rootNode.attachChild(selectableNode);
 
