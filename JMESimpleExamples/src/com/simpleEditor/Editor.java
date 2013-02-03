@@ -49,7 +49,7 @@ public class Editor {
 
     protected static Application app;    
     protected static AppSettings settings;
-    private static EditorBaseParts baseParts;
+//    private static EditorBaseParts baseParts;
 //    protected static EditorMappings mappings;
     
     public Editor() {
@@ -176,7 +176,7 @@ public class Editor {
         mItems.menuButtonz();
         mItems.panelButtonz(canvasPanelOpt1);
 
-        baseParts = new EditorBaseParts(app);
+//        baseParts = new EditorBaseParts(app);
 //        mappings = new EditorMappings();          
     }
 

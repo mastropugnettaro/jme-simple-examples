@@ -65,7 +65,7 @@ public class EditorBaseParts {
         
         rootNode.attachChild(selectableNode);
         rootNode.attachChild(camTrackHelper);
-
+        
         EditorMappings mappings = new EditorMappings(this.app, camTrackHelper);
 
         setCamTracker();
