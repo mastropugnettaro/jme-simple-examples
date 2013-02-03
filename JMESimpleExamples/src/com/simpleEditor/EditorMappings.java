@@ -21,14 +21,12 @@ public class EditorMappings implements AnalogListener, ActionListener{
     private EditorCameraMoveControl camMoveControl;
     private Application app;
     
-    public EditorMappings (Application app) {
+    public EditorMappings (Application app, Node camHelper) {
         
         this.app = app;
+        this.camHelper = camHelper;
         setupKeys();
         root = (Node) this.app.getViewPort().getScenes().get(0);            
-        camHelper = (Node) root.getChild("camTrackHelper");        
-        
-
         
     }
     

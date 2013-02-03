@@ -62,10 +62,11 @@ public class EditorBaseParts {
 
         setGlobalNodes();
 
-        rootNode.attachChild(camTrackHelper);
+        
         rootNode.attachChild(selectableNode);
+        rootNode.attachChild(camTrackHelper);
 
-        EditorMappings mappings = new EditorMappings(this.app);
+        EditorMappings mappings = new EditorMappings(this.app, camTrackHelper);
 
         setCamTracker();
         EditorCameraSets camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());
