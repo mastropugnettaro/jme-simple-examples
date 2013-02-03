@@ -53,24 +53,14 @@ public class EditorBaseParts {
         viewPort = app.getViewPort();
         assetManager = app.getAssetManager();
 
-        rootNode = (Node) app.getViewPort().getScenes().get(0);
-        guiNode = (Node) app.getGuiViewPort().getScenes().get(0);
-
-
         flyCam = app.getStateManager().getState(FlyCamAppState.class).getCamera();
         flyCam.setEnabled(false);
 
         setGlobalNodes();
-
         
-        rootNode.attachChild(selectableNode);
-        rootNode.attachChild(camTrackHelper);
-        
+        EditorCameraSets camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());        
         EditorMappings mappings = new EditorMappings(this.app, camTrackHelper);
-
         setCamTracker();
-        EditorCameraSets camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());
-
 
         createSimpleGui();
         setLight();
@@ -100,11 +90,14 @@ public class EditorBaseParts {
 
     private void setGlobalNodes() {
 
-        selectableNode = new Node("selectableNode");
-
-
+        rootNode = (Node) app.getViewPort().getScenes().get(0);
+        guiNode = (Node) app.getGuiViewPort().getScenes().get(0);        
+        
         camTrackHelper = new Node("camTrackHelper");
-
+        rootNode.attachChild(camTrackHelper);                
+        
+        selectableNode = new Node("selectableNode");
+        rootNode.attachChild(selectableNode);
 
         hidedNode = new Node("hidedNode");
 
@@ -128,7 +121,6 @@ public class EditorBaseParts {
         layerNode_18 = new Node("layerNode_18");
         layerNode_19 = new Node("layerNode_19");
         layerNode_20 = new Node("layerNode_20");
-
     }
 
     private void setCamTracker() {

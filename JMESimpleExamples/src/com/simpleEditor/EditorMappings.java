@@ -9,6 +9,9 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 
 
@@ -18,13 +21,14 @@ public class EditorMappings implements AnalogListener, ActionListener{
 
     
     private Node root, camHelper;
-    private EditorCameraMoveControl camMoveControl;
     private Application app;
+    private Camera camera;
     
     public EditorMappings (Application app, Node camHelper) {
         
         this.app = app;
         this.camHelper = camHelper;
+        camera = app.getCamera();
         setupKeys();
         root = (Node) this.app.getViewPort().getScenes().get(0);            
         
@@ -49,21 +53,35 @@ public class EditorMappings implements AnalogListener, ActionListener{
     }
     
     public void onAnalog(String name, float value, float tpf) {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        if (name.equals("MoveCameraHelper")){
+
+        // center of the screen
+        float width = camera.getWidth() * 0.5f;
+        float height = camera.getHeight() * 0.5f;
+        Vector2f ceneterScr = new Vector2f(width, height);   
+        
+        Vector2f endPosMouse = app.getInputManager().getCursorPosition();
+        float mouseDist = ceneterScr.distance(endPosMouse);
+
+        
+        
+        Vector3f camMoveX = camera.getLeft();
+        camMoveX.negateLocal();
+        camMoveX.normalizeLocal();
+                
+        Vector3f camMoveY = camera.getUp();
+//         camMoveY.negateLocal();        
+        camMoveY.normalizeLocal();
+        
+//        System.out.println(endPosMouse);
+        
+        camHelper.move(camMoveX.mult((endPosMouse.x - ceneterScr.x) / camera.getWidth()).addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / camera.getHeight())).normalizeLocal().multLocal(mouseDist*0.001f));
+        
+        } 
     }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (name.equals("MoveCameraHelper") && isPressed){
-//            System.out.println("MoveCamera");
-            
-//            settings.setHeight(app.getViewPort().getCamera().getHeight());
-//            settings.setWidth(app.getViewPort().getCamera().getWidth());
-            camMoveControl = new EditorCameraMoveControl(camHelper, app.getInputManager(), app.getViewPort().getCamera());
-            camHelper.addControl(camMoveControl);
-        } else if (name.equals("MoveCameraHelper") && !isPressed) {
-            camHelper.removeControl(camMoveControl);
-                System.out.println("ReMoveCamera");
-        }
+
     }
     
     
