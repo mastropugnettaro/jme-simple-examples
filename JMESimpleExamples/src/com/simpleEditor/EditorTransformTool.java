@@ -51,6 +51,7 @@ public class EditorTransformTool extends AbstractControl {
     private boolean isActive = false;
     private boolean useTool;
     private Geometry testGeo;
+    private Vector3f deltaMoveVector;
 
     protected enum TransformToolType {
 
@@ -99,22 +100,38 @@ public class EditorTransformTool extends AbstractControl {
             collisionPlane.collideWith(ray, results);
             CollisionResult result = results.getClosestCollision();
 
-            if (pickedAxys == PickedAxys.X && results.size() > 0) {
+            // Complex trigonometry formula based on sin(angle)*distance
+            if (results.size() > 0) {
 
-                Vector3f contactPoint = result.getContactPoint();
+                Vector3f contactPoint = result.getContactPoint(); // get a point of collisionPlane
+                
+                //set new delteVector if it's not set
+                if (deltaMoveVector == null) deltaMoveVector = selectedSp.getWorldTranslation().subtract(contactPoint);
+                
+                contactPoint = contactPoint.add(deltaMoveVector); // add delta of the picked place
+                
                 Vector3f vec1 = contactPoint.subtract(selectedSp.getWorldTranslation());
                 float distanceVec1 = selectedSp.getWorldTranslation().distance(contactPoint);
-                float angle = vec1.clone().normalizeLocal().angleBetween(selectedSp.getLocalRotation().mult(Vector3f.UNIT_X));
+                
+                // Picked vector
+                Vector3f pickedVec = Vector3f.UNIT_X;
+                if (pickedAxys == PickedAxys.Y) pickedVec = Vector3f.UNIT_Y;
+                else if (pickedAxys == PickedAxys.Z) pickedVec = Vector3f.UNIT_Z;
+                // the main formula for constraint axys
+                float angle = vec1.clone().normalizeLocal().angleBetween(selectedSp.getLocalRotation().mult(pickedVec).normalizeLocal());
                 float distanceVec2 = distanceVec1 * FastMath.sin(angle);
                 
-                Vector3f moveVec = collisionPlane.getLocalRotation().mult(Vector3f.UNIT_Y).mult(distanceVec2);
+                // Additional perpendicular vector 
+                Vector3f perpendicularVec = Vector3f.UNIT_X;
+                // fix if angle>90 degrees
+                Vector3f moveVec = collisionPlane.getLocalRotation().mult(perpendicularVec).mult(distanceVec2);
                 Vector3f checkVec = contactPoint.add(moveVec).subtractLocal(contactPoint).normalizeLocal();
                 float angleCheck = checkVec.angleBetween(vec1.clone().normalizeLocal()); 
                 if (angleCheck < FastMath.HALF_PI) moveVec = moveVec.negate();
                 
                 testGeo.setLocalTranslation(contactPoint);
                 testGeo.getLocalTranslation().addLocal(moveVec);
-                System.out.println("Vec: " + collisionPlane.getLocalRotation().toString() + "   angle: " + angle);
+                System.out.println("Vec: " + testGeo.getWorldTranslation().toString() + "   angle: " + angle);
             }
         }
 
@@ -200,15 +217,25 @@ public class EditorTransformTool extends AbstractControl {
         ray.setOrigin(pos);
         ray.setDirection(dir);
         node.collideWith(ray, results);
-        CollisionResult result = results.getClosestCollision();
+        CollisionResult result = null;
 
         if (results.size() > 0) {
-            System.out.println(result.getGeometry().getName());
-        } else {
-            System.out.println("NONE");
-        }
-
-        if (result != null) {
+            result = results.getClosestCollision();
+            
+            // Set PickedAxys
+            String type = result.getGeometry().getName();
+            if (type.indexOf("move") >= 0) {
+                if (type.indexOf("move_x") > 0) {
+                    setPickedAxis(EditorTransformTool.PickedAxys.X);
+                } else if (type.indexOf("move_y") > 0) {
+                    setPickedAxis(EditorTransformTool.PickedAxys.Y);
+                } else if (type.indexOf("move_z") > 0) {
+                    setPickedAxis(EditorTransformTool.PickedAxys.Z);
+                } else if (type.indexOf("move_view") > 0) {
+                    setPickedAxis(EditorTransformTool.PickedAxys.View);
+                }
+            }
+            
 
             // select an angle between 0 and 90 degrees (from 0 to 1.57 in radians) (for collisionPlane)
             float angleX = app.getCamera().getDirection().angleBetween(selectedSp.getLocalRotation().mult(Vector3f.UNIT_X));
@@ -238,26 +265,37 @@ public class EditorTransformTool extends AbstractControl {
             // set the collision Plane location and rotation
             collisionPlane.setLocalTranslation(selectedSp.getWorldTranslation());
             collisionPlane.setLocalRotation(selectedSp.getWorldRotation().clone()); //equals to angleZ
+            Quaternion planeRot = collisionPlane.getLocalRotation();
+            
+            // rotate the plane for constraints
             if (lessAngle == angleX) {
-                collisionPlane.getLocalRotation().fromAngleAxis(FastMath.HALF_PI, collisionPlane.getLocalRotation().clone().multLocal(Vector3f.UNIT_X));
-            } else if (lessAngle == angleY) {
-                collisionPlane.getLocalRotation().fromAngleAxis(FastMath.HALF_PI, collisionPlane.getLocalRotation().clone().multLocal(Vector3f.UNIT_X));
-            }
-
-
-            // Set PickedAxys
-            String type = result.getGeometry().getName();
-            if (type.indexOf("move") >= 0) {
-                if (type.indexOf("move_x") > 0) {
-                    setPickedAxis(EditorTransformTool.PickedAxys.X);
-                } else if (type.indexOf("move_y") > 0) {
-                    setPickedAxis(EditorTransformTool.PickedAxys.Y);
-                } else if (type.indexOf("move_z") > 0) {
-                    setPickedAxis(EditorTransformTool.PickedAxys.Z);
-                } else if (type.indexOf("move_view") > 0) {
-                    setPickedAxis(EditorTransformTool.PickedAxys.View);
+                System.out.println("XXXAngle");
+                if (pickedAxys == PickedAxys.X && angleY > angleZ)  collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
+                else if (pickedAxys == PickedAxys.X && angleY < angleZ)  {
+                    collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+                    collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
                 }
+                else if (pickedAxys == PickedAxys.Y) collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+                else if (pickedAxys == PickedAxys.Z) collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
+            } else if (lessAngle == angleY) {
+                if (pickedAxys == PickedAxys.X) {
+                    collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
+                    collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+                }
+                else if (pickedAxys == PickedAxys.Y && angleX < angleZ)  collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y)); // if angleX>angleY no need to ratate
+                else if (pickedAxys == PickedAxys.Z) collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
+            } else if (lessAngle == angleZ) {
+                if (pickedAxys == PickedAxys.X) collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
+//                if (pickedAxys == PickedAxys.Y) 
+                  if (pickedAxys == PickedAxys.Z && angleY < angleX) collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
+                  else if (pickedAxys == PickedAxys.Z && angleY > angleX) {
+                      collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+                      collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
+                  }
             }
+            
+            deltaMoveVector = null;  // prepare for new deltaVector
+            
         }
 
         return result;
