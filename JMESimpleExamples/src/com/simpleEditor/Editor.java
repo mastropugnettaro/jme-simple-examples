@@ -49,8 +49,7 @@ public class Editor {
 
     protected static Application app;    
     protected static AppSettings settings;
-//    private static EditorBaseParts baseParts;
-//    protected static EditorMappings mappings;
+    private static EditorBaseParts baseParts;
     
     public Editor() {
         
@@ -149,16 +148,13 @@ public class Editor {
         // create menu
         menuTortureMethods = new JMenu("File");
         menuBar.add(menuTortureMethods);
-
-
-        
         
     }
     
     
     
     private static void createFrame(){
-        frame = new JFrame("ModelViewer");
+        frame = new JFrame("simpleEditor");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter(){
             @Override
@@ -177,7 +173,7 @@ public class Editor {
         mItems.panelButtonz(canvasPanelOpt1);
 
 //        baseParts = new EditorBaseParts(app);
-//        mappings = new EditorMappings();          
+       
     }
 
     public static void createCanvas(String appClass){

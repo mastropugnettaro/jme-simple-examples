@@ -85,7 +85,7 @@ public class EditorCameraSets {
          
          cam.setParallelProjection(true);
          float aspect = (float) cam.getWidth() / cam.getHeight();
-         float frustumSize = 100f;
+         float frustumSize = 10f;
          cam.setFrustum(cam.getFrustumNear(), cam.getFrustumFar(), -aspect * frustumSize, aspect * frustumSize, frustumSize, -frustumSize);   
          
       } else if (bool == false) {
