@@ -13,7 +13,7 @@ public class EmptyScene extends SimpleApplication{
         EmptyScene app = new EmptyScene();
         AppSettings aps = new AppSettings(true);
         aps.setVSync(true);
-        aps.setResolution(800, 600);
+        aps.setResolution(1280, 720);
         app.setSettings(aps);
         app.start();
     }
@@ -23,9 +23,9 @@ public class EmptyScene extends SimpleApplication{
 
     @Override
     public void simpleInitApp() {
+
+        EditorBaseParts baseParts = new EditorBaseParts(this);        
         
-        EditorBaseParts baseParts = new EditorBaseParts((Application)this);
-    
     }
 
     

@@ -38,6 +38,7 @@ public class EditorBaseParts {
     private Camera sceneCamera;
     private ViewPort viewPort;
     private FlyByCamera flyCam;
+    
     // Global Nodes
     private Node rootNode, guiNode;
     private Node layerNode_1, layerNode_2, layerNode_3, layerNode_4, layerNode_5, layerNode_6,
@@ -45,7 +46,13 @@ public class EditorBaseParts {
             layerNode_14, layerNode_15, layerNode_16, layerNode_17, layerNode_18, layerNode_19, layerNode_20;
     private Node selectableNode, hidedNode;
     private Node camTrackHelper;
-
+    
+    // Tools
+    private EditorCameraSets camSettings;
+    private EditorTransformTool transformTools;
+    private EditorMappings mappings;
+    private EditorSelectionTool selectionTool;
+    
     public EditorBaseParts(Application app) {
 
         this.app = app;
@@ -58,8 +65,8 @@ public class EditorBaseParts {
 
         setGlobalNodes();
         
-        EditorCameraSets camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());        
-        EditorMappings mappings = new EditorMappings(this.app, camTrackHelper);
+        camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());        
+        mappings = new EditorMappings(this.app, this);
         setCamTracker();
 
         createSimpleGui();
@@ -69,7 +76,7 @@ public class EditorBaseParts {
         EditorGui gui = new EditorGui();
         app.getStateManager().attach(gui);
 
-        // Selected Spatial for a while
+        // Testing Entity for a while
         Box b = new Box(Vector3f.ZERO, 1, 1, 1);
         Geometry geo = new Geometry("Box", b);
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -77,14 +84,12 @@ public class EditorBaseParts {
         geo.setMaterial(mat);
         Node selectedSp = new Node();
         selectedSp.attachChild(geo);
-        rootNode.attachChild(selectedSp);
+        layerNode_1.attachChild(selectedSp);
 
-
-
-
-
-        EditorTool tool = new EditorTool(app, selectedSp);
-        selectableNode.addControl(tool);
+        transformTools = new EditorTransformTool(app, selectedSp);
+        selectableNode.addControl(transformTools);
+        
+        selectionTool = new EditorSelectionTool(this);
 //        EditorTool edt = new EditorTool(this, selectedSp);    
     }
 
@@ -102,6 +107,8 @@ public class EditorBaseParts {
         hidedNode = new Node("hidedNode");
 
         layerNode_1 = new Node("layerNode_1");
+        selectableNode.attachChild(layerNode_1);
+        
         layerNode_2 = new Node("layerNode_2");
         layerNode_3 = new Node("layerNode_3");
         layerNode_4 = new Node("layerNode_4");
@@ -123,6 +130,51 @@ public class EditorBaseParts {
         layerNode_20 = new Node("layerNode_20");
     }
 
+    
+    protected EditorTransformTool getTransformTool() {
+        return transformTools;
+    }
+
+    protected EditorSelectionTool getSelectionTool() {
+        return selectionTool;
+    }    
+    
+    protected EditorMappings getEditorMappings() {
+        return mappings;
+    }    
+    
+    protected Node getLayer(int layerNumber) {
+        
+        Node nd = null;
+        
+        switch (layerNumber) {
+            case 1: nd = layerNode_1;
+            case 2: nd = layerNode_2;
+            case 3: nd = layerNode_3;
+            case 4: nd = layerNode_4;
+            case 5: nd = layerNode_5;
+            case 6: nd = layerNode_6;
+            case 7: nd = layerNode_7;
+            case 8: nd = layerNode_8;
+            case 9: nd = layerNode_9;
+            case 10: nd = layerNode_10;
+            case 11: nd = layerNode_11;
+            case 12: nd = layerNode_12;
+            case 13: nd = layerNode_13;
+            case 14: nd = layerNode_14;
+            case 15: nd = layerNode_15;
+            case 16: nd = layerNode_16;
+            case 17: nd = layerNode_17;
+            case 18: nd = layerNode_18;
+            case 19: nd = layerNode_19;
+            case 20: nd = layerNode_20;     
+            break;  
+            default: break;    
+        }
+        
+        return nd;
+    }
+    
     private void setCamTracker() {
 
         // Red line for X axis
@@ -169,10 +221,6 @@ public class EditorBaseParts {
         gzAxis.setMaterial(mat3);
 //        gzAxis.setCullHint(CullHint.Never);
         camTrackHelper.attachChild(gzAxis);
-
-//        CameraNode camnode = new CameraNode("this", cam);
-////        camnode.attachChild(camTrackHelper);
-//        rootNode.attachChild(camnode);
 
     }
 
