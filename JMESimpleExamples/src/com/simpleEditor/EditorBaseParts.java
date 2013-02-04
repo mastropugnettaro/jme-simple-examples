@@ -84,6 +84,8 @@ public class EditorBaseParts {
         geo.setMaterial(mat);
         Node selectedSp = new Node();
         selectedSp.attachChild(geo);
+        selectedSp.move(0.5f, 2, 3);
+//        selectedSp.rotate(0.1f, 0.2f, 1.2f);
         layerNode_1.attachChild(selectedSp);
 
         transformTools = new EditorTransformTool(app, selectedSp);
