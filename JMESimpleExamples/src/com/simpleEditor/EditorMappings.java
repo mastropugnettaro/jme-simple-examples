@@ -20,9 +20,9 @@ public class EditorMappings implements AnalogListener, ActionListener {
     private Node root, camHelper;
     private Application app;
     private Camera camera;
-    EditorBaseParts baseParts;
+    EditorBaseManager baseParts;
 
-    public EditorMappings(Application app, EditorBaseParts baseParts) {
+    public EditorMappings(Application app, EditorBaseManager baseParts) {
 
         this.app = app;
         this.baseParts = baseParts;
@@ -81,8 +81,8 @@ public class EditorMappings implements AnalogListener, ActionListener {
             CollisionResult result = baseParts.getTransformTool().pick((Node) root.getChild("transformTool"));
 
         } else if (name.equals("MoveOrSelect") && !isPressed) {
-            if (baseParts.getTransformTool().getpickedAxis() != EditorTransformTool.PickedAxys.None) {
-                baseParts.getTransformTool().setPickedAxis(EditorTransformTool.PickedAxys.None);
+            if (baseParts.getTransformTool().getpickedAxis() != EditorTransformManager.PickedAxys.None) {
+                baseParts.getTransformTool().setPickedAxis(EditorTransformManager.PickedAxys.None);
             }
             System.out.println("transform done");
         }

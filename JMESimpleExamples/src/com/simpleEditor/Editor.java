@@ -49,7 +49,7 @@ public class Editor {
 
     protected static Application app;    
     protected static AppSettings settings;
-    private static EditorBaseParts baseParts;
+    private static EditorBaseManager baseParts;
     
     public Editor() {
         

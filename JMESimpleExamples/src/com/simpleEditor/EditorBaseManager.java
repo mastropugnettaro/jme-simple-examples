@@ -31,7 +31,7 @@ import com.jme3.scene.shape.Line;
  *
  * @author mifth
  */
-public class EditorBaseParts {
+public class EditorBaseManager {
 
     private Application app;
     private AssetManager assetManager;
@@ -41,31 +41,29 @@ public class EditorBaseParts {
     
     // Global Nodes
     private Node rootNode, guiNode;
-    private Node layerNode_1, layerNode_2, layerNode_3, layerNode_4, layerNode_5, layerNode_6,
-            layerNode_7, layerNode_8, layerNode_9, layerNode_10, layerNode_11, layerNode_12, layerNode_13,
-            layerNode_14, layerNode_15, layerNode_16, layerNode_17, layerNode_18, layerNode_19, layerNode_20;
+
     private Node selectableNode, hidedNode;
     private Node camTrackHelper;
     
     // Tools
     private EditorCameraSets camSettings;
-    private EditorTransformTool transformTools;
+    private EditorTransformManager transformManager;
     private EditorMappings mappings;
-    private EditorSelectionTool selectionTool;
-    
-    public EditorBaseParts(Application app) {
+    private EditorSelectionManager selectionManager;
+    private EditorLayerManager layerManager;
+    public EditorBaseManager(Application app) {
 
         this.app = app;
-        sceneCamera = app.getCamera();
-        viewPort = app.getViewPort();
-        assetManager = app.getAssetManager();
+        sceneCamera = this.app.getCamera();
+        viewPort = this.app.getViewPort();
+        assetManager = this.app.getAssetManager();
 
-        flyCam = app.getStateManager().getState(FlyCamAppState.class).getCamera();
+        flyCam = this.app.getStateManager().getState(FlyCamAppState.class).getCamera();
         flyCam.setEnabled(false);
 
         setGlobalNodes();
         
-        camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, app.getInputManager());        
+        camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, this.app.getInputManager());        
         mappings = new EditorMappings(this.app, this);
         setCamTracker();
 
@@ -74,25 +72,27 @@ public class EditorBaseParts {
 
         createGrid();
         EditorGui gui = new EditorGui();
-        app.getStateManager().attach(gui);
+        this.app.getStateManager().attach(gui);
 
+        // setup global tools
+        layerManager = new EditorLayerManager(this.app, this);
+        selectionManager = new EditorSelectionManager(this.app, this);
+        selectableNode.addControl(selectionManager);
+        transformManager = new EditorTransformManager(this.app, this);
+        selectableNode.addControl(transformManager);        
+        
+        
         // Testing Entity for a while
         Box b = new Box(Vector3f.ZERO, 1, 1, 1);
         Geometry geo = new Geometry("Box", b);
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-//        mat.getAdditionalRenderState().setWireframe(true);
         geo.setMaterial(mat);
-        Node selectedSp = new Node();
-        selectedSp.attachChild(geo);
-        selectedSp.move(0.5f, 2, 3);
-//        selectedSp.rotate(0.1f, 0.2f, 1.2f);
-        layerNode_1.attachChild(selectedSp);
+        Node boxNode = new Node();
+        boxNode.attachChild(geo);
+        boxNode.move(0.5f, 2, 3);
+        layerManager.getLayer(1).attachChild(boxNode);
+        selectionManager.selectEntity(boxNode, EditorSelectionManager.SelectionMode.Normal);
 
-        transformTools = new EditorTransformTool(app, selectedSp);
-        selectableNode.addControl(transformTools);
-        
-        selectionTool = new EditorSelectionTool(this);
-//        EditorTool edt = new EditorTool(this, selectedSp);    
     }
 
     private void setGlobalNodes() {
@@ -108,74 +108,21 @@ public class EditorBaseParts {
 
         hidedNode = new Node("hidedNode");
 
-        layerNode_1 = new Node("layerNode_1");
-        selectableNode.attachChild(layerNode_1);
-        
-        layerNode_2 = new Node("layerNode_2");
-        layerNode_3 = new Node("layerNode_3");
-        layerNode_4 = new Node("layerNode_4");
-        layerNode_5 = new Node("layerNode_5");
-        layerNode_6 = new Node("layerNode_6");
-        layerNode_7 = new Node("layerNode_7");
-        layerNode_8 = new Node("layerNode_8");
-        layerNode_9 = new Node("layerNode_9");
-        layerNode_10 = new Node("layerNode_10");
-        layerNode_11 = new Node("layerNode_11");
-        layerNode_12 = new Node("layerNode_12");
-        layerNode_13 = new Node("layerNode_13");
-        layerNode_14 = new Node("layerNode_14");
-        layerNode_15 = new Node("layerNode_15");
-        layerNode_16 = new Node("layerNode_16");
-        layerNode_17 = new Node("layerNode_17");
-        layerNode_18 = new Node("layerNode_18");
-        layerNode_19 = new Node("layerNode_19");
-        layerNode_20 = new Node("layerNode_20");
+
     }
 
     
-    protected EditorTransformTool getTransformTool() {
-        return transformTools;
+    protected EditorTransformManager getTransformTool() {
+        return transformManager;
     }
 
-    protected EditorSelectionTool getSelectionTool() {
-        return selectionTool;
+    public EditorSelectionManager getSelectionManager() {
+        return selectionManager;
     }    
     
     protected EditorMappings getEditorMappings() {
         return mappings;
     }    
-    
-    protected Node getLayer(int layerNumber) {
-        
-        Node nd = null;
-        
-        switch (layerNumber) {
-            case 1: nd = layerNode_1;
-            case 2: nd = layerNode_2;
-            case 3: nd = layerNode_3;
-            case 4: nd = layerNode_4;
-            case 5: nd = layerNode_5;
-            case 6: nd = layerNode_6;
-            case 7: nd = layerNode_7;
-            case 8: nd = layerNode_8;
-            case 9: nd = layerNode_9;
-            case 10: nd = layerNode_10;
-            case 11: nd = layerNode_11;
-            case 12: nd = layerNode_12;
-            case 13: nd = layerNode_13;
-            case 14: nd = layerNode_14;
-            case 15: nd = layerNode_15;
-            case 16: nd = layerNode_16;
-            case 17: nd = layerNode_17;
-            case 18: nd = layerNode_18;
-            case 19: nd = layerNode_19;
-            case 20: nd = layerNode_20;     
-            break;  
-            default: break;    
-        }
-        
-        return nd;
-    }
     
     private void setCamTracker() {
 
