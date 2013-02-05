@@ -24,7 +24,7 @@ public class EmptyScene extends SimpleApplication{
     @Override
     public void simpleInitApp() {
 
-        EditorBaseParts baseParts = new EditorBaseParts(this);        
+        EditorBaseManager baseParts = new EditorBaseManager(this);        
         
     }
 
