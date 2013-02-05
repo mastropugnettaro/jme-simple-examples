@@ -6,7 +6,9 @@ package com.simpleEditor;
 
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
+import com.jme3.math.FastMath;
 import com.jme3.math.Transform;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -27,7 +29,7 @@ public class EditorSelectionManager extends AbstractControl{
     private Application app;
     private EditorBaseManager base;
     private static List<Spatial> selectionList = new ArrayList<Spatial>();
-    private Transform selectionCenter;
+    private Transform selectionCenter = null;
     private SelectionToolType selectionTool;
 
     protected enum SelectionToolType {
@@ -57,6 +59,8 @@ public class EditorSelectionManager extends AbstractControl{
             else selectionList.add(sp);
         }
         // Substractive is not implemented        
+        
+        calculateSelectionCenter();
     }
     
     protected void clearSelectionList() {
@@ -71,7 +75,41 @@ public class EditorSelectionManager extends AbstractControl{
         this.selectionCenter = selectionTransform;
     }
 
-    protected static List<Spatial> getSelectionList() {
+    protected void calculateSelectionCenter() {
+        if (selectionList.size() == 0) selectionCenter = null;
+        else if (selectionList.size() == 1) selectionCenter = selectionList.get(0).getWorldTransform();
+        else if (selectionList.size() > 1) {
+            Vector3f posMin = null;
+            Vector3f posMax = null;
+            Vector3f rotMin = null;
+            Vector3f rotMax = null;            
+            for (Spatial obj : selectionList) {
+                // POSITION 
+                if (posMin == null) {
+                    posMin = obj.getWorldTranslation();
+                    posMax = obj.getWorldTranslation();
+                }
+                else {
+                    // find max values
+                    if (posMax.x < obj.getWorldTranslation().getX()) posMax.x = obj.getWorldTranslation().getX();
+                    if (posMax.y < obj.getWorldTranslation().getY()) posMax.y = obj.getWorldTranslation().getY();
+                    if (posMax.z < obj.getWorldTranslation().getZ()) posMax.z = obj.getWorldTranslation().getZ();
+                    // find min values
+                    if (posMin.x > obj.getWorldTranslation().getX()) posMin.x = obj.getWorldTranslation().getX();
+                    if (posMin.y > obj.getWorldTranslation().getY()) posMin.y = obj.getWorldTranslation().getY();
+                    if (posMin.z > obj.getWorldTranslation().getZ()) posMin.z = obj.getWorldTranslation().getZ();                    
+                    
+                    selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
+                }
+                
+                // ROTATION 
+                selectionCenter.setRotation(selectionList.get(selectionList.size() - 1).getLocalRotation()); //Local coordinates of the last object
+                
+            }
+        }
+    }
+    
+    protected List<Spatial> getSelectionList() {
         return selectionList;
     }
 

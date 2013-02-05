@@ -78,12 +78,10 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
         // Select a transformTool or an entity
         if (name.equals("MoveOrSelect") && isPressed) {
-            CollisionResult result = baseParts.getTransformTool().pick((Node) root.getChild("transformTool"));
+            CollisionResult result = baseParts.getTransformTool().activate();
 
         } else if (name.equals("MoveOrSelect") && !isPressed) {
-            if (baseParts.getTransformTool().getpickedAxis() != EditorTransformManager.PickedAxys.None) {
-                baseParts.getTransformTool().setPickedAxis(EditorTransformManager.PickedAxys.None);
-            }
+            baseParts.getTransformTool().deactivate();
             System.out.println("transform done");
         }
 

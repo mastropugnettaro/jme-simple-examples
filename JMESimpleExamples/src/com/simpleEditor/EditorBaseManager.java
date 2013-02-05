@@ -92,6 +92,7 @@ public class EditorBaseManager {
         boxNode.move(0.5f, 2, 3);
         layerManager.getLayer(1).attachChild(boxNode);
         selectionManager.selectEntity(boxNode, EditorSelectionManager.SelectionMode.Normal);
+        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);
 
     }
 
