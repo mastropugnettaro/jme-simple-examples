@@ -28,7 +28,7 @@ public class EntityTest extends SimpleApplication {
               
     private Node camTrackHelper;
     private EntityManager entityManager = new EntityManager();
-    private EntitySpatialsSystem spatials = new EntitySpatialsSystem();
+    private EntitySpatialsSystem spatialSystem = new EntitySpatialsSystem();
     
     @Override
     public void simpleInitApp() {
@@ -49,8 +49,7 @@ public class EntityTest extends SimpleApplication {
 
         // setup Entity
         long ent = entityManager.createEntity();                
-        
-        ComponentsControl components = entityManager.addComponentControl(ent);
+        ComponentsControl components = entityManager.getComponentControl(ent);
         
         EntityNameComponent name = new EntityNameComponent("ent" + i);
         components.setComponent(name);
@@ -65,9 +64,9 @@ public class EntityTest extends SimpleApplication {
         components.setComponent(transform);
 
         // Update components
-        components.setUpdate(false);
+//        components.doUpdate(false);
         
-        EntitySpatialsControl spatialControl = spatials.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
+        EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
         spatialControl.recurseNode();
         
@@ -78,6 +77,12 @@ public class EntityTest extends SimpleApplication {
         System.out.println(entityManager.getComponentControl(1).toString());
         System.out.println(entityManager.getComponentControl(2).toString());
         System.out.println(entityManager.getComponentControl(100).toString());
+        
+        // make 300 entities static
+        for (int i=0; i<300 ; i++) {
+            entityManager.getComponentControl(i+1).updateAlways(false);
+            System.out.println(i);
+        }
     
     }
 

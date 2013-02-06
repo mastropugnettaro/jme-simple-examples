@@ -20,15 +20,18 @@ public class EditorMappings implements AnalogListener, ActionListener {
     private Node root, camHelper;
     private Application app;
     private Camera camera;
-    EditorBaseManager baseParts;
+    private EditorBaseManager baseParts;
+    private EditorCameraManager camMan;
 
     public EditorMappings(Application app, EditorBaseManager baseParts) {
 
         this.app = app;
         this.baseParts = baseParts;
         root = (Node) this.app.getViewPort().getScenes().get(0);
-        this.camHelper = (Node) root.getChild("camTrackHelper");
+        camHelper = (Node) root.getChild("camTrackHelper");
         camera = app.getCamera();
+        camMan = baseParts.getCamManager();
+        
         setupKeys();
 
 
@@ -53,24 +56,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
         // Move Camera
         if (name.equals("MoveCameraHelper")) {
-
-            // center of the screen
-            float width = camera.getWidth() * 0.5f;
-            float height = camera.getHeight() * 0.5f;
-            Vector2f ceneterScr = new Vector2f(width, height);
-
-            Vector2f endPosMouse = app.getInputManager().getCursorPosition();
-            float mouseDist = ceneterScr.distance(endPosMouse);
-
-            Vector3f camMoveX = camera.getLeft();
-            camMoveX.negateLocal();
-            camMoveX.normalizeLocal();
-
-            Vector3f camMoveY = camera.getUp();
-            camMoveY.normalizeLocal();
-
-            camHelper.move(camMoveX.mult((endPosMouse.x - ceneterScr.x) / camera.getWidth()).addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / camera.getHeight())).normalizeLocal().multLocal(mouseDist * 0.001f));
-
+            camMan.moveCamera();
         }
     }
 

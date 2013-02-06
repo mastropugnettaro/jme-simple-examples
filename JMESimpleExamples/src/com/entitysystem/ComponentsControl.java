@@ -15,7 +15,8 @@ public class ComponentsControl {
     
     private ConcurrentHashMap <Class<?>, Object> components = new ConcurrentHashMap <Class<?>, Object>();        
     private long ID;
-    private boolean isUpdated = true;
+    private boolean isDoUpdate = true;
+    private boolean updateOnce = false;
 
     
     public ComponentsControl(long ID) {
@@ -26,12 +27,20 @@ public class ComponentsControl {
         return ID;
     }
     
-    public boolean isUpdated() {
-        return isUpdated;
+    public boolean isDoUpdateAlways() {
+        return isDoUpdate;
     }
 
-    public void setUpdate(boolean bool) {
-        isUpdated = bool;
+    public boolean isDoUpdateOnce() {
+        return updateOnce;
+    }
+    
+    public void updateOnce(boolean bool) {
+         updateOnce = bool;
+    }    
+    
+    public void updateAlways(boolean bool) {
+        isDoUpdate = bool;
     }    
     
     public Object getComponent(Class controlType) {

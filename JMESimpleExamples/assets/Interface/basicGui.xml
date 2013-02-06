@@ -8,10 +8,10 @@
   <useControls filename="nifty-default-controls.xml" />
   
   
-    <screen id="null" controller="com.simpleEditor.EditorGui">
+    <screen id="null" controller="com.simpleEditor.EditorGuiManager">
     </screen>  
   
-  <screen id="start" controller="com.simpleEditor.EditorGui">
+  <screen id="start" controller="com.simpleEditor.EditorGuiManager">
     <layer id="layer" childLayout="center">
       <panel width="150px" height="70%" align="left" valign="center" childLayout="vertical" style="panel_style_02" padding="10" >
         <effect>

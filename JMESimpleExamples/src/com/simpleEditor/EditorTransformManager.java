@@ -43,9 +43,11 @@ public class EditorTransformManager extends AbstractControl {
     private Application app;
     private boolean isActive = false;
     private boolean useTool;
-    private Geometry testGeo;
+//    private Geometry testGeo;
     private Vector3f deltaMoveVector;
     private EditorBaseManager base;
+    private Node tranformParentNode;
+
 
     protected enum TransformToolType {
 
@@ -74,7 +76,7 @@ public class EditorTransformManager extends AbstractControl {
         root.attachChild(transformTool);
 
         createManipulators();
-        selectedCenter = this.base.getSelectionManager().getSelectionCenter();
+//        selectedCenter = this.base.getSelectionManager().getSelectionCenter().clone();
 //
 //        Node nd = (Node) selectedSp;
 
@@ -97,15 +99,16 @@ public class EditorTransformManager extends AbstractControl {
         collisionPlane.attachChild(g);
         root.attachChild(collisionPlane);
 
-        testGeo = new Geometry("testGeo", new Sphere(10, 10, 0.1f));
-        testGeo.setMaterial(mat);
-        root.attachChild(testGeo);
+//        testGeo = new Geometry("testGeo", new Sphere(10, 10, 0.1f));
+//        testGeo.setMaterial(mat);
+//        root.attachChild(testGeo);
 
     }
 
     protected void setTransformToolType(TransformToolType type) {
         transformType = type;
         List list = base.getSelectionManager().getSelectionList();
+        
         if (list.size() > 0) {
             transformTool.detachAllChildren(); // if None
             if (type == TransformToolType.MoveTool) {
@@ -117,8 +120,8 @@ public class EditorTransformManager extends AbstractControl {
             }
             selectedCenter = base.getSelectionManager().getSelectionCenter();
             if (selectedCenter != null) {
-                actionCenter = selectedCenter.clone();
-                updateTransform(actionCenter);
+//                actionCenter = selectedCenter.clone();
+                updateTransform(selectedCenter);
             }
         }
     }
@@ -135,10 +138,17 @@ public class EditorTransformManager extends AbstractControl {
         pickedAxis = axis;
     }
 
+    protected Node tranformParentNode() {
+        return tranformParentNode;
+    }    
+    
     protected void updateTransform(Transform center) {
+        if (center != null){
         Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
         transformTool.setLocalTranslation(app.getCamera().getLocation().add(vec));
-        transformTool.setLocalRotation(center.getRotation());
+        transformTool.setLocalRotation(center.getRotation());            
+        }
+
     }
 
     protected CollisionResult activate() {
@@ -200,7 +210,7 @@ public class EditorTransformManager extends AbstractControl {
                 }
 
                 // set the collision Plane location and rotation
-                collisionPlane.setLocalTranslation(selectedCenter.getTranslation());
+                collisionPlane.setLocalTranslation(selectedCenter.getTranslation().clone());
                 collisionPlane.setLocalRotation(selectedCenter.getRotation().clone()); //equals to angleZ
                 Quaternion planeRot = collisionPlane.getLocalRotation();
 
@@ -327,19 +337,19 @@ public class EditorTransformManager extends AbstractControl {
     }
 
     protected void translateObjects(float distance) {
-        for (Spatial sp : base.getSelectionManager().getSelectionList()) {
-            sp.setLocalTranslation(selectedCenter.getTranslation().clone());
-            if (pickedAxis == PickedAxis.X) {
-                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(0).mult(distance));
-                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(0).mult(distance)));
-            } else if (pickedAxis == PickedAxis.Y) {
-                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(1).mult(distance));
-                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(1).mult(distance)));
-            } else if (pickedAxis == PickedAxis.Z) {
-                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(2).mult(distance));
-                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(2).mult(distance)));
-            }
-        }
+//        for (Long id : base.getSelectionManager().getSelectionList()) {
+//            sp.setLocalTranslation(selectedCenter.getTranslation().clone());
+//            if (pickedAxis == PickedAxis.X) {
+//                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(0).mult(distance));
+//                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(0).mult(distance)));
+//            } else if (pickedAxis == PickedAxis.Y) {
+//                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(1).mult(distance));
+//                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(1).mult(distance)));
+//            } else if (pickedAxis == PickedAxis.Z) {
+//                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(2).mult(distance));
+//                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(2).mult(distance)));
+//            }
+//        }
     }
 
     @Override
@@ -402,7 +412,7 @@ public class EditorTransformManager extends AbstractControl {
 
                 translateObjects(distanceToMove);
 //                testGeo.getLocalTranslation().addLocal(perendicularVec);
-                System.out.println("Vec: " + testGeo.getWorldTranslation().toString() + "   angle: " + angle);
+                System.out.println("Vec: " + actionCenter.getTranslation().toString() + "   angle: " + angle);
                 
                 updateTransform(actionCenter);
             }
@@ -410,6 +420,7 @@ public class EditorTransformManager extends AbstractControl {
 
         if (!isActive) {
             updateTransform(selectedCenter);
+            System.out.println(base.getSelectionManager().getSelectionCenter());
         }
     }
 
