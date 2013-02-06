@@ -93,6 +93,12 @@ public class EditorBaseManager {
         layerManager.getLayer(1).attachChild(boxNode);
         selectionManager.selectEntity(boxNode, EditorSelectionManager.SelectionMode.Normal);
         transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);
+        
+        Node boxNode2 = (Node) boxNode.clone(false);
+        boxNode2.move(-0.5f, -2, 2);
+        layerManager.getLayer(1).attachChild(boxNode2);
+        selectionManager.selectEntity(boxNode2, EditorSelectionManager.SelectionMode.Additive);
+//        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
 
     }
 

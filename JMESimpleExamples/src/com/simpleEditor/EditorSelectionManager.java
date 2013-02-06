@@ -53,6 +53,7 @@ public class EditorSelectionManager extends AbstractControl{
     protected void selectEntity(Spatial sp, SelectionMode mode) {
 
         if (mode == SelectionMode.Normal) {
+            selectionList.clear();
             selectionList.add(sp);
         } else if (mode == SelectionMode.Additive) {
             if (selectionList.contains(sp)) selectionList.remove(sp);
@@ -77,7 +78,7 @@ public class EditorSelectionManager extends AbstractControl{
 
     protected void calculateSelectionCenter() {
         if (selectionList.size() == 0) selectionCenter = null;
-        else if (selectionList.size() == 1) selectionCenter = selectionList.get(0).getWorldTransform();
+        else if (selectionList.size() == 1) selectionCenter = selectionList.get(0).getWorldTransform().clone();
         else if (selectionList.size() > 1) {
             Vector3f posMin = null;
             Vector3f posMax = null;
@@ -86,8 +87,8 @@ public class EditorSelectionManager extends AbstractControl{
             for (Spatial obj : selectionList) {
                 // POSITION 
                 if (posMin == null) {
-                    posMin = obj.getWorldTranslation();
-                    posMax = obj.getWorldTranslation();
+                    posMin = obj.getWorldTranslation().clone();
+                    posMax = obj.getWorldTranslation().clone();
                 }
                 else {
                     // find max values
@@ -97,13 +98,13 @@ public class EditorSelectionManager extends AbstractControl{
                     // find min values
                     if (posMin.x > obj.getWorldTranslation().getX()) posMin.x = obj.getWorldTranslation().getX();
                     if (posMin.y > obj.getWorldTranslation().getY()) posMin.y = obj.getWorldTranslation().getY();
-                    if (posMin.z > obj.getWorldTranslation().getZ()) posMin.z = obj.getWorldTranslation().getZ();                    
+                    if (posMin.z > obj.getWorldTranslation().getZ()) posMin.z = obj.getWorldTranslation().getZ();
                     
                     selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
                 }
                 
                 // ROTATION 
-                selectionCenter.setRotation(selectionList.get(selectionList.size() - 1).getLocalRotation()); //Local coordinates of the last object
+                selectionCenter.setRotation(selectionList.get(selectionList.size() - 1).getLocalRotation().clone()); //Local coordinates of the last object
                 
             }
         }
