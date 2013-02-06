@@ -115,10 +115,15 @@ public final class EntitySpatialsControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         
-        if (!components.isUpdated()) {
+        // Update transforms
+        if (components.isDoUpdateAlways() || components.isDoUpdateOnce()) {
         TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
-        spatial.setLocalTransform(transform.getTransform().clone());
-        components.setUpdate(false);
+        spatial.setLocalTransform(transform.getTransform());
+
+        if (components.isDoUpdateOnce()) {
+            components.updateOnce(false);
+//            components.updateAlways(false);
+        }
         }
 //        System.out.println(ID);
     }

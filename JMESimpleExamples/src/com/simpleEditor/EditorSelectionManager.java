@@ -4,6 +4,7 @@
  */
 package com.simpleEditor;
 
+import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.math.FastMath;
@@ -28,7 +29,7 @@ public class EditorSelectionManager extends AbstractControl{
     private Node root, guiNode;
     private Application app;
     private EditorBaseManager base;
-    private static List<Spatial> selectionList = new ArrayList<Spatial>();
+    private static List<Long> selectionList = new ArrayList<Long>();
     private Transform selectionCenter = null;
     private SelectionToolType selectionTool;
 
@@ -50,14 +51,14 @@ public class EditorSelectionManager extends AbstractControl{
 
     }
     
-    protected void selectEntity(Spatial sp, SelectionMode mode) {
+    protected void selectEntity(long ID, SelectionMode mode) {
 
         if (mode == SelectionMode.Normal) {
             selectionList.clear();
-            selectionList.add(sp);
+            selectionList.add(ID);
         } else if (mode == SelectionMode.Additive) {
-            if (selectionList.contains(sp)) selectionList.remove(sp);
-            else selectionList.add(sp);
+            if (selectionList.contains(ID)) selectionList.remove(ID);
+            else selectionList.add(ID);
         }
         // Substractive is not implemented        
         
@@ -78,39 +79,47 @@ public class EditorSelectionManager extends AbstractControl{
 
     protected void calculateSelectionCenter() {
         if (selectionList.size() == 0) selectionCenter = null;
-        else if (selectionList.size() == 1) selectionCenter = selectionList.get(0).getWorldTransform().clone();
+        else if (selectionList.size() == 1) {
+            TransformComponent trLocation = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(0), TransformComponent.class);
+            selectionCenter = trLocation.getTransform().clone();
+        }
         else if (selectionList.size() > 1) {
             Vector3f posMin = null;
             Vector3f posMax = null;
             Vector3f rotMin = null;
             Vector3f rotMax = null;            
-            for (Spatial obj : selectionList) {
-                // POSITION 
+            for (Long ID : selectionList) {
+                // POSITION
+                TransformComponent trLocation = (TransformComponent) base.getEntityManager().getComponent(ID, TransformComponent.class);
                 if (posMin == null) {
-                    posMin = obj.getWorldTranslation().clone();
-                    posMax = obj.getWorldTranslation().clone();
+                    posMin = trLocation.getLocation().clone();
+                    posMax = trLocation.getLocation().clone();
                 }
                 else {
                     // find max values
-                    if (posMax.x < obj.getWorldTranslation().getX()) posMax.x = obj.getWorldTranslation().getX();
-                    if (posMax.y < obj.getWorldTranslation().getY()) posMax.y = obj.getWorldTranslation().getY();
-                    if (posMax.z < obj.getWorldTranslation().getZ()) posMax.z = obj.getWorldTranslation().getZ();
+                    if (posMax.x < trLocation.getLocation().getX()) posMax.x = trLocation.getLocation().getX();
+                    if (posMax.y < trLocation.getLocation().getY()) posMax.y = trLocation.getLocation().getY();
+                    if (posMax.z < trLocation.getLocation().getZ()) posMax.z = trLocation.getLocation().getZ();
                     // find min values
-                    if (posMin.x > obj.getWorldTranslation().getX()) posMin.x = obj.getWorldTranslation().getX();
-                    if (posMin.y > obj.getWorldTranslation().getY()) posMin.y = obj.getWorldTranslation().getY();
-                    if (posMin.z > obj.getWorldTranslation().getZ()) posMin.z = obj.getWorldTranslation().getZ();
+                    if (posMin.x > trLocation.getLocation().getX()) posMin.x = trLocation.getLocation().getX();
+                    if (posMin.y > trLocation.getLocation().getY()) posMin.y = trLocation.getLocation().getY();
+                    if (posMin.z > trLocation.getLocation().getZ()) posMin.z = trLocation.getLocation().getZ();
                     
-                    selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
                 }
-                
-                // ROTATION 
-                selectionCenter.setRotation(selectionList.get(selectionList.size() - 1).getLocalRotation().clone()); //Local coordinates of the last object
-                
             }
+                selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
+                
+                // Rotation
+                TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
+                selectionCenter.setRotation(trLastSelected.getRotation().clone()); //Local coordinates of the last object            
+        }
+        
+        if (selectionList.size() > 0 && base.getTransformTool().getTransformToolType() != EditorTransformManager.TransformToolType.None) {
+            base.getTransformTool().setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);
         }
     }
     
-    protected List<Spatial> getSelectionList() {
+    protected List<Long> getSelectionList() {
         return selectionList;
     }
 

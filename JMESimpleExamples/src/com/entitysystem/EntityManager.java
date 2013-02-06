@@ -12,10 +12,11 @@ public final class EntityManager {
 
     public static long createEntity() {
         idx++;
+        addComponentControl(idx);
         return idx;
     }
 
-    public static ComponentsControl addComponentControl(long ID) {
+    private static ComponentsControl addComponentControl(long ID) {
        ComponentsControl component = componentControl.get(ID);
         if (component == null) {
             component = new ComponentsControl(ID);
@@ -27,6 +28,10 @@ public final class EntityManager {
     public static ComponentsControl getComponentControl(long ID) {
         return componentControl.get(ID);
     }        
+    
+    public static Object getComponent(long ID, Class getClass) {
+        return componentControl.get(ID).getComponent(getClass);
+    }      
 
     private static void removeComponentControl(long ID) {
         componentControl.get(ID).clearComponents();

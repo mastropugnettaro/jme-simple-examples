@@ -4,6 +4,12 @@
  */
 package com.simpleEditor;
 
+import com.entitysystem.ComponentsControl;
+import com.entitysystem.EntityManager;
+import com.entitysystem.EntityNameComponent;
+import com.entitysystem.EntitySpatialsControl;
+import com.entitysystem.EntitySpatialsSystem;
+import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.asset.AssetManager;
@@ -15,6 +21,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
@@ -46,11 +53,14 @@ public class EditorBaseManager {
     private Node camTrackHelper;
     
     // Tools
-    private EditorCameraSets camSettings;
+    private EditorCameraManager camManager;
     private EditorTransformManager transformManager;
     private EditorMappings mappings;
     private EditorSelectionManager selectionManager;
     private EditorLayerManager layerManager;
+    private EntityManager entityManager;
+    private EntitySpatialsSystem spatialSystem = new EntitySpatialsSystem();
+
     public EditorBaseManager(Application app) {
 
         this.app = app;
@@ -63,15 +73,11 @@ public class EditorBaseManager {
 
         setGlobalNodes();
         
-        camSettings = new EditorCameraSets(sceneCamera, camTrackHelper, this.app.getInputManager());        
+        camManager = new EditorCameraManager(this.app, this);        
+        camManager.setCamTracker();
         mappings = new EditorMappings(this.app, this);
-        setCamTracker();
 
-        createSimpleGui();
-        setLight();
-
-        createGrid();
-        EditorGui gui = new EditorGui();
+        EditorGuiManager gui = new EditorGuiManager();
         this.app.getStateManager().attach(gui);
 
         // setup global tools
@@ -79,27 +85,11 @@ public class EditorBaseManager {
         selectionManager = new EditorSelectionManager(this.app, this);
         selectableNode.addControl(selectionManager);
         transformManager = new EditorTransformManager(this.app, this);
-        selectableNode.addControl(transformManager);        
+        selectableNode.addControl(transformManager);      
+        entityManager = new EntityManager();
         
+        setSomeEntities();
         
-        // Testing Entity for a while
-        Box b = new Box(Vector3f.ZERO, 1, 1, 1);
-        Geometry geo = new Geometry("Box", b);
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        geo.setMaterial(mat);
-        Node boxNode = new Node();
-        boxNode.attachChild(geo);
-        boxNode.move(0.5f, 2, 3);
-        layerManager.getLayer(1).attachChild(boxNode);
-        selectionManager.selectEntity(boxNode, EditorSelectionManager.SelectionMode.Normal);
-        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);
-        
-        Node boxNode2 = (Node) boxNode.clone(false);
-        boxNode2.move(-0.5f, -2, 2);
-        layerManager.getLayer(1).attachChild(boxNode2);
-        selectionManager.selectEntity(boxNode2, EditorSelectionManager.SelectionMode.Additive);
-//        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
-
     }
 
     private void setGlobalNodes() {
@@ -118,12 +108,15 @@ public class EditorBaseManager {
 
     }
 
+    protected EditorCameraManager getCamManager() {
+        return camManager;
+    }    
     
     protected EditorTransformManager getTransformTool() {
         return transformManager;
     }
 
-    public EditorSelectionManager getSelectionManager() {
+    protected EditorSelectionManager getSelectionManager() {
         return selectionManager;
     }    
     
@@ -131,122 +124,55 @@ public class EditorBaseManager {
         return mappings;
     }    
     
-    private void setCamTracker() {
-
-        // Red line for X axis
-        final Line xAxis = new Line(new Vector3f(0f, 0f, 0f), new Vector3f(0.05f, 0f, 0f));
-        xAxis.setLineWidth(2f);
-        Geometry gxAxis = new Geometry("XAxis", xAxis);
-        gxAxis.setModelBound(new BoundingBox());
-        Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat1.setColor("Color", new ColorRGBA(1.0f, 0.0f, 0.0f, 0.5f));
-        mat1.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
-        gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
-        gxAxis.setMaterial(mat1);
-//        gxAxis.setCullHint(CullHint.Never);
-
-        camTrackHelper.attachChild(gxAxis);
-
-
-        // Blue line for Y axis
-        final Line yAxis = new Line(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0.05f, 0f));
-        yAxis.setLineWidth(2f);
-        Geometry gyAxis = new Geometry("ZAxis", yAxis);
-        gyAxis.setModelBound(new BoundingBox());
-        Material mat2 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat2.setColor("Color", new ColorRGBA(0.0f, 0.0f, 1.0f, 0.5f));
-        mat2.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gyAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
-        gyAxis.setShadowMode(RenderQueue.ShadowMode.Off);
-        gyAxis.setMaterial(mat2);
-//        gzAxis.setCullHint(CullHint.Never);
-        camTrackHelper.attachChild(gyAxis);
-
-
-        // Blue line for Z axis
-        final Line zAxis = new Line(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.05f));
-        zAxis.setLineWidth(2f);
-        Geometry gzAxis = new Geometry("ZAxis", zAxis);
-        gzAxis.setModelBound(new BoundingBox());
-        Material mat3 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat3.setColor("Color", new ColorRGBA(0.0f, 1.0f, 0.0f, 0.5f));
-        mat3.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
-        gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
-        gzAxis.setMaterial(mat3);
-//        gzAxis.setCullHint(CullHint.Never);
-        camTrackHelper.attachChild(gzAxis);
-
+    protected EntityManager getEntityManager() {
+        return entityManager;
     }
 
-    private void setLight() {
+    public EntitySpatialsSystem getSpatialSystem() {
+        return spatialSystem;
+    }
+    
+    private void setSomeEntities() {
+    for (int i=0; i<7 ; i++) {
+    
+        Box b = new Box(Vector3f.ZERO, 1, 1, 1);
+        Geometry geo = new Geometry("Box"+i, b);
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+//        mat.getAdditionalRenderState().setWireframe(true);
+        geo.setMaterial(mat);
+        Node selectedSp = new Node();
+        selectedSp.attachChild(geo);        
 
-        DirectionalLight dl = new DirectionalLight();
-        dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
-        dl.setColor(new ColorRGBA(1, 1, 1, 1));
-        rootNode.addLight(dl);
+        // setup Entity
+        long ent = entityManager.createEntity();                
+        ComponentsControl components = entityManager.getComponentControl(ent);
+        
+        EntityNameComponent name = new EntityNameComponent("ent" + i);
+        components.setComponent(name);
+        
+        // Check for different transform of entity
+        Transform tr = new Transform();
+        Vector3f loc = new Vector3f((float) Math.random() * 20.0f,(float) Math.random() * 10.0f,(float)Math.random() * 20.0f);
+        tr.setTranslation(loc);
+//        selectedSp.setLocalTransform(tr);
+        
+        TransformComponent transform = new TransformComponent(tr);
+        components.setComponent(transform);
 
-        viewPort.setBackgroundColor(ColorRGBA.Gray);
+        // Update components
+//        components.setUpdated(false);
+        
+        EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
+        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
+        spatialControl.recurseNode();
+
+        layerManager.getLayer(1).attachChild(selectedSp);
+        selectionManager.selectEntity(ent, EditorSelectionManager.SelectionMode.Additive);
+//        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
+        
+        
+        System.out.println(selectedSp.getUserData("EntityID"));
+    }        
     }
 
-    private void createSimpleGui() {
-
-        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        BitmapText ch = new BitmapText(guiFont, false);
-        ch.setSize(guiFont.getCharSet().getRenderedSize());
-        ch.setText("W,A,S,D,Q,Z, MiddleMouseButton, RightMouseButton, Scroll"); // crosshairs
-        ch.setColor(new ColorRGBA(1f, 0.8f, 0.1f, 0.3f));
-        ch.setLocalTranslation(viewPort.getCamera().getWidth() * 0.1f, viewPort.getCamera().getHeight() * 0.1f, 0);
-        guiNode.attachChild(ch);
-
-    }
-
-    private void createGrid() {
-        Node gridNode = new Node("gridNode");
-
-        //Create a grid plane
-        Geometry g = new Geometry("GRID", new Grid(101, 101, 1f));
-        Material floor_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        floor_mat.getAdditionalRenderState().setWireframe(true);
-        floor_mat.setColor("Color", new ColorRGBA(0.3f, 0.3f, 0.3f, 0.1f));
-        floor_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        g.setShadowMode(RenderQueue.ShadowMode.Off);
-        g.setQueueBucket(RenderQueue.Bucket.Transparent);
-        g.setMaterial(floor_mat);
-        g.center().move(new Vector3f(0f, 0f, 0f));
-        gridNode.attachChild(g);
-
-        // Red line for X axis
-        final Line xAxis = new Line(new Vector3f(-50f, 0f, 0f), new Vector3f(50f, 0f, 0f));
-        xAxis.setLineWidth(2f);
-        Geometry gxAxis = new Geometry("XAxis", xAxis);
-        gxAxis.setModelBound(new BoundingBox());
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", new ColorRGBA(1.0f, 0.2f, 0.2f, 0.2f));
-        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
-        gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
-        gxAxis.setMaterial(mat);
-        gxAxis.setCullHint(Spatial.CullHint.Never);
-
-        gridNode.attachChild(gxAxis);
-
-        // Blue line for Z axis
-        final Line zAxis = new Line(new Vector3f(0f, 0f, -50f), new Vector3f(0f, 0f, 50f));
-        zAxis.setLineWidth(2f);
-        Geometry gzAxis = new Geometry("ZAxis", zAxis);
-        gzAxis.setModelBound(new BoundingBox());
-        mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", new ColorRGBA(0.2f, 1.0f, 0.2f, 0.2f));
-        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
-        gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
-        gzAxis.setMaterial(mat);
-        gzAxis.setCullHint(Spatial.CullHint.Never);
-        gridNode.attachChild(gzAxis);
-
-        rootNode.attachChild(gridNode);
-
-    }
 }
