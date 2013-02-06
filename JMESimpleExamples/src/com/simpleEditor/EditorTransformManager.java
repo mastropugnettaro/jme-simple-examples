@@ -117,7 +117,8 @@ public class EditorTransformManager extends AbstractControl {
             }
             selectedCenter = base.getSelectionManager().getSelectionCenter();
             if (selectedCenter != null) {
-                updateTransform();
+                actionCenter = selectedCenter.clone();
+                updateTransform(actionCenter);
             }
         }
     }
@@ -134,10 +135,10 @@ public class EditorTransformManager extends AbstractControl {
         pickedAxis = axis;
     }
 
-    protected void updateTransform() {
-        Vector3f vec = selectedCenter.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
+    protected void updateTransform(Transform center) {
+        Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
         transformTool.setLocalTranslation(app.getCamera().getLocation().add(vec));
-        transformTool.setLocalRotation(selectedCenter.getRotation());
+        transformTool.setLocalRotation(center.getRotation());
     }
 
     protected CollisionResult activate() {
@@ -240,6 +241,7 @@ public class EditorTransformManager extends AbstractControl {
                 }
 
                 deltaMoveVector = null;  // prepare for new deltaVector
+                isActive = true;
 
             }
         }
@@ -319,19 +321,23 @@ public class EditorTransformManager extends AbstractControl {
             base.getSelectionManager().calculateSelectionCenter();
             selectedCenter = base.getSelectionManager().getSelectionCenter();
             actionCenter = null;
+            isActive = false;
             
         }
     }
 
     protected void translateObjects(float distance) {
         for (Spatial sp : base.getSelectionManager().getSelectionList()) {
-            sp.setLocalTranslation(selectedCenter.getTranslation());
+            sp.setLocalTranslation(selectedCenter.getTranslation().clone());
             if (pickedAxis == PickedAxis.X) {
                 sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(0).mult(distance));
+                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(0).mult(distance)));
             } else if (pickedAxis == PickedAxis.Y) {
                 sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(1).mult(distance));
+                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(1).mult(distance)));
             } else if (pickedAxis == PickedAxis.Z) {
                 sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(2).mult(distance));
+                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(2).mult(distance)));
             }
         }
     }
@@ -339,9 +345,9 @@ public class EditorTransformManager extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
 
-        if (pickedAxis != PickedAxis.None && selectedCenter != null) {
+        if (pickedAxis != PickedAxis.None && selectedCenter != null && isActive) {
 
-            actionCenter = selectedCenter;
+            actionCenter = selectedCenter.clone();
 
             CollisionResults results = new CollisionResults();
             Ray ray = new Ray();
@@ -397,11 +403,13 @@ public class EditorTransformManager extends AbstractControl {
                 translateObjects(distanceToMove);
 //                testGeo.getLocalTranslation().addLocal(perendicularVec);
                 System.out.println("Vec: " + testGeo.getWorldTranslation().toString() + "   angle: " + angle);
+                
+                updateTransform(actionCenter);
             }
         }
 
-        if (selectedCenter != null) {
-            updateTransform();
+        if (!isActive) {
+            updateTransform(selectedCenter);
         }
     }
 
