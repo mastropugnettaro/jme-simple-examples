@@ -4,6 +4,7 @@
  */
 package com.simpleEditor;
 
+import com.entitysystem.EntitySpatialsControl;
 import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
@@ -80,8 +81,8 @@ public class EditorSelectionManager extends AbstractControl{
     protected void calculateSelectionCenter() {
         if (selectionList.size() == 0) selectionCenter = null;
         else if (selectionList.size() == 1) {
-            TransformComponent trLocation = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(0), TransformComponent.class);
-            selectionCenter = trLocation.getTransform().clone();
+            Spatial nd = base.getSpatialSystem().getSpatialControl(selectionList.get(0)).getGeneralNode();
+            selectionCenter = nd.getLocalTransform().clone();
         }
         else if (selectionList.size() > 1) {
             Vector3f posMin = null;
@@ -90,20 +91,21 @@ public class EditorSelectionManager extends AbstractControl{
             Vector3f rotMax = null;            
             for (Long ID : selectionList) {
                 // POSITION
-                TransformComponent trLocation = (TransformComponent) base.getEntityManager().getComponent(ID, TransformComponent.class);
+                Spatial ndPos = base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
+//                TransformComponent trLocation = (TransformComponent) base.getEntityManager().getComponent(idGet, TransformComponent.class);
                 if (posMin == null) {
-                    posMin = trLocation.getLocation().clone();
-                    posMax = trLocation.getLocation().clone();
+                    posMin = ndPos.getLocalTranslation().clone();
+                    posMax = ndPos.getLocalTranslation().clone();
                 }
                 else {
                     // find max values
-                    if (posMax.x < trLocation.getLocation().getX()) posMax.x = trLocation.getLocation().getX();
-                    if (posMax.y < trLocation.getLocation().getY()) posMax.y = trLocation.getLocation().getY();
-                    if (posMax.z < trLocation.getLocation().getZ()) posMax.z = trLocation.getLocation().getZ();
+                    if (posMax.x < ndPos.getLocalTranslation().getX()) posMax.x = ndPos.getLocalTranslation().getX();
+                    if (posMax.y < ndPos.getLocalTranslation().getY()) posMax.y = ndPos.getLocalTranslation().getY();
+                    if (posMax.z < ndPos.getLocalTranslation().getZ()) posMax.z = ndPos.getLocalTranslation().getZ();
                     // find min values
-                    if (posMin.x > trLocation.getLocation().getX()) posMin.x = trLocation.getLocation().getX();
-                    if (posMin.y > trLocation.getLocation().getY()) posMin.y = trLocation.getLocation().getY();
-                    if (posMin.z > trLocation.getLocation().getZ()) posMin.z = trLocation.getLocation().getZ();
+                    if (posMin.x > ndPos.getLocalTranslation().getX()) posMin.x = ndPos.getLocalTranslation().getX();
+                    if (posMin.y > ndPos.getLocalTranslation().getY()) posMin.y = ndPos.getLocalTranslation().getY();
+                    if (posMin.z > ndPos.getLocalTranslation().getZ()) posMin.z = ndPos.getLocalTranslation().getZ();
                     
                 }
             }

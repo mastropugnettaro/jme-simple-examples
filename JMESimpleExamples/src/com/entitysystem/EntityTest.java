@@ -64,7 +64,7 @@ public class EntityTest extends SimpleApplication {
         components.setComponent(transform);
 
         // Update components
-//        components.doUpdate(false);
+        components.setUpdateType(ComponentsControl.UpdateType.dynamicServerEntity);
         
         EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
@@ -80,7 +80,7 @@ public class EntityTest extends SimpleApplication {
         
         // make 300 entities static
         for (int i=0; i<300 ; i++) {
-            entityManager.getComponentControl(i+1).updateAlways(false);
+            entityManager.getComponentControl(i+1).updateOnce(true, ComponentsControl.UpdateType.dynamicServerEntity);
             System.out.println(i);
         }
     
