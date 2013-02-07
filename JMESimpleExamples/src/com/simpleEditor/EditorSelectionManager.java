@@ -111,14 +111,11 @@ public class EditorSelectionManager extends AbstractControl{
             }
                 selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
                 
-                // Rotation
+                // Rotation of the last selected
                 TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
                 selectionCenter.setRotation(trLastSelected.getRotation().clone()); //Local coordinates of the last object            
         }
         
-        if (selectionList.size() > 0 && base.getTransformTool().getTransformToolType() != EditorTransformManager.TransformToolType.None) {
-            base.getTransformTool().setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);
-        }
     }
     
     protected List<Long> getSelectionList() {

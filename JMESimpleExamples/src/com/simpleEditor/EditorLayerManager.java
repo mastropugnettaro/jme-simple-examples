@@ -56,8 +56,10 @@ public class EditorLayerManager {
 
     protected Node getLayer(int layerNumber) {
 
-        Node nd = layerNode_1;
-        if (layerNumber == 2) nd = layerNode_2;
+        Node nd = null;
+        
+        if (layerNumber == 1) nd = layerNode_1;
+        else if (layerNumber == 2) nd = layerNode_2;
         else if (layerNumber == 3) nd = layerNode_3;
         else if (layerNumber == 4) nd = layerNode_4;
         else if (layerNumber == 5) nd = layerNode_5;
@@ -79,4 +81,5 @@ public class EditorLayerManager {
 
         return nd;
     }
+    
 }
