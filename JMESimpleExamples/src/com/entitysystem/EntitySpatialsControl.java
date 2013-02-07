@@ -8,7 +8,6 @@ import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
-import com.jme3.math.Transform;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
@@ -25,25 +24,26 @@ import java.util.List;
  * @author mifth
  */
 public final class EntitySpatialsControl extends AbstractControl {
-
+    
     private Spatial spatial;
     private static List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
     private SpatialType type;
 //    private static EntityManager entManager;
     private long ID;
     private ComponentsControl components;
-
+    
     public EntitySpatialsControl(Spatial sp, long ID, ComponentsControl components) {
-
+        
         this.ID = ID;
         this.components = components;
         spatial = sp;
         spatial.addControl(this);
-
-
+        
+        
     }
-
+    
     public static enum SpatialType {
+
         Node,
         LightNode,
         BatchNode,
@@ -52,11 +52,17 @@ public final class EntitySpatialsControl extends AbstractControl {
     }    
     
     public void setType(SpatialType type) {
-        if (type.equals(SpatialType.Node)) type = SpatialType.Node;
-        else if (type.equals(SpatialType.BatchNode)) type = SpatialType.BatchNode;
-        else if (type.equals(SpatialType.CameraNode)) type = SpatialType.CameraNode;
-        else if (type.equals(SpatialType.GuiNode)) type = SpatialType.GuiNode;
-        else if (type.equals(SpatialType.LightNode)) type = SpatialType.LightNode;
+        if (type.equals(SpatialType.Node)) {
+            type = SpatialType.Node;
+        } else if (type.equals(SpatialType.BatchNode)) {
+            type = SpatialType.BatchNode;
+        } else if (type.equals(SpatialType.CameraNode)) {
+            type = SpatialType.CameraNode;
+        } else if (type.equals(SpatialType.GuiNode)) {
+            type = SpatialType.GuiNode;
+        } else if (type.equals(SpatialType.LightNode)) {
+            type = SpatialType.LightNode;
+        }
     }
     
     public SpatialType getType() {
@@ -69,38 +75,37 @@ public final class EntitySpatialsControl extends AbstractControl {
     
     public Spatial getGeneralNode() {
         return spatial;
-    }    
-    
+    }
+
     //Read the node child to find geomtry and stored it to the map for later access as submesh
-    public void recurseNode(){
+    public void recurseNode() {
         Node nd_temp = (Node) spatial;
         nd_temp.setUserData("EntityID", ID);
         
-        for (int i = 0; i < nd_temp.getChildren().size(); i++){
+        for (int i = 0; i < nd_temp.getChildren().size(); i++) {
             
-           if(nd_temp.getChildren().get(i) instanceof Node){
-               nd_temp.getChildren().get(i).setUserData("EntityID", ID);
-               recurseNode();
-           }
-           else if (nd_temp.getChildren().get(i) instanceof Geometry){
-            Geometry geom = (Geometry) nd_temp.getChildren().get(i);
-            geom.setUserData("EntityID", ID);
-            //System.out.println("omomomomoomomomo GEOMETRY ADDED : "+geom.getName()+" for Entity "+mObjectName);
-            mapChildMeshes.add(geom);
-           }
+            if (nd_temp.getChildren().get(i) instanceof Node) {
+                nd_temp.getChildren().get(i).setUserData("EntityID", ID);
+                recurseNode();
+            } else if (nd_temp.getChildren().get(i) instanceof Geometry) {
+                Geometry geom = (Geometry) nd_temp.getChildren().get(i);
+                geom.setUserData("EntityID", ID);
+                //System.out.println("omomomomoomomomo GEOMETRY ADDED : "+geom.getName()+" for Entity "+mObjectName);
+                mapChildMeshes.add(geom);
+            }
         }
     }
-
-    public Geometry getChildMesh(String name){
+    
+    public Geometry getChildMesh(String name) {
         for (Geometry mc : mapChildMeshes) {
-            if(name.equals(mc.getName())){
+            if (name.equals(mc.getName())) {
                 return mc;
             }
         }
         return null;
     }
     
-    public List<Geometry> getChildMeshes(){
+    public List<Geometry> getChildMeshes() {
         return mapChildMeshes;
     }
     
@@ -110,29 +115,30 @@ public final class EntitySpatialsControl extends AbstractControl {
         spatial.removeControl(this);
         spatial = null;
     }
-
     
     @Override
     protected void controlUpdate(float tpf) {
-        
+
         // Update transforms
-        if (components.isDoUpdateAlways() || components.isDoUpdateOnce()) {
-        TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
-        spatial.setLocalTransform(transform.getTransform());
-
+        if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicServerEntity) {
+            TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
+            spatial.setLocalTransform(transform.getTransform());
+        } else if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicClientEntity) {
+            TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
+            transform.getTransform().set(spatial.getLocalTransform());
+        }
+        
         if (components.isDoUpdateOnce()) {
-            components.updateOnce(false);
-//            components.updateAlways(false);
+            components.updateOnce(false, ComponentsControl.UpdateType.staticEntity);
+//            components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
         }
-        }
-//        System.out.println(ID);
     }
-
+    
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-
+        
     }
-
+    
     public Control cloneForSpatial(Spatial spatial) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -152,5 +158,4 @@ public final class EntitySpatialsControl extends AbstractControl {
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
     }    
-    
 }

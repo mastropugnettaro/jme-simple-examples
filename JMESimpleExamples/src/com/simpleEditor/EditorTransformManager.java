@@ -42,12 +42,11 @@ public class EditorTransformManager extends AbstractControl {
     private AssetManager assetMan;
     private Application app;
     private boolean isActive = false;
-    private boolean useTool;
+    private boolean useTool, changeSelectedPosition;
 //    private Geometry testGeo;
     private Vector3f deltaMoveVector;
     private EditorBaseManager base;
     private Node tranformParentNode;
-
 
     protected enum TransformToolType {
 
@@ -76,6 +75,9 @@ public class EditorTransformManager extends AbstractControl {
         root.attachChild(transformTool);
 
         createManipulators();
+        tranformParentNode = new Node("tranformParentNode");
+        Node selectableNode = (Node) root.getChild("selectableNode");
+        selectableNode.attachChild(tranformParentNode);
 //        selectedCenter = this.base.getSelectionManager().getSelectionCenter().clone();
 //
 //        Node nd = (Node) selectedSp;
@@ -108,7 +110,7 @@ public class EditorTransformManager extends AbstractControl {
     protected void setTransformToolType(TransformToolType type) {
         transformType = type;
         List list = base.getSelectionManager().getSelectionList();
-        
+
         if (list.size() > 0) {
             transformTool.detachAllChildren(); // if None
             if (type == TransformToolType.MoveTool) {
@@ -140,13 +142,13 @@ public class EditorTransformManager extends AbstractControl {
 
     protected Node tranformParentNode() {
         return tranformParentNode;
-    }    
-    
+    }
+
     protected void updateTransform(Transform center) {
-        if (center != null){
-        Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
-        transformTool.setLocalTranslation(app.getCamera().getLocation().add(vec));
-        transformTool.setLocalRotation(center.getRotation());            
+        if (center != null) {
+            Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
+            transformTool.setLocalTranslation(app.getCamera().getLocation().add(vec));
+            transformTool.setLocalRotation(center.getRotation());
         }
 
     }
@@ -250,7 +252,17 @@ public class EditorTransformManager extends AbstractControl {
                     }
                 }
 
+                // attach all selected objects to the transformParentNode
+                List selectedList = base.getSelectionManager().getSelectionList();
+                for (Object ID : selectedList) {
+                    long id = (Long) ID;
+                    Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+                    tranformParentNode.attachChild(sp);
+                }
+
                 deltaMoveVector = null;  // prepare for new deltaVector
+                changeSelectedPosition = true;  // use delta for selected entities
+                transformTool.detachAllChildren();
                 isActive = true;
 
             }
@@ -329,27 +341,40 @@ public class EditorTransformManager extends AbstractControl {
         if (pickedAxis != PickedAxis.None) {
             pickedAxis = PickedAxis.None;
             base.getSelectionManager().calculateSelectionCenter();
-            selectedCenter = base.getSelectionManager().getSelectionCenter();
+            selectedCenter = tranformParentNode.getLocalTransform();
+            tranformParentNode.setLocalTransform(new Transform());
             actionCenter = null;
             isActive = false;
-            
+
         }
     }
 
     protected void translateObjects(float distance) {
-//        for (Long id : base.getSelectionManager().getSelectionList()) {
-//            sp.setLocalTranslation(selectedCenter.getTranslation().clone());
-//            if (pickedAxis == PickedAxis.X) {
-//                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(0).mult(distance));
-//                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(0).mult(distance)));
-//            } else if (pickedAxis == PickedAxis.Y) {
-//                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(1).mult(distance));
-//                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(1).mult(distance)));
-//            } else if (pickedAxis == PickedAxis.Z) {
-//                sp.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(2).mult(distance));
-//                actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(2).mult(distance)));
-//            }
-//        }
+
+        tranformParentNode.setLocalTranslation(selectedCenter.getTranslation().clone());
+
+        if (changeSelectedPosition) {
+            Vector3f moveDeltaVec = new Vector3f().subtract(tranformParentNode.getLocalTranslation());
+            List selectedList = base.getSelectionManager().getSelectionList();
+            for (Object ID : selectedList) {
+                long id = (Long) ID;
+                Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+                sp.getLocalTranslation().addLocal(moveDeltaVec);
+            }
+            changeSelectedPosition = false;
+        }
+
+        if (pickedAxis == PickedAxis.X) {
+            tranformParentNode.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(0).mult(distance));
+            actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(0).mult(distance)));
+        } else if (pickedAxis == PickedAxis.Y) {
+            tranformParentNode.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(1).mult(distance));
+            actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(1).mult(distance)));
+        } else if (pickedAxis == PickedAxis.Z) {
+            tranformParentNode.getLocalTranslation().addLocal(selectedCenter.getRotation().getRotationColumn(2).mult(distance));
+            actionCenter.setTranslation(selectedCenter.getTranslation().clone().add(selectedCenter.getRotation().getRotationColumn(2).mult(distance)));
+        }
+
     }
 
     @Override
@@ -413,14 +438,23 @@ public class EditorTransformManager extends AbstractControl {
                 translateObjects(distanceToMove);
 //                testGeo.getLocalTranslation().addLocal(perendicularVec);
                 System.out.println("Vec: " + actionCenter.getTranslation().toString() + "   angle: " + angle);
-                
-                updateTransform(actionCenter);
+
+//                updateTransform(actionCenter);
             }
         }
 
-        if (!isActive) {
+        if (!isActive && base.getSelectionManager().getSelectionList().size() > 0) {
+            transformTool.detachAllChildren();
+            if (transformType == transformType.MoveTool) {
+                transformTool.attachChild(moveTool);
+            } else if (transformType == transformType.RotateTool) {
+                transformTool.attachChild(rotateTool);
+            } else if (transformType == transformType.ScaleTool) {
+                transformTool.attachChild(scaleTool);
+            }
             updateTransform(selectedCenter);
-            System.out.println(base.getSelectionManager().getSelectionCenter());
+        } else if (base.getSelectionManager().getSelectionList().size() == 0) {
+            transformTool.detachAllChildren();
         }
     }
 

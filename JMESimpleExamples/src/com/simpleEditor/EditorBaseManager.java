@@ -160,7 +160,8 @@ public class EditorBaseManager {
         components.setComponent(transform);
 
         // Update components
-//        components.setUpdated(false);
+        components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
+        selectedSp.setLocalTransform(tr);
         
         EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
