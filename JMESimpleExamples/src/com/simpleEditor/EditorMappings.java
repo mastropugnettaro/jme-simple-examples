@@ -64,7 +64,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
         // Select a transformTool or an entity
         if (name.equals("MoveOrSelect") && isPressed) {
-            CollisionResult result = baseParts.getTransformTool().activate();
+            boolean result = baseParts.getTransformTool().activate();
 
         } else if (name.equals("MoveOrSelect") && !isPressed) {
             baseParts.getTransformTool().deactivate();
