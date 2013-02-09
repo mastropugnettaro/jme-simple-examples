@@ -90,24 +90,26 @@ public class EditorTransformScaleTool {
 
 
 
-//            // scale according to distance
+            // scale according to distance
             Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
             Vector3f axisToScale = rotationOfSelection.mult(pickedVec).normalize();
             Vector2f delta2d = new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY());
             Vector3f baseScale = new Vector3f(1,1,1); // default scale
 
-//            Node ndScale = new Node();
-//            Node ndTransfomChild = (Node)trNode.getChild(0); // node which compensate
-//            ndScale.setLocalTransform();
+            // scale object
+            float disCursor = cursorPos.distance(selectedCoords);
+            float disDelta = delta2d.distance(selectedCoords);
+            Vector3f scalevec = null;
+            if (disCursor > disDelta) {
+             scalevec = baseScale.add(pickedVec.mult(cursorPos.distance(delta2d) * 0.01f));
+            } else {
+             scalevec = baseScale.subtract(pickedVec.mult(cursorPos.distance(delta2d) * 0.01f));   
+            }
             
-            trNode.setLocalScale(baseScale.clone());
-            Vector3f scalevec = baseScale.add(pickedVec.mult(cursorPos.distance(delta2d) * 0.001f));
-            Vector3f scalevec2 = baseScale.add(pickedVec.mult(cursorPos.distance(delta2d) * 0.001f).negate());
-            trNode.setLocalScale(scalevec.x,scalevec.y,scalevec.z);
-            trNode.getChild(0).setLocalScale(scalevec2.x,scalevec2.y,scalevec2.z);
-//            trNode.setLocalRotation(rotationOfSelection.clone());
-//            
+            trNode.setLocalScale(scalevec);
+
+
         
-        System.out.println(cursorPos.distance(delta2d));        
+//        System.out.println(cursorPos.distance(delta2d));        
     }    
 }
