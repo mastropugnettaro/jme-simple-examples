@@ -30,28 +30,48 @@ public class EditorLayerManager {
         guiNode = (Node) this.app.getGuiViewPort().getScenes().get(0);
 
         layerNode_1 = new Node("layerNode_1");
+        layerNode_1.setUserData("LayerNumber", 1);
         Node selectableNode = (Node) root.getChild("selectableNode");
         selectableNode.attachChild(layerNode_1);
 
         layerNode_2 = new Node("layerNode_2");
+        layerNode_2.setUserData("LayerNumber", 2);
         layerNode_3 = new Node("layerNode_3");
+        layerNode_2.setUserData("LayerNumber", 3);
         layerNode_4 = new Node("layerNode_4");
+        layerNode_2.setUserData("LayerNumber", 4);
         layerNode_5 = new Node("layerNode_5");
+        layerNode_2.setUserData("LayerNumber", 5);
         layerNode_6 = new Node("layerNode_6");
+        layerNode_2.setUserData("LayerNumber", 6);
         layerNode_7 = new Node("layerNode_7");
+        layerNode_2.setUserData("LayerNumber", 7);
         layerNode_8 = new Node("layerNode_8");
+        layerNode_2.setUserData("LayerNumber", 8);
         layerNode_9 = new Node("layerNode_9");
+        layerNode_2.setUserData("LayerNumber", 9);
         layerNode_10 = new Node("layerNode_10");
+        layerNode_2.setUserData("LayerNumber", 10);
         layerNode_11 = new Node("layerNode_11");
+        layerNode_2.setUserData("LayerNumber", 11);
         layerNode_12 = new Node("layerNode_12");
+        layerNode_2.setUserData("LayerNumber", 12);
         layerNode_13 = new Node("layerNode_13");
+        layerNode_2.setUserData("LayerNumber", 13);
         layerNode_14 = new Node("layerNode_14");
+        layerNode_2.setUserData("LayerNumber", 14);
         layerNode_15 = new Node("layerNode_15");
+        layerNode_2.setUserData("LayerNumber", 15);
         layerNode_16 = new Node("layerNode_16");
+        layerNode_2.setUserData("LayerNumber", 16);
         layerNode_17 = new Node("layerNode_17");
+        layerNode_2.setUserData("LayerNumber", 17);
         layerNode_18 = new Node("layerNode_18");
+        layerNode_2.setUserData("LayerNumber", 18);
         layerNode_19 = new Node("layerNode_19");
+        layerNode_2.setUserData("LayerNumber", 19);
         layerNode_20 = new Node("layerNode_20");
+        layerNode_2.setUserData("LayerNumber", 20);
     }
 
     protected Node getLayer(int layerNumber) {

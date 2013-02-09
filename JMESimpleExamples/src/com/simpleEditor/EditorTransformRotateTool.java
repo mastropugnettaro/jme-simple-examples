@@ -7,9 +7,12 @@ package com.simpleEditor;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Ray;
 import com.jme3.math.Transform;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
@@ -54,10 +57,58 @@ public class EditorTransformRotateTool {
         }
 
         EditorTransformManager.PickedAxis pickedAxis = trManager.getpickedAxis();
-        
+
         // set the collision Plane location and rotation
         collisionPlane.setLocalTranslation(selectedCenter.getTranslation().clone());
         collisionPlane.getLocalRotation().lookAt(app.getCamera().getDirection(), Vector3f.UNIT_Y); //equals to angleZ
+
+    }
+
+    protected void rotateObjects() {
+
+        // cursor position and selected position vectors
+        Vector2f cursorPos = new Vector2f(app.getInputManager().getCursorPosition());
+        Vector3f vectorScreenSelected = app.getCamera().getScreenCoordinates(base.getSelectionManager().getSelectionCenter().getTranslation());
+        Vector2f selectedCoords = new Vector2f(vectorScreenSelected.getX(), vectorScreenSelected.getY());
+
+        //set new deltaVector if it's not set
+        if (trManager.getDeltaMoveVector() == null) {
+            Vector2f deltaVecPos = new Vector2f(cursorPos.getX(), cursorPos.getY());
+            Vector2f vecDelta = selectedCoords.subtract(deltaVecPos);
+            trManager.setDeltaMoveVector(new Vector3f(vecDelta.getX(), vecDelta.getY(), 0).normalize());
+        }
+
+
+
+        Node trNode = trManager.getTranformParentNode();
+
+        // Picked vector
+        EditorTransformManager.PickedAxis pickedAxis = trManager.getpickedAxis();
+        Vector3f pickedVec = Vector3f.UNIT_X;
+        if (pickedAxis == EditorTransformManager.PickedAxis.Y) {
+            pickedVec = Vector3f.UNIT_Y;
+        } else if (pickedAxis == EditorTransformManager.PickedAxis.Z) {
+            pickedVec = Vector3f.UNIT_Z;
+        }
+
+
+        // rotate according to angle
+        Vector2f vec1 = selectedCoords.subtract(cursorPos).normalizeLocal();
+        float angle = vec1.angleBetween(new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY()));
+        Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
+        Vector3f axisToRotate = rotationOfSelection.mult(pickedVec);
+        float angleCheck = axisToRotate.angleBetween(app.getCamera().getDirection());
+        if (angleCheck > FastMath.HALF_PI) angle = -angle;
+        Quaternion rot = rotationOfSelection.clone().fromAngleAxis(angle, axisToRotate);
         
+//            Quaternion newRotation = rotationOfSelection.mult(new Quaternion().fromAngleAxis(-angle, axisToRotate));
+        trNode.setLocalRotation(rot);
+
+        System.out.println(angleCheck);
+//            // rotate according to distance
+//            Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
+//            Vector3f axisToRotate = rotationOfSelection.mult(pickedVec).normalizeLocal();
+//            Quaternion newRotation = rotationOfSelection.clone().fromAngleAxis(distance, axisToRotate);
+//            trNode.setLocalRotation(newRotation);
     }
 }

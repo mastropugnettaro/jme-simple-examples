@@ -9,6 +9,7 @@ import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -112,8 +113,9 @@ public class EditorSelectionManager extends AbstractControl{
                 selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
                 
                 // Rotation of the last selected
-                TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
-                selectionCenter.setRotation(trLastSelected.getRotation().clone()); //Local coordinates of the last object            
+                Quaternion rot = base.getSpatialSystem().getSpatialControl(selectionList.get(selectionList.size()-1)).getGeneralNode().getLocalRotation();
+//                TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
+                selectionCenter.setRotation(rot); //Local coordinates of the last object            
         }
         
     }
