@@ -12,7 +12,6 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
@@ -83,7 +82,7 @@ public class EditorTransformManager extends AbstractControl {
         selectableNode.attachChild(tranformParentNode);
         
         pickedAxis = PickedAxis.None;
-        transformType = TransformToolType.ScaleTool;  //default type
+        transformType = TransformToolType.RotateTool;  //default type
 
         createCollisionPlane();
         
@@ -145,42 +144,7 @@ public class EditorTransformManager extends AbstractControl {
             transformTool.setLocalRotation(center.getRotation());
         }
     }
-    
-    protected boolean activate() {
-        boolean result = false;
-        
-        if (transformType != TransformToolType.None) {
-            
-            CollisionResult colResult = null;
-            CollisionResults results = new CollisionResults();
-            Ray ray = new Ray();
-            Vector3f pos = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0f).clone();
-            Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0.1f).clone();
-            dir.subtractLocal(pos).normalizeLocal();
-            ray.setOrigin(pos);
-            ray.setDirection(dir);
-            transformTool.collideWith(ray, results);
-            
-            if (results.size() > 0) {
-                colResult = results.getClosestCollision();
-                
-                if (transformType == TransformToolType.MoveTool) {
-                    moveToolObj.setCollisionPlane(colResult);
-                } else if (transformType == TransformToolType.RotateTool) {
-                    rotateToolObj.setCollisionPlane(colResult);
-                } else if (transformType == TransformToolType.ScaleTool) {
-                    scaleToolObj.setCollisionPlane(colResult);
-                }                
-                
-                attachSelectedToTransformParent();
-                isActive = true;
-                result = true;
-            }
-        }
-        
-        return result;
-    }
-    
+
     private void createManipulators() {
         
         Material mat_red = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -244,44 +208,100 @@ public class EditorTransformManager extends AbstractControl {
         
     }
     
+    protected boolean activate() {
+
+        boolean result = false;
+        
+//        if (transformType != TransformToolType.None) {
+            
+            CollisionResult colResult = null;
+            CollisionResults results = new CollisionResults();
+            Ray ray = new Ray();
+            Vector3f pos = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0f).clone();
+            Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0.1f).clone();
+            dir.subtractLocal(pos).normalizeLocal();
+            ray.setOrigin(pos);
+            ray.setDirection(dir);
+            transformTool.collideWith(ray, results);
+            
+            if (results.size() > 0) {
+                colResult = results.getClosestCollision();
+                
+                if (transformType == TransformToolType.MoveTool) {
+                    moveToolObj.setCollisionPlane(colResult);
+                } else if (transformType == TransformToolType.RotateTool) {
+                    rotateToolObj.setCollisionPlane(colResult);
+                } else if (transformType == TransformToolType.ScaleTool) {
+                    scaleToolObj.setCollisionPlane(colResult);
+                }                
+
+//                base.getSelectionManager().getSelectionCenter().setRotation(new Quaternion(0.1f,0.2f,0.5f,0.1f));
+//                selectedCenter = base.getSelectionManager().getSelectionCenter();                
+                attachSelectedToTransformParent();
+                transformTool.setLocalRotation(selectedCenter.getRotation().clone());
+                isActive = true;
+                result = true;
+
+            }
+//        }
+        
+        return result;
+    }
+    
     private void attachSelectedToTransformParent() {
         
         tranformParentNode.setLocalTranslation(selectedCenter.getTranslation().clone());
+//        tranformParentNode.setLocalRotation(new Quaternion());
+//        tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());        
         Vector3f moveDeltaVec = new Vector3f().subtract(tranformParentNode.getLocalTranslation());
         List selectedList = base.getSelectionManager().getSelectionList();
         for (Object ID : selectedList) {
             long id = (Long) ID;
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+//            Transform tr = sp.getWorldTransform();
+            int layerNumb = sp.getParent().getUserData("LayerNumber");
+            
             tranformParentNode.attachChild(sp);
+//            sp.setLocalTransform(tr);
             sp.getLocalTranslation().addLocal(moveDeltaVec);
-            sp.setUserData("LayerSelected", sp.getParent());
+            sp.setUserData("LayerSelected", layerNumb); //get layer number
         }
+//    tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());        
     }
     
     private void detachSelectedFromTransformParent() {
         List selectedList = base.getSelectionManager().getSelectionList();
-        Vector3f moveDeltaVecInvert = tranformParentNode.getLocalTranslation().subtract(new Vector3f());
+        
         for (Object ID : selectedList) {
             long id = (Long) ID;
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
-            Node layer = (Node) sp.getUserData("LayerSelected");
+            Transform tr = sp.getWorldTransform();
+            int layerNumb = sp.getUserData("LayerSelected");
+            Node layer = base.getLayerManager().getLayer(layerNumb);
             layer.attachChild(sp);
-            sp.getLocalTranslation().addLocal(moveDeltaVecInvert);
+            sp.setLocalTransform(tr);     
+
             sp.setUserData("LayerSelected", null);
         }
     }
     
     protected void deactivate() {
-        if (transformType != TransformToolType.None && pickedAxis != PickedAxis.None) {
+        if (pickedAxis != PickedAxis.None) {
             
             pickedAxis = PickedAxis.None;
             detachSelectedFromTransformParent();
             
             if (selectedCenter != null) {
-                // set new selection center
+
+                // set new selection center translation
                 base.getSelectionManager().getSelectionCenter().setTranslation(tranformParentNode.getLocalTranslation().clone());
-                selectedCenter.set(base.getSelectionManager().getSelectionCenter());
-                transformTool.setLocalTranslation(selectedCenter.getTranslation().clone());
+                // set new selection center rotation (there is a trick!)
+                base.getSelectionManager().getSelectionCenter().setRotation(tranformParentNode.getLocalRotation().clone().mult(base.getSelectionManager().getSelectionCenter().getRotation()));
+                
+                selectedCenter = base.getSelectionManager().getSelectionCenter().clone();
+//                tranformParentNode.setro
+                System.out.println(selectedCenter.getRotation().toString());
+//                transformTool.setLocalTransform(selectedCenter.clone());
                 deltaMoveVector = null;  // clear deltaVector
                 isActive = false;
             }
@@ -292,9 +312,16 @@ public class EditorTransformManager extends AbstractControl {
     protected void controlUpdate(float tpf) {
 
         // Move Selected Objects!
-        if (pickedAxis != PickedAxis.None && selectedCenter != null && transformType == transformType.MoveTool && isActive) {
+        if (selectedCenter != null && transformType == transformType.MoveTool && isActive) {
             transformTool.detachAllChildren();
             moveToolObj.moveObjects();
+            System.out.println(selectedCenter.getRotation().toString());
+        } else if (selectedCenter != null && transformType == transformType.RotateTool && isActive) {
+            transformTool.detachAllChildren();
+//            transformTool.setLocalRotation(tranformParentNode.getLocalRotation().clone());
+            rotateToolObj.rotateObjects();
+        } else if (selectedCenter != null && transformType == transformType.ScaleTool && isActive) {
+            
         }
 
 

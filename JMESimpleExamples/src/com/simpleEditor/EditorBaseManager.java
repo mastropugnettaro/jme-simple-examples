@@ -21,6 +21,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -128,9 +129,13 @@ public class EditorBaseManager {
         return entityManager;
     }
 
-    public EntitySpatialsSystem getSpatialSystem() {
+    protected EntitySpatialsSystem getSpatialSystem() {
         return spatialSystem;
     }
+
+    protected EditorLayerManager getLayerManager() {
+        return layerManager;
+    }    
     
     private void setSomeEntities() {
     for (int i=0; i<7 ; i++) {
@@ -152,7 +157,8 @@ public class EditorBaseManager {
         
         // Check for different transform of entity
         Transform tr = new Transform();
-        Vector3f loc = new Vector3f((float) Math.random() * 20.0f,(float) Math.random() * 10.0f,(float)Math.random() * 20.0f);
+//        Vector3f loc = new Vector3f((float) Math.random() * 20.0f,(float) Math.random() * 10.0f,(float)Math.random() * 20.0f);
+        Vector3f loc = new Vector3f(0,0,i+3);
         tr.setTranslation(loc);
 //        selectedSp.setLocalTransform(tr);
         
@@ -162,6 +168,7 @@ public class EditorBaseManager {
         // Update components
         components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
         selectedSp.setLocalTransform(tr);
+//        selectedSp.setLocalRotation(new Quaternion(0.1f,0.2f,0.1f,0.5f));
         
         EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
