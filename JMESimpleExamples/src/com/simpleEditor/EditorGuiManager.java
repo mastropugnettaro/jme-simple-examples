@@ -45,9 +45,11 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     private Node gridNode, rootNode, guiNode;
     private AssetManager assetManager;
     private ViewPort guiViewPort;
+    private EditorBaseManager base;
 
     
-    public EditorGuiManager() {
+    public EditorGuiManager(EditorBaseManager base) {
+        this.base = base;
     }
 
     
@@ -100,13 +102,23 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     }
 
-    public void printGo() {
-        System.out.println("Changed Background");
-
-        application.getViewPort().setBackgroundColor(ColorRGBA.randomColor());
+    public void setMoveManipulator() {
+        System.out.println("Manipulator is changed");
+        base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
         screen.getFocusHandler().resetFocusElements();
-//        application.update();
     }
+    
+    public void setRotateManipulator() {
+        System.out.println("Manipulator is changed");
+        base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.RotateTool);
+        screen.getFocusHandler().resetFocusElements();
+    }
+    
+    public void setScaleManipulator() {
+        System.out.println("Manipulator is changed");
+        base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.ScaleTool);
+        screen.getFocusHandler().resetFocusElements();
+    }    
 
     private void createGrid() {
         gridNode = new Node("gridNode");

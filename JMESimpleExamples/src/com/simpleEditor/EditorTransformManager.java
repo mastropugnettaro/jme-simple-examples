@@ -12,6 +12,7 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
@@ -82,7 +83,7 @@ public class EditorTransformManager extends AbstractControl {
         selectableNode.attachChild(tranformParentNode);
         
         pickedAxis = PickedAxis.None;
-        transformType = TransformToolType.RotateTool;  //default type
+        transformType = TransformToolType.ScaleTool;  //default type
 
         createCollisionPlane();
         
@@ -107,6 +108,10 @@ public class EditorTransformManager extends AbstractControl {
     
     protected TransformToolType getTransformToolType() {
         return transformType;
+    }
+
+    public void setTransformType(TransformToolType transformType) {
+        this.transformType = transformType;
     }
     
     protected PickedAxis getpickedAxis() {
@@ -238,7 +243,7 @@ public class EditorTransformManager extends AbstractControl {
 //                base.getSelectionManager().getSelectionCenter().setRotation(new Quaternion(0.1f,0.2f,0.5f,0.1f));
 //                selectedCenter = base.getSelectionManager().getSelectionCenter();                
                 attachSelectedToTransformParent();
-                transformTool.setLocalRotation(selectedCenter.getRotation().clone());
+//                transformTool.setLocalRotation(selectedCenter.getRotation().clone());
                 isActive = true;
                 result = true;
 
@@ -249,10 +254,18 @@ public class EditorTransformManager extends AbstractControl {
     }
     
     private void attachSelectedToTransformParent() {
-        
+
+        tranformParentNode.setLocalTransform(new Transform());  // clear previous transform
         tranformParentNode.setLocalTranslation(selectedCenter.getTranslation().clone());
-//        tranformParentNode.setLocalRotation(new Quaternion());
-//        tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());        
+        tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());     
+        
+        // New node to compensate rotation of tranformParentNode
+        Node ndParent2 = new Node();
+        tranformParentNode.attachChild(ndParent2);
+        Quaternion rotNdParent2 = selectedCenter.getRotation().clone();
+        rotNdParent2.inverseLocal();
+        ndParent2.setLocalRotation(rotNdParent2);
+        
         Vector3f moveDeltaVec = new Vector3f().subtract(tranformParentNode.getLocalTranslation());
         List selectedList = base.getSelectionManager().getSelectionList();
         for (Object ID : selectedList) {
@@ -261,12 +274,19 @@ public class EditorTransformManager extends AbstractControl {
 //            Transform tr = sp.getWorldTransform();
             int layerNumb = sp.getParent().getUserData("LayerNumber");
             
-            tranformParentNode.attachChild(sp);
+            ndParent2.attachChild(sp);
 //            sp.setLocalTransform(tr);
+            
+//            sp.getLocalTranslation().addLocal(tr.getTranslation().subtract(sp.getWorldTranslation()));
             sp.getLocalTranslation().addLocal(moveDeltaVec);
             sp.setUserData("LayerSelected", layerNumb); //get layer number
         }
+        
+        // remove compensate vector
+//        tranformParentNode.setLocalRotation(new Quaternion());
+        
 //    tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());        
+        System.out.println("parents" + rotNdParent2 + ndParent2.getLocalRotation());
     }
     
     private void detachSelectedFromTransformParent() {
@@ -296,9 +316,12 @@ public class EditorTransformManager extends AbstractControl {
                 // set new selection center translation
                 base.getSelectionManager().getSelectionCenter().setTranslation(tranformParentNode.getLocalTranslation().clone());
                 // set new selection center rotation (there is a trick!)
-                base.getSelectionManager().getSelectionCenter().setRotation(tranformParentNode.getLocalRotation().clone().mult(base.getSelectionManager().getSelectionCenter().getRotation()));
+                if (transformType == transformType.RotateTool) {
+                base.getSelectionManager().getSelectionCenter().setRotation(tranformParentNode.getLocalRotation().clone());
+                }
                 
                 selectedCenter = base.getSelectionManager().getSelectionCenter().clone();
+                tranformParentNode.detachAllChildren();
 //                tranformParentNode.setro
                 System.out.println(selectedCenter.getRotation().toString());
 //                transformTool.setLocalTransform(selectedCenter.clone());
@@ -321,7 +344,8 @@ public class EditorTransformManager extends AbstractControl {
 //            transformTool.setLocalRotation(tranformParentNode.getLocalRotation().clone());
             rotateToolObj.rotateObjects();
         } else if (selectedCenter != null && transformType == transformType.ScaleTool && isActive) {
-            
+            transformTool.detachAllChildren();
+            scaleToolObj.scaleObjects();
         }
 
 

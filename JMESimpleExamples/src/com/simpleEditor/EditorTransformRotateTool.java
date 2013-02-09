@@ -75,7 +75,7 @@ public class EditorTransformRotateTool {
         if (trManager.getDeltaMoveVector() == null) {
             Vector2f deltaVecPos = new Vector2f(cursorPos.getX(), cursorPos.getY());
             Vector2f vecDelta = selectedCoords.subtract(deltaVecPos);
-            trManager.setDeltaMoveVector(new Vector3f(vecDelta.getX(), vecDelta.getY(), 0).normalize());
+            trManager.setDeltaMoveVector(new Vector3f(vecDelta.getX(), vecDelta.getY(), 0));
         }
 
 
@@ -96,15 +96,17 @@ public class EditorTransformRotateTool {
         Vector2f vec1 = selectedCoords.subtract(cursorPos).normalizeLocal();
         float angle = vec1.angleBetween(new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY()));
         Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
+        
         Vector3f axisToRotate = rotationOfSelection.mult(pickedVec);
         float angleCheck = axisToRotate.angleBetween(app.getCamera().getDirection());
         if (angleCheck > FastMath.HALF_PI) angle = -angle;
-        Quaternion rot = rotationOfSelection.clone().fromAngleAxis(angle, axisToRotate);
+        
+        Quaternion rot = rotationOfSelection.mult(rotationOfSelection.clone().fromAngleAxis(angle, pickedVec));
         
 //            Quaternion newRotation = rotationOfSelection.mult(new Quaternion().fromAngleAxis(-angle, axisToRotate));
         trNode.setLocalRotation(rot);
 
-        System.out.println(angleCheck);
+        System.out.println(trNode.getLocalRotation());
 //            // rotate according to distance
 //            Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
 //            Vector3f axisToRotate = rotationOfSelection.mult(pickedVec).normalizeLocal();

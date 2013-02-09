@@ -24,20 +24,20 @@
         </panel>
         
           <panel height="30px" align="center" childLayout="vertical">
-          <control id="button1" name="button" style="ma_button" label="but1" visibleToMouse="true">
-          <interact onRelease="printGo()"/>
+          <control id="button_move" name="button" style="ma_button" label="Move" visibleToMouse="true">
+          <interact onRelease="setMoveManipulator()"/>
           </control>              
         </panel>  
         
           <panel height="30px" align="center" childLayout="vertical">
-          <control id="button2" name="button" style="ma_button" label="but2" visibleToMouse="true">
-          <interact onRelease="printGo()"/>
+          <control id="button_rotate" name="button" style="ma_button" label="Rotate" visibleToMouse="true">
+          <interact onRelease="setRotateManipulator()"/>
           </control>              
         </panel>  
         
           <panel height="30px" align="center" childLayout="vertical">
-          <control id="button3" name="button" style="ma_button" label="but3" visibleToMouse="true">
-          <interact onRelease="printGo()"/>
+          <control id="button_scale" name="button" style="ma_button" label="Scale" visibleToMouse="true">
+          <interact onRelease="setScaleManipulator()"/>
           </control>              
         </panel>
         
