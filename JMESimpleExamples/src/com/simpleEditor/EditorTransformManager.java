@@ -50,6 +50,8 @@ public class EditorTransformManager extends AbstractControl {
     private EditorTransformMoveTool moveToolObj;
     private EditorTransformRotateTool rotateToolObj;
     private EditorTransformScaleTool scaleToolObj;
+    private Node ndParent1 = new Node();
+    private Node ndParent2 = new Node();
     
     protected enum TransformToolType {
         
@@ -86,6 +88,7 @@ public class EditorTransformManager extends AbstractControl {
         transformType = TransformToolType.ScaleTool;  //default type
 
         createCollisionPlane();
+        ndParent1.attachChild(ndParent2); // this is for rotation compensation
         
         moveToolObj = new EditorTransformMoveTool(this, this.app, this.base);
         rotateToolObj = new EditorTransformRotateTool(this, this.app, this.base);
@@ -260,8 +263,7 @@ public class EditorTransformManager extends AbstractControl {
         tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());     
         
         // New node to compensate rotation of tranformParentNode
-        Node ndParent2 = new Node();
-        tranformParentNode.attachChild(ndParent2);
+        ndParent1.setLocalRotation(tranformParentNode.getLocalRotation().clone());
         Quaternion rotNdParent2 = selectedCenter.getRotation().clone();
         rotNdParent2.inverseLocal();
         ndParent2.setLocalRotation(rotNdParent2);
@@ -271,16 +273,26 @@ public class EditorTransformManager extends AbstractControl {
         for (Object ID : selectedList) {
             long id = (Long) ID;
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
-//            Transform tr = sp.getWorldTransform();
+
             int layerNumb = sp.getParent().getUserData("LayerNumber");
             
             ndParent2.attachChild(sp);
 //            sp.setLocalTransform(tr);
             
 //            sp.getLocalTranslation().addLocal(tr.getTranslation().subtract(sp.getWorldTranslation()));
-            sp.getLocalTranslation().addLocal(moveDeltaVec);
             sp.setUserData("LayerSelected", layerNumb); //get layer number
+            sp.getLocalTranslation().addLocal(moveDeltaVec);
+            ndParent1.setLocalRotation(new Quaternion());
+            Transform tr = sp.getWorldTransform().clone();
+            tranformParentNode.attachChild(sp);
+            sp.getLocalTranslation().addLocal(moveDeltaVec);
+            sp.setLocalTransform(tr);
+            ndParent1.setLocalRotation(tranformParentNode.getLocalRotation().clone());
+            
         }
+        
+        ndParent2.setLocalRotation(new Quaternion());
+        ndParent1.setLocalRotation(new Quaternion());
         
         // remove compensate vector
 //        tranformParentNode.setLocalRotation(new Quaternion());
