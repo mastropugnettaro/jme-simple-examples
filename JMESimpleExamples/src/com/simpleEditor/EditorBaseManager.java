@@ -78,7 +78,7 @@ public class EditorBaseManager {
         camManager.setCamTracker();
         mappings = new EditorMappings(this.app, this);
 
-        EditorGuiManager gui = new EditorGuiManager();
+        EditorGuiManager gui = new EditorGuiManager(this);
         this.app.getStateManager().attach(gui);
 
         // setup global tools
@@ -158,7 +158,7 @@ public class EditorBaseManager {
         // Check for different transform of entity
         Transform tr = new Transform();
 //        Vector3f loc = new Vector3f((float) Math.random() * 20.0f,(float) Math.random() * 10.0f,(float)Math.random() * 20.0f);
-        Vector3f loc = new Vector3f(0,0,i+3);
+        Vector3f loc = new Vector3f(0,0,i*3);
         tr.setTranslation(loc);
 //        selectedSp.setLocalTransform(tr);
         
