@@ -40,7 +40,7 @@ public class EditorTransformScaleTool {
     protected void setCollisionPlane(CollisionResult colResult) {
         
         
-       Transform selectedCenter = base.getSelectionManager().getSelectionCenter();
+       Transform selectedCenter = trManager.getselectionTransformCenter();
         
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
@@ -65,7 +65,7 @@ public class EditorTransformScaleTool {
 
         // cursor position and selected position vectors
         Vector2f cursorPos = new Vector2f(app.getInputManager().getCursorPosition());
-        Vector3f vectorScreenSelected = app.getCamera().getScreenCoordinates(base.getSelectionManager().getSelectionCenter().getTranslation());
+        Vector3f vectorScreenSelected = app.getCamera().getScreenCoordinates(trManager.getselectionTransformCenter().getTranslation());
         Vector2f selectedCoords = new Vector2f(vectorScreenSelected.getX(), vectorScreenSelected.getY());
 
         //set new deltaVector if it's not set (scale tool stores position of a cursor)
@@ -91,8 +91,8 @@ public class EditorTransformScaleTool {
 
 
             // scale according to distance
-            Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
-            Vector3f axisToScale = rotationOfSelection.mult(pickedVec).normalize();
+            Quaternion rotationOfSelection = trManager.getselectionTransformCenter().getRotation();
+//            Vector3f axisToScale = rotationOfSelection.mult(pickedVec).normalize();
             Vector2f delta2d = new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY());
             Vector3f baseScale = new Vector3f(1,1,1); // default scale
 

@@ -148,6 +148,11 @@ public class EditorBaseManager {
         Node selectedSp = new Node();
         selectedSp.attachChild(geo);        
 
+        Geometry geo2 = geo.clone();
+        geo2.scale(0.3f, 0.32f, 1);
+        geo2.move(0, 0, 1);
+        selectedSp.attachChild(geo2);
+        
         // setup Entity
         long ent = entityManager.createEntity();                
         ComponentsControl components = entityManager.getComponentControl(ent);
@@ -168,6 +173,7 @@ public class EditorBaseManager {
         // Update components
         components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
         selectedSp.setLocalTransform(tr);
+        selectedSp.setName("ent" + i);
 //        selectedSp.setLocalRotation(new Quaternion(0.1f,0.2f,0.1f,0.5f));
         
         EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
@@ -176,6 +182,7 @@ public class EditorBaseManager {
 
         layerManager.getLayer(1).attachChild(selectedSp);
         selectionManager.selectEntity(ent, EditorSelectionManager.SelectionMode.Additive);
+        selectionManager.calculateSelectionCenter();
 //        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
         
         

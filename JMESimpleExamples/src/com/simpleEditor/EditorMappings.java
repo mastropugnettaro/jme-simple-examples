@@ -22,6 +22,8 @@ public class EditorMappings implements AnalogListener, ActionListener {
     private Camera camera;
     private EditorBaseManager baseParts;
     private EditorCameraManager camMan;
+    private boolean transformResult = false; 
+    private boolean selectResult = false;
 
     public EditorMappings(Application app, EditorBaseManager baseParts) {
 
@@ -64,10 +66,19 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
         // Select a transformTool or an entity
         if (name.equals("MoveOrSelect") && isPressed) {
-            boolean result = baseParts.getTransformTool().activate();
+             transformResult = baseParts.getTransformTool().activate();
+            if (!transformResult) selectResult = baseParts.getSelectionManager().activate();
 
         } else if (name.equals("MoveOrSelect") && !isPressed) {
-            baseParts.getTransformTool().deactivate();
+            if (transformResult) {
+                baseParts.getTransformTool().deactivate();
+                transformResult = false;
+            }
+            if (selectResult) {
+                baseParts.getSelectionManager().deactivate();
+                selectResult = false;
+            }
+            
             System.out.println("transform done");
         }
 

@@ -47,12 +47,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     private ViewPort guiViewPort;
     private EditorBaseManager base;
 
-    
     public EditorGuiManager(EditorBaseManager base) {
         this.base = base;
     }
 
-    
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
 
@@ -62,16 +60,16 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         assetManager = app.getAssetManager();
         guiNode = application.getGuiNode();
         guiViewPort = application.getGuiViewPort();
-        
+
         createGrid();
         createSimpleGui();
         setLight();
-        
+
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(application.getAssetManager(),
                 application.getInputManager(),
                 application.getAudioRenderer(),
                 guiViewPort);
-        
+
         nifty = niftyDisplay.getNifty();
 //     nifty.loadStyleFile("nifty-default-styles.xml");
 //     nifty.loadControlFile("nifty-default-controls.xml");        
@@ -107,28 +105,71 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public void setRotateManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.RotateTool);
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public void setScaleManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.ScaleTool);
         screen.getFocusHandler().resetFocusElements();
-    }    
+    }
 
+    public void setGrid() {
+        int indexGrid = rootNode.getChildIndex(gridNode);
+        if (indexGrid == -1) rootNode.attachChild(gridNode);
+        else rootNode.detachChild(gridNode);
+        screen.getFocusHandler().resetFocusElements();
+    }
+
+    public void setMouseSelection() {
+        base.getSelectionManager().setSelectionTool(EditorSelectionManager.SelectionToolType.MouseClick);
+        screen.getFocusHandler().resetFocusElements();
+    }
+    
+    public void setRectangleSelection() {
+        base.getSelectionManager().setSelectionTool(EditorSelectionManager.SelectionToolType.Rectangle);
+        screen.getFocusHandler().resetFocusElements();
+    }    
+    
+    public void setLocalCoords() {
+        base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.LocalCoords);
+        screen.getFocusHandler().resetFocusElements();
+    }
+    
+    public void setWorldCoords() {
+        base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.WorldCoords);
+        screen.getFocusHandler().resetFocusElements();
+    }
+    
+    public void setViewCoords() {
+        base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.ViewCoords);
+        screen.getFocusHandler().resetFocusElements();
+    }
+
+    public void setAdditiveSelection() {
+        base.getSelectionManager().setSelectionMode(EditorSelectionManager.SelectionMode.Additive);
+        screen.getFocusHandler().resetFocusElements();
+    }            
+        
+    public void setNormalSelection() {
+        base.getSelectionManager().setSelectionMode(EditorSelectionManager.SelectionMode.Normal);
+        screen.getFocusHandler().resetFocusElements();
+    }            
+    
     private void createGrid() {
         gridNode = new Node("gridNode");
 
         //Create a grid plane
-        Geometry g = new Geometry("GRID", new Grid(101, 101, 1f));
+        Geometry g = new Geometry("GRID", new Grid(1001, 1001, 1f));
         Material floor_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         floor_mat.getAdditionalRenderState().setWireframe(true);
         floor_mat.setColor("Color", new ColorRGBA(0.3f, 0.3f, 0.3f, 0.1f));
         floor_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        g.setCullHint(Spatial.CullHint.Never);
         g.setShadowMode(RenderQueue.ShadowMode.Off);
         g.setQueueBucket(RenderQueue.Bucket.Transparent);
         g.setMaterial(floor_mat);
@@ -136,13 +177,14 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         gridNode.attachChild(g);
 
         // Red line for X axis
-        final Line xAxis = new Line(new Vector3f(-50f, 0f, 0f), new Vector3f(50f, 0f, 0f));
+        final Line xAxis = new Line(new Vector3f(-500f, 0f, 0f), new Vector3f(500f, 0f, 0f));
         xAxis.setLineWidth(2f);
         Geometry gxAxis = new Geometry("XAxis", xAxis);
         gxAxis.setModelBound(new BoundingBox());
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", new ColorRGBA(1.0f, 0.2f, 0.2f, 0.2f));
         mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        gxAxis.setCullHint(Spatial.CullHint.Never);
         gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
         gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gxAxis.setMaterial(mat);
@@ -151,14 +193,15 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         gridNode.attachChild(gxAxis);
 
         // Blue line for Z axis
-        final Line zAxis = new Line(new Vector3f(0f, 0f, -50f), new Vector3f(0f, 0f, 50f));
+        final Line zAxis = new Line(new Vector3f(0f, 0f, -500f), new Vector3f(0f, 0f, 500f));
         zAxis.setLineWidth(2f);
         Geometry gzAxis = new Geometry("ZAxis", zAxis);
         gzAxis.setModelBound(new BoundingBox());
         mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", new ColorRGBA(0.2f, 1.0f, 0.2f, 0.2f));
         mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
+        gzAxis.setCullHint(Spatial.CullHint.Never);
+        gzAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
         gzAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gzAxis.setMaterial(mat);
         gzAxis.setCullHint(Spatial.CullHint.Never);
@@ -170,8 +213,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     public Node getGridNode() {
         return gridNode;
-    }    
-    
+    }
+
     private void setLight() {
 
         DirectionalLight dl = new DirectionalLight();
@@ -193,7 +236,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         guiNode.attachChild(ch);
 
     }
-    
+
     @Override
     public void update(float tpf) {
         //TODO: implement behavior during runtime

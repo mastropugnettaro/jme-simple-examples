@@ -19,7 +19,7 @@
         <onEndScreen name="move" mode="out" direction="bottom" length="300" startDelay="0" inherit="true"/>
         </effect>
                 
-        <panel height="30px" backgroundColor="#2222" padding="10">
+        <panel height="10px" backgroundColor="#2222" padding="10">
           <!-- add your content here -->
         </panel>
         
@@ -41,12 +41,70 @@
           </control>              
         </panel>
         
+        <panel height="10px" backgroundColor="#2222" padding="10">
+          <!-- add your content here -->
+        </panel>
+          
           <panel height="30px" align="center" childLayout="vertical">
-          <control id="button4" name="button" style="ma_button" label="but4" visibleToMouse="true">
-          <interact onRelease="printGo()"/>
+          <control id="button_set_local_coords" name="button" style="ma_button" label="Local Coords" visibleToMouse="true">
+          <interact onRelease="setLocalCoords()"/>
+          </control>              
+        </panel>                       
+        
+          <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_set_world_coords" name="button" style="ma_button" label="World Coords" visibleToMouse="true">
+          <interact onRelease="setWorldCoords()"/>
+          </control>              
+        </panel>                               
+        
+          <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_set_view_coords" name="button" style="ma_button" label="View Coords" visibleToMouse="true">
+          <interact onRelease="setViewCoords()"/>
+          </control>              
+        </panel>           
+        
+        <panel height="10px" backgroundColor="#2222" padding="10">
+          <!-- add your content here -->
+        </panel>        
+                                                                                                                                                                                                                                                            
+          <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_mouse_sel" name="button" style="ma_button" label="Mouse Sel" visibleToMouse="true">
+          <interact onRelease="setMouseSelection()"/>
+          </control>              
+        </panel>   
+        
+          <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_rectangle_sel" name="button" style="ma_button" label="Rectangle Sel" visibleToMouse="true">
+          <interact onRelease="setRectangleSelection()"/>
+          </control>              
+        </panel>   
+        
+        <panel height="10px" backgroundColor="#2222" padding="10">
+          <!-- add your content here -->
+        </panel>        
+        
+         <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_normal_sel" name="button" style="ma_button" label="Normal Sel" visibleToMouse="true">
+          <interact onRelease="setNormalSelection()"/>
+          </control>              
+        </panel>                          
+
+         <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_additive_sel" name="button" style="ma_button" label="Additive Sel" visibleToMouse="true">
+          <interact onRelease="setAdditiveSelection()"/>
+          </control>              
+        </panel>          
+                        
+        <panel height="10px" backgroundColor="#2222" padding="10">
+          <!-- add your content here -->
+        </panel>              
+        
+          <panel height="30px" align="center" childLayout="vertical">
+          <control id="button_set_grid" name="button" style="ma_button" label="Set Grid" visibleToMouse="true">
+          <interact onRelease="setGrid()"/>
           </control>              
         </panel>      
-        
+                                                                                
       </panel>
       
     </layer>

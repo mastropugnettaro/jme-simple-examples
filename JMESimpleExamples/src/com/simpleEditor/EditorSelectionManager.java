@@ -8,15 +8,20 @@ import com.entitysystem.EntitySpatialsControl;
 import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
+import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,10 +38,13 @@ public class EditorSelectionManager extends AbstractControl{
     private EditorBaseManager base;
     private static List<Long> selectionList = new ArrayList<Long>();
     private Transform selectionCenter = null;
-    private SelectionToolType selectionTool;
+    private SelectionToolType selectionToolType;
+    private EditorSelectionTools selectionTools;
+    private boolean isActive = false;
+    private SelectionMode selectionMode;
 
     protected enum SelectionToolType {
-        All, Mouse, Rectangle, Polygon
+        All, MouseClick, Rectangle, Polygon
     };    
    
     protected enum SelectionMode {
@@ -50,8 +58,40 @@ public class EditorSelectionManager extends AbstractControl{
         assetMan = this.app.getAssetManager();
         root = (Node) this.app.getViewPort().getScenes().get(0);
         guiNode = (Node) this.app.getGuiViewPort().getScenes().get(0);
+        
+        selectionTools = new EditorSelectionTools(this.app, this.base, this);
+        selectionToolType = SelectionToolType.MouseClick;
+        selectionMode = selectionMode.Normal;
 
     }
+    
+    
+    protected boolean activate() {
+        boolean result = false;
+        
+        if (selectionToolType == SelectionToolType.MouseClick) {
+            selectionTools.selectMouseClick();
+            result = true;
+        } else if (selectionToolType == SelectionToolType.Rectangle) {
+//            selectionTools.drawRectangle();
+            isActive = true;
+            result = true;
+        }
+        
+        return result;
+        
+    }
+    
+    protected void deactivate() {
+        if (selectionToolType == SelectionToolType.Rectangle) {
+            selectEntities();
+            calculateSelectionCenter();
+            selectionTools.clearRectangle();
+            isActive = false;
+            System.out.println("deact");
+        }
+        
+    }    
     
     protected void selectEntity(long ID, SelectionMode mode) {
 
@@ -64,7 +104,49 @@ public class EditorSelectionManager extends AbstractControl{
         }
         // Substractive is not implemented        
         
-        calculateSelectionCenter();
+//        calculateSelectionCenter();
+    }
+    
+    protected void selectEntities() {
+        
+           List <Node> lst = base.getLayerManager().getLayers();
+           Vector2f centerCam = new Vector2f(app.getCamera().getWidth() * 0.5f, app.getCamera().getHeight() * 0.5f);
+           Node rectangle = selectionTools.getRectangleSelection();
+           Vector3f rectanglePosition = rectangle.getLocalTranslation();
+
+           if (selectionMode == SelectionMode.Normal) selectionList.clear();
+           
+           for (Node layer : lst) {
+               boolean bool = layer.getUserData("isEnabled");
+               if (bool == true) {
+                   for (Spatial sp : layer.getChildren()) {
+                       
+                       Vector3f spScreenPos = app.getCamera().getScreenCoordinates(sp.getWorldTranslation());
+                       float spScreenDistance = centerCam.distance(new Vector2f(spScreenPos.getX(), spScreenPos.getY()));
+                       
+                       if (spScreenPos.getZ() < 1f) {
+                           
+                           float pointMinX = Math.min(rectanglePosition.getX(), spScreenPos.getX());
+                           float pointMaxX = Math.max(rectanglePosition.getX(), spScreenPos.getX());
+                           float pointMinY = Math.min(rectanglePosition.getY(), spScreenPos.getY());
+                           float pointMaxY = Math.max(rectanglePosition.getY(), spScreenPos.getY());
+
+                           float distX = pointMaxX - pointMinX;
+                           float distY = pointMaxY - pointMinY;
+                           
+                           //add to selection the spatial which is in the rectangle area
+                           if (distX <= rectangle.getLocalScale().getX()*0.5f
+                               && distY <= rectangle.getLocalScale().getY()*0.5f){
+                               long spId = sp.getUserData("EntityID");
+                               if (selectionMode == SelectionMode.Additive) selectEntity(spId, selectionMode);
+                               else if (selectionMode == SelectionMode.Normal) selectionList.add(spId);
+//                               System.out.println(rectanglePosition);
+                               
+                           }
+                       }
+                   }
+               }
+           }
     }
     
     protected void clearSelectionList() {
@@ -86,6 +168,9 @@ public class EditorSelectionManager extends AbstractControl{
             selectionCenter = nd.getLocalTransform().clone();
         }
         else if (selectionList.size() > 1) {
+            
+            if (selectionCenter == null) selectionCenter = new Transform();
+            
             Vector3f posMin = null;
             Vector3f posMax = null;
             Vector3f rotMin = null;
@@ -125,16 +210,27 @@ public class EditorSelectionManager extends AbstractControl{
     }
 
     public SelectionToolType getSelectionTool() {
-        return selectionTool;
+        return selectionToolType;
     }
 
     public void setSelectionTool(SelectionToolType selectionTool) {
-        this.selectionTool = selectionTool;
+        this.selectionToolType = selectionTool;
     }    
 
+    public SelectionMode getSelectionMode() {
+        return selectionMode;
+    }
+
+    public void setSelectionMode(SelectionMode selectionMode) {
+        this.selectionMode = selectionMode;
+    }
+    
     @Override
     protected void controlUpdate(float tpf) {
 
+        if (isActive) {
+            selectionTools.drawRectangle();
+        }
     }
 
     @Override

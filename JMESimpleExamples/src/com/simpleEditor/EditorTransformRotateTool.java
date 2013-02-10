@@ -42,7 +42,7 @@ public class EditorTransformRotateTool {
     protected void setCollisionPlane(CollisionResult colResult) {
 
 
-        Transform selectedCenter = base.getSelectionManager().getSelectionCenter();
+        Transform selectedCenter = trManager.getselectionTransformCenter();
 
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
@@ -59,7 +59,7 @@ public class EditorTransformRotateTool {
         EditorTransformManager.PickedAxis pickedAxis = trManager.getpickedAxis();
 
         // set the collision Plane location and rotation
-        collisionPlane.setLocalTranslation(selectedCenter.getTranslation().clone());
+        collisionPlane.setLocalTranslation(trManager.getselectionTransformCenter().getTranslation().clone());
         collisionPlane.getLocalRotation().lookAt(app.getCamera().getDirection(), Vector3f.UNIT_Y); //equals to angleZ
 
     }
@@ -95,7 +95,7 @@ public class EditorTransformRotateTool {
         // rotate according to angle
         Vector2f vec1 = selectedCoords.subtract(cursorPos).normalizeLocal();
         float angle = vec1.angleBetween(new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY()));
-        Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
+        Quaternion rotationOfSelection = trManager.getselectionTransformCenter().getRotation();
         
         Vector3f axisToRotate = rotationOfSelection.mult(pickedVec);
         float angleCheck = axisToRotate.angleBetween(app.getCamera().getDirection());

@@ -32,10 +32,10 @@ import java.util.List;
  * @author mifth
  */
 public class EditorTransformManager extends AbstractControl {
-    
+
     private Node transformTool;
     private Node moveTool, rotateTool, scaleTool, collisionPlane;
-    private Transform selectedCenter, actionCenter;
+    private Transform selectionTransformCenter, actionCenter;
     private Node root, guiNode;
     private TransformToolType transformType;
     private PickedAxis pickedAxis;
@@ -52,50 +52,52 @@ public class EditorTransformManager extends AbstractControl {
     private EditorTransformScaleTool scaleToolObj;
     private Node ndParent1 = new Node();
     private Node ndParent2 = new Node();
-    
+    private TransformCoordinates trCoordinates;
+
     protected enum TransformToolType {
-        
+
         MoveTool, RotateTool, ScaleTool, None
     };
-    
+
     protected enum TransformCoordinates {
-        
+
         WorldCoords, LocalCoords, ViewCoords
     };
-    
+
     protected enum PickedAxis {
-        
+
         X, Y, Z, XY, XZ, YZ, View, None
     };
-    
+
     public EditorTransformManager(Application app, EditorBaseManager base) {
-        
+
         this.app = app;
         this.base = base;
         assetMan = app.getAssetManager();
         root = (Node) app.getViewPort().getScenes().get(0);
         guiNode = (Node) app.getGuiViewPort().getScenes().get(0);
-        
+
         transformTool = new Node("transformTool");
         root.attachChild(transformTool);
-        
+
         createManipulators();
         tranformParentNode = new Node("tranformParentNode");
         Node selectableNode = (Node) root.getChild("selectableNode");
         selectableNode.attachChild(tranformParentNode);
-        
+
         pickedAxis = PickedAxis.None;
         transformType = TransformToolType.ScaleTool;  //default type
+        trCoordinates = TransformCoordinates.LocalCoords;
 
         createCollisionPlane();
         ndParent1.attachChild(ndParent2); // this is for rotation compensation
-        
+
         moveToolObj = new EditorTransformMoveTool(this, this.app, this.base);
         rotateToolObj = new EditorTransformRotateTool(this, this.app, this.base);
         scaleToolObj = new EditorTransformScaleTool(this, this.app, this.base);
-        
+
     }
-    
+
     private void createCollisionPlane() {
         float size = 2000;
         Geometry g = new Geometry("plane", new Quad(size, size));
@@ -106,9 +108,9 @@ public class EditorTransformManager extends AbstractControl {
         g.setLocalTranslation(-size / 2, -size / 2, 0);
         collisionPlane = new Node();
         collisionPlane.attachChild(g);
-        root.attachChild(collisionPlane);
+//        root.attachChild(collisionPlane);
     }
-    
+
     protected TransformToolType getTransformToolType() {
         return transformType;
     }
@@ -116,34 +118,46 @@ public class EditorTransformManager extends AbstractControl {
     public void setTransformType(TransformToolType transformType) {
         this.transformType = transformType;
     }
-    
+
     protected PickedAxis getpickedAxis() {
         return pickedAxis;
     }
-    
+
     protected void setPickedAxis(PickedAxis axis) {
         pickedAxis = axis;
     }
-    
+
     protected Node tranformParentNode() {
         return tranformParentNode;
     }
-    
+
     protected Node getCollisionPlane() {
         return collisionPlane;
     }
-    
+
     protected Vector3f getDeltaMoveVector() {
         return deltaMoveVector;
     }
-    
+
     protected void setDeltaMoveVector(Vector3f vec) {
         deltaMoveVector = vec;
     }
-    
+
     protected Node getTranformParentNode() {
         return tranformParentNode;
     }
+
+    public TransformCoordinates getTrCoordinates() {
+        return trCoordinates;
+    }
+
+    public void setTrCoordinates(TransformCoordinates trCoordinates) {
+        this.trCoordinates = trCoordinates;
+    }
+
+    public Transform getselectionTransformCenter() {
+        return selectionTransformCenter;
+    }    
     
     protected void updateTransform(Transform center) {
         if (center != null) {
@@ -154,21 +168,21 @@ public class EditorTransformManager extends AbstractControl {
     }
 
     private void createManipulators() {
-        
+
         Material mat_red = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_red.setColor("Color", ColorRGBA.Red);
-        
+
         Material mat_blue = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_blue.setColor("Color", ColorRGBA.Blue);
-        
+
         Material mat_green = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_green.setColor("Color", ColorRGBA.Green);
-        
+
         Material mat_white = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_white.setColor("Color", ColorRGBA.White);
-        
+
         moveTool = (Node) assetMan.loadModel("Models/simpleEditor/manipulators/manipulators_move.j3o");
-        
+
         moveTool.getChild("move_x").setMaterial(mat_red);
         moveTool.getChild("collision_move_x").setMaterial(mat_red);
         moveTool.getChild("collision_move_x").setCullHint(Spatial.CullHint.Always);
@@ -182,7 +196,7 @@ public class EditorTransformManager extends AbstractControl {
         moveTool.getChild("collision_move_view").setMaterial(mat_white);
         moveTool.getChild("collision_move_view").setCullHint(Spatial.CullHint.Always);
         moveTool.scale(0.1f);
-        
+
         rotateTool = (Node) assetMan.loadModel("Models/simpleEditor/manipulators/manipulators_rotate.j3o");
         rotateTool.getChild("rot_x").setMaterial(mat_red);
         rotateTool.getChild("collision_rot_x").setMaterial(mat_red);
@@ -197,7 +211,7 @@ public class EditorTransformManager extends AbstractControl {
         rotateTool.getChild("collision_rot_view").setMaterial(mat_white);
         rotateTool.getChild("collision_rot_view").setCullHint(Spatial.CullHint.Always);
         rotateTool.scale(0.1f);
-        
+
         scaleTool = (Node) assetMan.loadModel("Models/simpleEditor/manipulators/manipulators_scale.j3o");
         scaleTool.getChild("scale_x").setMaterial(mat_red);
         scaleTool.getChild("collision_scale_x").setMaterial(mat_red);
@@ -212,62 +226,62 @@ public class EditorTransformManager extends AbstractControl {
         scaleTool.getChild("collision_scale_view").setMaterial(mat_white);
         scaleTool.getChild("collision_scale_view").setCullHint(Spatial.CullHint.Always);
         scaleTool.scale(0.1f);
-        
-        
+
+
     }
-    
+
     protected boolean activate() {
 
         boolean result = false;
-        
+
 //        if (transformType != TransformToolType.None) {
-            
-            CollisionResult colResult = null;
-            CollisionResults results = new CollisionResults();
-            Ray ray = new Ray();
-            Vector3f pos = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0f).clone();
-            Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0.1f).clone();
-            dir.subtractLocal(pos).normalizeLocal();
-            ray.setOrigin(pos);
-            ray.setDirection(dir);
-            transformTool.collideWith(ray, results);
-            
-            if (results.size() > 0) {
-                colResult = results.getClosestCollision();
-                
-                if (transformType == TransformToolType.MoveTool) {
-                    moveToolObj.setCollisionPlane(colResult);
-                } else if (transformType == TransformToolType.RotateTool) {
-                    rotateToolObj.setCollisionPlane(colResult);
-                } else if (transformType == TransformToolType.ScaleTool) {
-                    scaleToolObj.setCollisionPlane(colResult);
-                }                
+
+        CollisionResult colResult = null;
+        CollisionResults results = new CollisionResults();
+        Ray ray = new Ray();
+        Vector3f pos = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0f).clone();
+        Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0.1f).clone();
+        dir.subtractLocal(pos).normalizeLocal();
+        ray.setOrigin(pos);
+        ray.setDirection(dir);
+        transformTool.collideWith(ray, results);
+
+        if (results.size() > 0) {
+            colResult = results.getClosestCollision();
+
+            if (transformType == TransformToolType.MoveTool) {
+                moveToolObj.setCollisionPlane(colResult);
+            } else if (transformType == TransformToolType.RotateTool) {
+                rotateToolObj.setCollisionPlane(colResult);
+            } else if (transformType == TransformToolType.ScaleTool) {
+                scaleToolObj.setCollisionPlane(colResult);
+            }
 
 //                base.getSelectionManager().getSelectionCenter().setRotation(new Quaternion(0.1f,0.2f,0.5f,0.1f));
 //                selectedCenter = base.getSelectionManager().getSelectionCenter();                
-                attachSelectedToTransformParent();
+            attachSelectedToTransformParent();
 //                transformTool.setLocalRotation(selectedCenter.getRotation().clone());
-                isActive = true;
-                result = true;
+            isActive = true;
+            result = true;
 
-            }
+        }
 //        }
-        
+
         return result;
     }
-    
+
     private void attachSelectedToTransformParent() {
 
         tranformParentNode.setLocalTransform(new Transform());  // clear previous transform
-        tranformParentNode.setLocalTranslation(selectedCenter.getTranslation().clone());
-        tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());     
-        
+        tranformParentNode.setLocalTranslation(selectionTransformCenter.getTranslation().clone());
+        tranformParentNode.setLocalRotation(selectionTransformCenter.getRotation().clone());
+
         // New node to compensate rotation of tranformParentNode
         ndParent1.setLocalRotation(tranformParentNode.getLocalRotation().clone());
-        Quaternion rotNdParent2 = selectedCenter.getRotation().clone();
+        Quaternion rotNdParent2 = selectionTransformCenter.getRotation().clone();
         rotNdParent2.inverseLocal();
         ndParent2.setLocalRotation(rotNdParent2);
-        
+
         Vector3f moveDeltaVec = new Vector3f().subtract(tranformParentNode.getLocalTranslation());
         List selectedList = base.getSelectionManager().getSelectionList();
         for (Object ID : selectedList) {
@@ -275,10 +289,10 @@ public class EditorTransformManager extends AbstractControl {
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
 
             int layerNumb = sp.getParent().getUserData("LayerNumber");
-            
+
             ndParent2.attachChild(sp);
 //            sp.setLocalTransform(tr);
-            
+
 //            sp.getLocalTranslation().addLocal(tr.getTranslation().subtract(sp.getWorldTranslation()));
             sp.setUserData("LayerSelected", layerNumb); //get layer number
             sp.getLocalTranslation().addLocal(moveDeltaVec);
@@ -288,22 +302,18 @@ public class EditorTransformManager extends AbstractControl {
             sp.getLocalTranslation().addLocal(moveDeltaVec);
             sp.setLocalTransform(tr);
             ndParent1.setLocalRotation(tranformParentNode.getLocalRotation().clone());
-            
+
         }
-        
+
         ndParent2.setLocalRotation(new Quaternion());
         ndParent1.setLocalRotation(new Quaternion());
-        
-        // remove compensate vector
-//        tranformParentNode.setLocalRotation(new Quaternion());
-        
-//    tranformParentNode.setLocalRotation(selectedCenter.getRotation().clone());        
-        System.out.println("parents" + rotNdParent2 + ndParent2.getLocalRotation());
+
+//        System.out.println("parents" + rotNdParent2 + ndParent2.getLocalRotation());
     }
-    
+
     private void detachSelectedFromTransformParent() {
         List selectedList = base.getSelectionManager().getSelectionList();
-        
+
         for (Object ID : selectedList) {
             long id = (Long) ID;
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
@@ -311,51 +321,51 @@ public class EditorTransformManager extends AbstractControl {
             int layerNumb = sp.getUserData("LayerSelected");
             Node layer = base.getLayerManager().getLayer(layerNumb);
             layer.attachChild(sp);
-            sp.setLocalTransform(tr);     
+            sp.setLocalTransform(tr);
 
             sp.setUserData("LayerSelected", null);
         }
     }
-    
+
     protected void deactivate() {
         if (pickedAxis != PickedAxis.None) {
-            
+
             pickedAxis = PickedAxis.None;
             detachSelectedFromTransformParent();
-            
-            if (selectedCenter != null) {
+
+            if (selectionTransformCenter != null) {
 
                 // set new selection center translation
                 base.getSelectionManager().getSelectionCenter().setTranslation(tranformParentNode.getLocalTranslation().clone());
                 // set new selection center rotation (there is a trick!)
                 if (transformType == transformType.RotateTool) {
-                base.getSelectionManager().getSelectionCenter().setRotation(tranformParentNode.getLocalRotation().clone());
+                    base.getSelectionManager().getSelectionCenter().setRotation(tranformParentNode.getLocalRotation().clone());
                 }
-                
-                selectedCenter = base.getSelectionManager().getSelectionCenter().clone();
+
+                selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
                 tranformParentNode.detachAllChildren();
 //                tranformParentNode.setro
-                System.out.println(selectedCenter.getRotation().toString());
+                System.out.println(selectionTransformCenter.getRotation().toString());
 //                transformTool.setLocalTransform(selectedCenter.clone());
                 deltaMoveVector = null;  // clear deltaVector
                 isActive = false;
             }
         }
     }
-    
+
     @Override
     protected void controlUpdate(float tpf) {
 
         // Move Selected Objects!
-        if (selectedCenter != null && transformType == transformType.MoveTool && isActive) {
+        if (selectionTransformCenter != null && transformType == transformType.MoveTool && isActive) {
             transformTool.detachAllChildren();
             moveToolObj.moveObjects();
-            System.out.println(selectedCenter.getRotation().toString());
-        } else if (selectedCenter != null && transformType == transformType.RotateTool && isActive) {
+            System.out.println(selectionTransformCenter.getRotation().toString());
+        } else if (selectionTransformCenter != null && transformType == transformType.RotateTool && isActive) {
             transformTool.detachAllChildren();
 //            transformTool.setLocalRotation(tranformParentNode.getLocalRotation().clone());
             rotateToolObj.rotateObjects();
-        } else if (selectedCenter != null && transformType == transformType.ScaleTool && isActive) {
+        } else if (selectionTransformCenter != null && transformType == transformType.ScaleTool && isActive) {
             transformTool.detachAllChildren();
             scaleToolObj.scaleObjects();
         }
@@ -363,7 +373,25 @@ public class EditorTransformManager extends AbstractControl {
 
         // update transform tool
         if (!isActive && base.getSelectionManager().getSelectionList().size() > 0) {
-            selectedCenter = base.getSelectionManager().getSelectionCenter();
+
+            //set Transform
+            selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
+            
+            // set rotation for View and World Modes
+            if (trCoordinates == TransformCoordinates.LocalCoords) {
+                selectionTransformCenter = base.getSelectionManager().getSelectionCenter();
+            } else if (trCoordinates == TransformCoordinates.WorldCoords) {
+                selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
+                selectionTransformCenter.setRotation(new Quaternion());
+            } else if (trCoordinates == TransformCoordinates.ViewCoords) {
+                selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
+//                Quaternion viewRot = new Quaternion();
+//                viewRot.lookAt(app.getCamera().getLocation(), Vector3f.UNIT_Y);
+                selectionTransformCenter.setRotation(app.getCamera().getRotation().mult(new Quaternion().fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y)));
+            }
+
+
+            // Update transform tool
             transformTool.detachAllChildren();
             if (transformType == transformType.MoveTool) {
                 transformTool.attachChild(moveTool);
@@ -372,16 +400,16 @@ public class EditorTransformManager extends AbstractControl {
             } else if (transformType == transformType.ScaleTool) {
                 transformTool.attachChild(scaleTool);
             }
-            updateTransform(selectedCenter);
+            updateTransform(selectionTransformCenter);
         } else if (base.getSelectionManager().getSelectionList().size() == 0) {
             transformTool.detachAllChildren();
         }
     }
-    
+
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
-    
+
     public Control cloneForSpatial(Spatial spatial) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
