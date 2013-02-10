@@ -160,6 +160,23 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         screen.getFocusHandler().resetFocusElements();
     }            
     
+    public void switchLayer(String i) {
+        int iInt = Integer.valueOf(i); 
+        System.out.println(iInt);
+        Node layer = base.getLayerManager().getLayer(iInt);
+        boolean isActive = layer.getUserData("isActive");
+        if (isActive == true) {
+            layer.getParent().detachChild(layer);
+            layer.setUserData("isActive", false);
+        }
+        else {
+            Node selectable = (Node) rootNode.getChild("selectableNode");
+            selectable.attachChild(layer);
+            layer.setUserData("isActive", true);
+          }
+        screen.getFocusHandler().resetFocusElements();
+    }
+    
     private void createGrid() {
         gridNode = new Node("gridNode");
 
