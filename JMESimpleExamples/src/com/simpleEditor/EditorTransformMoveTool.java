@@ -41,7 +41,7 @@ public class EditorTransformMoveTool {
     protected void setCollisionPlane(CollisionResult colResult) {
         
         
-       Transform selectedCenter = base.getSelectionManager().getSelectionCenter();
+       Transform selectedCenter = trManager.getselectionTransformCenter();
         
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
@@ -139,7 +139,7 @@ public class EditorTransformMoveTool {
         if (results.size() > 0) {
 
             Vector3f contactPoint = result.getContactPoint(); // get a point of collisionPlane
-            Transform selectedCenter = base.getSelectionManager().getSelectionCenter();
+            Transform selectedCenter = trManager.getselectionTransformCenter();
 
             //set new deltaVector if it's not set
             if (trManager.getDeltaMoveVector() == null) {
