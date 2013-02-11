@@ -7,6 +7,7 @@ package com.simpleEditor;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class EditorLayerManager {
 
     private void createLayers() {
         for (int i = 0; i < 20; i++) {
-            Node layerNode = new Node("layerNode_" + (i + 1));
+            Node layerNode = new Node("layer" + (i + 1));
             layerNode.setUserData("LayerNumber", i + 1);
             layerNode.setUserData("isEnabled", false);
             layerNode.setUserData("isActive", false);
@@ -61,4 +62,17 @@ public class EditorLayerManager {
     protected List <Node> getLayers() {
         return layersList;
     }
+
+    protected void addToLayer(Spatial sp, int layerNumber) {
+        getLayer(layerNumber).attachChild(sp);
+    }
+    
+    protected Node getActiveLayer() {
+        return activeLayer;
+    }
+
+    protected void setActiveLayer(Node activeLayer) {
+        this.activeLayer = activeLayer;
+    }
+    
 }

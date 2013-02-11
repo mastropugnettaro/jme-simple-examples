@@ -36,31 +36,30 @@ public class EditorTransformScaleTool {
         this.trManager = trManager;
         collisionPlane = trManager.getCollisionPlane();
     }
-    
+
     protected void setCollisionPlane(CollisionResult colResult) {
-        
-        
-       Transform selectedCenter = trManager.getselectionTransformCenter();
-        
+
+
+        Transform selectedCenter = trManager.getselectionTransformCenter();
+
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
-            if (type.indexOf("scale_x") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
-            } else if (type.indexOf("scale_y") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
-            } else if (type.indexOf("scale_z") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
-            } else if (type.indexOf("scale_view") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
-            }
+        if (type.indexOf("scale_x") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
+        } else if (type.indexOf("scale_y") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
+        } else if (type.indexOf("scale_z") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
+        } else if (type.indexOf("scale_view") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
+        }
         EditorTransformManager.PickedAxis pickedAxis = trManager.getpickedAxis();
-        
+
         // set the collision Plane location and rotation
         collisionPlane.setLocalTranslation(selectedCenter.getTranslation().clone());
         collisionPlane.getLocalRotation().lookAt(app.getCamera().getDirection(), Vector3f.UNIT_Y); //equals to angleZ
-    }    
-    
-    
+    }
+
     protected void scaleObjects() {
 
         // cursor position and selected position vectors
@@ -90,27 +89,31 @@ public class EditorTransformScaleTool {
 
 
 
-            // scale according to distance
-            Quaternion rotationOfSelection = trManager.getselectionTransformCenter().getRotation();
+        // scale according to distance
+        Quaternion rotationOfSelection = trManager.getselectionTransformCenter().getRotation();
 //            Vector3f axisToScale = rotationOfSelection.mult(pickedVec).normalize();
-            Vector2f delta2d = new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY());
-            Vector3f baseScale = new Vector3f(1,1,1); // default scale
+        Vector2f delta2d = new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY());
+        Vector3f baseScale = new Vector3f(1, 1, 1); // default scale
 
-            // scale object
-            float disCursor = cursorPos.distance(selectedCoords);
-            float disDelta = delta2d.distance(selectedCoords);
-            Vector3f scalevec = null;
-            if (disCursor > disDelta) {
-             scalevec = baseScale.add(pickedVec.mult(cursorPos.distance(delta2d) * 0.01f));
-            } else {
-             float scaleZero = Math.max(cursorPos.distance(delta2d), 0.0001f);  // remove negateve values
-             scalevec = baseScale.subtract(pickedVec.mult(scaleZero * 0.01f));   
-            }
-            
-            trNode.setLocalScale(scalevec);
+        // scale object
+        float disCursor = cursorPos.distance(selectedCoords);
+        float disDelta = delta2d.distance(selectedCoords);
+        Vector3f scalevec = null;
+        float scaleValue = cursorPos.distance(delta2d);
+
+        if (disCursor > disDelta) {
+            scalevec = baseScale.add(pickedVec.mult(scaleValue * 0.01f));
+            System.out.println("xx");
+        } else {
+            scaleValue = Math.min(scaleValue * 0.01f, 0.999f); // remove negateve values
+            scalevec = baseScale.subtract(pickedVec.mult((scaleValue)));
+            System.out.println("YY");
+        }
+
+        trNode.setLocalScale(scalevec);
 
 
-        
+
 //        System.out.println(cursorPos.distance(delta2d));        
-    }    
+    }
 }
