@@ -26,6 +26,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Line;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.controls.CheckBox;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.logging.ConsoleHandler;
@@ -97,6 +98,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 ((ConsoleHandler) handlers[i]).setLevel(Level.WARNING);
             }
         }
+        
+//        CheckBox cb = screen.findNiftyControl("layer1", CheckBox.class);
+//        cb.uncheck();
 
     }
 
