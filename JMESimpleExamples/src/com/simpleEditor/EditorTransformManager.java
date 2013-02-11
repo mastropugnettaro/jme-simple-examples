@@ -83,7 +83,7 @@ public class EditorTransformManager extends AbstractControl {
         createManipulators();
         tranformParentNode = new Node("tranformParentNode");
         Node selectableNode = (Node) root.getChild("selectableNode");
-        selectableNode.attachChild(tranformParentNode);
+        root.attachChild(tranformParentNode);
 
         pickedAxis = PickedAxis.None;
         transformType = TransformToolType.ScaleTool;  //default type

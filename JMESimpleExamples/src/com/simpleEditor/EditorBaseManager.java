@@ -182,9 +182,10 @@ public class EditorBaseManager {
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
         spatialControl.recurseNode();
 
-        layerManager.getLayer(1).attachChild(selectedSp);
-        selectionManager.selectEntity(ent, EditorSelectionManager.SelectionMode.Additive);
-        selectionManager.calculateSelectionCenter();
+        layerManager.addToLayer(selectedSp, 1);
+        if (i < 3) layerManager.addToLayer(selectedSp, 2);
+//        selectionManager.selectEntity(ent, EditorSelectionManager.SelectionMode.Additive);
+//        selectionManager.calculateSelectionCenter();
 //        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
         
         

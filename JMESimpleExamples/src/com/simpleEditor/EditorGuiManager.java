@@ -27,8 +27,12 @@ import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Line;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.CheckBox;
+import de.lessvoid.nifty.effects.EffectEventId;
+import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import de.lessvoid.nifty.tools.SizeValue;
+import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -98,9 +102,38 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 ((ConsoleHandler) handlers[i]).setLevel(Level.WARNING);
             }
         }
-        
-//        CheckBox cb = screen.findNiftyControl("layer1", CheckBox.class);
-//        cb.uncheck();
+
+
+        // set checkboxes for layers
+        CheckBox lastEnabled = null;
+        for (int i = 0; i < 20; i++) {
+            CheckBox cb = screen.findNiftyControl("layer" + (i + 1), CheckBox.class);
+            Node layer = base.getLayerManager().getLayer(i + 1);
+            Object isEnabledObj = layer.getUserData("isEnabled");
+            boolean isEnabled = (Boolean) isEnabledObj;
+            if (isEnabled) {
+
+                cb.check();
+                lastEnabled = cb;
+            } else {
+                cb.uncheck();
+            }
+        }
+
+        Node activeLayer = base.getLayerManager().getActiveLayer();
+        // SET THE LAYER ACTIVE (Red color)
+        if (activeLayer != null) {
+            screen.getFocusHandler().resetFocusElements();
+            Element selectImage = screen.findElementByName(base.getLayerManager().getActiveLayer().getName());
+            selectImage.startEffect(EffectEventId.onFocus);
+        } // SET LAST SELECTED LAYER (IF IT PARSES NOT SO GOOD)
+        else if (activeLayer == null && lastEnabled != null) {
+
+            screen.getFocusHandler().resetFocusElements();
+            Element selectImage = lastEnabled.getElement();
+            selectImage.startEffect(EffectEventId.onFocus);
+        }
+
 
     }
 
@@ -124,8 +157,11 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     public void setGrid() {
         int indexGrid = rootNode.getChildIndex(gridNode);
-        if (indexGrid == -1) rootNode.attachChild(gridNode);
-        else rootNode.detachChild(gridNode);
+        if (indexGrid == -1) {
+            rootNode.attachChild(gridNode);
+        } else {
+            rootNode.detachChild(gridNode);
+        }
         screen.getFocusHandler().resetFocusElements();
     }
 
@@ -133,22 +169,22 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         base.getSelectionManager().setSelectionTool(EditorSelectionManager.SelectionToolType.MouseClick);
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public void setRectangleSelection() {
         base.getSelectionManager().setSelectionTool(EditorSelectionManager.SelectionToolType.Rectangle);
         screen.getFocusHandler().resetFocusElements();
-    }    
-    
+    }
+
     public void setLocalCoords() {
         base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.LocalCoords);
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public void setWorldCoords() {
         base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.WorldCoords);
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public void setViewCoords() {
         base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.ViewCoords);
         screen.getFocusHandler().resetFocusElements();
@@ -157,31 +193,83 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     public void setAdditiveSelection() {
         base.getSelectionManager().setSelectionMode(EditorSelectionManager.SelectionMode.Additive);
         screen.getFocusHandler().resetFocusElements();
-    }            
-        
+    }
+
     public void setNormalSelection() {
         base.getSelectionManager().setSelectionMode(EditorSelectionManager.SelectionMode.Normal);
         screen.getFocusHandler().resetFocusElements();
-    }            
-    
-    public void switchLayer(String i) {
-        int iInt = Integer.valueOf(i); 
-        System.out.println(iInt);
-        Node layer = base.getLayerManager().getLayer(iInt);
-        Object isActiveObj = layer.getUserData("isActive");
-        boolean isActive = (Boolean) isActiveObj;
-        if (isActive == true) {
-            layer.getParent().detachChild(layer);
-            layer.setUserData("isActive", false);
-        }
-        else {
-            Node selectable = (Node) rootNode.getChild("selectableNode");
-            selectable.attachChild(layer);
-            layer.setUserData("isActive", true);
-          }
-        screen.getFocusHandler().resetFocusElements();
     }
-    
+
+    public void switchLayer(String srtinG) {
+        int iInt = Integer.valueOf(srtinG);
+        Node activeLayer = base.getLayerManager().getActiveLayer(); // active layer
+        Node layerToSwitch = base.getLayerManager().getLayer(iInt); // layer to switch on/off
+        Node selectableNode = (Node) rootNode.getChild("selectableNode");
+
+        Object isEnabledObj = layerToSwitch.getUserData("isEnabled");
+        boolean isEnabled = (Boolean) isEnabledObj;
+
+        // Switching off
+        if (isEnabled == true) {
+            // detach layer
+            selectableNode.detachChild(layerToSwitch);
+            layerToSwitch.setUserData("isEnabled", false);
+            
+            // remove layer from selection
+            List<Long> selectionList = base.getSelectionManager().getSelectionList();
+            for (Spatial sp : layerToSwitch.getChildren()) {
+                Object idObj = sp.getUserData("EntityID");
+                long id = (Long) idObj;
+                if (selectionList.indexOf(id) > -1) selectionList.remove(id);
+            }
+            base.getSelectionManager().calculateSelectionCenter();
+
+            // if selected layer is active
+            if (activeLayer.equals(layerToSwitch)) {
+                // deactivate active and slected layer
+                layerToSwitch.setUserData("isActive", false);
+                screen.findElementByName(layerToSwitch.getName()).stopEffect(EffectEventId.onFocus);
+                screen.getFocusHandler().resetFocusElements();
+
+                // set new active layer
+                if (selectableNode.getChildren().size() > 0) {
+                    Node nd = (Node) selectableNode.getChild(selectableNode.getChildren().size() - 1);
+                    nd.setUserData("isActive", true);
+                    base.getLayerManager().setActiveLayer(nd);
+                    Element newActive = screen.findElementByName(nd.getName());
+                    newActive.startEffect(EffectEventId.onFocus);
+                    screen.getFocusHandler().resetFocusElements();
+                } else {
+                    base.getLayerManager().setActiveLayer(null);
+                }
+            }
+        } // switching on
+        else {
+
+            if (activeLayer != null) {
+
+                Element selectActiveLayerImage = screen.findElementByName(activeLayer.getName());
+                selectActiveLayerImage.stopEffect(EffectEventId.onFocus);
+                selectActiveLayerImage.startEffect(EffectEventId.onEnabled);
+                screen.getFocusHandler().resetFocusElements();
+                activeLayer.setUserData("isActive", false);
+            }
+
+
+            // SET THE LAYER ACTIVE (Red color)
+//            CheckBox cb = screen.findNiftyControl("layer" + (iInt), CheckBox.class);
+            Element selectImage = screen.findElementByName(layerToSwitch.getName());
+            selectImage.startEffect(EffectEventId.onFocus);
+            base.getLayerManager().setActiveLayer(layerToSwitch);
+
+            selectableNode.attachChild(layerToSwitch);
+            layerToSwitch.setUserData("isActive", true);
+            layerToSwitch.setUserData("isEnabled", true);
+        }
+        screen.getFocusHandler().resetFocusElements();
+//        System.out.println("sel" + selectableNode.getChildren().size());
+    }
+
     private void createGrid() {
         gridNode = new Node("gridNode");
 
