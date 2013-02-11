@@ -103,7 +103,8 @@ public class EditorTransformScaleTool {
             if (disCursor > disDelta) {
              scalevec = baseScale.add(pickedVec.mult(cursorPos.distance(delta2d) * 0.01f));
             } else {
-             scalevec = baseScale.subtract(pickedVec.mult(cursorPos.distance(delta2d) * 0.01f));   
+             float scaleZero = Math.max(cursorPos.distance(delta2d), 0.0001f);  // remove negateve values
+             scalevec = baseScale.subtract(pickedVec.mult(scaleZero * 0.01f));   
             }
             
             trNode.setLocalScale(scalevec);

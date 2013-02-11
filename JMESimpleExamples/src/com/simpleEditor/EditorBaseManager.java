@@ -78,8 +78,7 @@ public class EditorBaseManager {
         camManager.setCamTracker();
         mappings = new EditorMappings(this.app, this);
 
-        EditorGuiManager gui = new EditorGuiManager(this);
-        this.app.getStateManager().attach(gui);
+
 
         // setup global tools
         layerManager = new EditorLayerManager(this.app, this);
@@ -90,6 +89,9 @@ public class EditorBaseManager {
         entityManager = new EntityManager();
         
         setSomeEntities();
+
+        EditorGuiManager gui = new EditorGuiManager(this);
+        this.app.getStateManager().attach(gui);        
         
     }
 
