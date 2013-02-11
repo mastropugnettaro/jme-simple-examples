@@ -117,7 +117,8 @@ public class EditorSelectionManager extends AbstractControl{
            if (selectionMode == SelectionMode.Normal) selectionList.clear();
            
            for (Node layer : lst) {
-               boolean bool = layer.getUserData("isEnabled");
+               Object boolObj = layer.getUserData("isEnabled");
+               boolean bool = (Boolean) boolObj;
                if (bool == true) {
                    for (Spatial sp : layer.getChildren()) {
                        
@@ -137,7 +138,8 @@ public class EditorSelectionManager extends AbstractControl{
                            //add to selection the spatial which is in the rectangle area
                            if (distX <= rectangle.getLocalScale().getX()*0.5f
                                && distY <= rectangle.getLocalScale().getY()*0.5f){
-                               long spId = sp.getUserData("EntityID");
+                               Object spIdObj = sp.getUserData("EntityID");
+                               long spId = (Long) spIdObj;
                                if (selectionMode == SelectionMode.Additive) selectEntity(spId, selectionMode);
                                else if (selectionMode == SelectionMode.Normal) selectionList.add(spId);
 //                               System.out.println(rectanglePosition);

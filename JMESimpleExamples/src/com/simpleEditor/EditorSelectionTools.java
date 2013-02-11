@@ -95,7 +95,8 @@ public class EditorSelectionTools {
 
         if (results.size() > 0) {
             colResult = results.getClosestCollision();
-            long id = colResult.getGeometry().getUserData("EntityID");
+            Object idObj = colResult.getGeometry().getUserData("EntityID");
+            long id = (Long) idObj;
             selManager.selectEntity(id, selManager.getSelectionMode());
             selManager.calculateSelectionCenter();
 //            System.out.println("Entity selection");
