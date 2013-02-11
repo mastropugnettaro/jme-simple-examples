@@ -288,7 +288,8 @@ public class EditorTransformManager extends AbstractControl {
             long id = (Long) ID;
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
 
-            int layerNumb = sp.getParent().getUserData("LayerNumber");
+            Object layerObj = sp.getParent().getUserData("LayerNumber");
+            int layerNumb = (Integer) layerObj;
 
             ndParent2.attachChild(sp);
 //            sp.setLocalTransform(tr);
@@ -318,7 +319,8 @@ public class EditorTransformManager extends AbstractControl {
             long id = (Long) ID;
             Spatial sp = base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
             Transform tr = sp.getWorldTransform();
-            int layerNumb = sp.getUserData("LayerSelected");
+            Object layerObj = sp.getUserData("LayerSelected");
+            int layerNumb = (Integer) layerObj;
             Node layer = base.getLayerManager().getLayer(layerNumb);
             layer.attachChild(sp);
             sp.setLocalTransform(tr);

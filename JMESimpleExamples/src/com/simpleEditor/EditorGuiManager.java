@@ -164,7 +164,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         int iInt = Integer.valueOf(i); 
         System.out.println(iInt);
         Node layer = base.getLayerManager().getLayer(iInt);
-        boolean isActive = layer.getUserData("isActive");
+        Object isActiveObj = layer.getUserData("isActive");
+        boolean isActive = (Boolean) isActiveObj;
         if (isActive == true) {
             layer.getParent().detachChild(layer);
             layer.setUserData("isActive", false);
