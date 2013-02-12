@@ -106,7 +106,7 @@ public class EditorTransformRotateTool {
 //            Quaternion newRotation = rotationOfSelection.mult(new Quaternion().fromAngleAxis(-angle, axisToRotate));
         trNode.setLocalRotation(rot);
 
-        System.out.println(trNode.getLocalRotation());
+//        System.out.println(trNode.getLocalRotation());
 //            // rotate according to distance
 //            Quaternion rotationOfSelection = base.getSelectionManager().getSelectionCenter().getRotation();
 //            Vector3f axisToRotate = rotationOfSelection.mult(pickedVec).normalizeLocal();

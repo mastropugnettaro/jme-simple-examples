@@ -99,7 +99,7 @@ public class EditorTransformManager extends AbstractControl {
     }
 
     private void createCollisionPlane() {
-        float size = 200;
+        float size = 2000;
         Geometry g = new Geometry("plane", new Quad(size, size));
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
@@ -192,9 +192,9 @@ public class EditorTransformManager extends AbstractControl {
         moveTool.getChild("move_z").setMaterial(mat_green);
         moveTool.getChild("collision_move_z").setMaterial(mat_green);
         moveTool.getChild("collision_move_z").setCullHint(Spatial.CullHint.Always);
-        moveTool.getChild("move_view").setMaterial(mat_white);
-        moveTool.getChild("collision_move_view").setMaterial(mat_white);
-        moveTool.getChild("collision_move_view").setCullHint(Spatial.CullHint.Always);
+//        moveTool.getChild("move_view").setMaterial(mat_white);
+//        moveTool.getChild("collision_move_view").setMaterial(mat_white);
+//        moveTool.getChild("collision_move_view").setCullHint(Spatial.CullHint.Always);
         moveTool.scale(0.1f);
 
         rotateTool = (Node) assetMan.loadModel("Models/simpleEditor/manipulators/manipulators_rotate.j3o");
@@ -207,9 +207,9 @@ public class EditorTransformManager extends AbstractControl {
         rotateTool.getChild("rot_z").setMaterial(mat_green);
         rotateTool.getChild("collision_rot_z").setMaterial(mat_green);
         rotateTool.getChild("collision_rot_z").setCullHint(Spatial.CullHint.Always);
-        rotateTool.getChild("rot_view").setMaterial(mat_white);
-        rotateTool.getChild("collision_rot_view").setMaterial(mat_white);
-        rotateTool.getChild("collision_rot_view").setCullHint(Spatial.CullHint.Always);
+//        rotateTool.getChild("rot_view").setMaterial(mat_white);
+//        rotateTool.getChild("collision_rot_view").setMaterial(mat_white);
+//        rotateTool.getChild("collision_rot_view").setCullHint(Spatial.CullHint.Always);
         rotateTool.scale(0.1f);
 
         scaleTool = (Node) assetMan.loadModel("Models/simpleEditor/manipulators/manipulators_scale.j3o");
@@ -222,9 +222,9 @@ public class EditorTransformManager extends AbstractControl {
         scaleTool.getChild("scale_z").setMaterial(mat_green);
         scaleTool.getChild("collision_scale_z").setMaterial(mat_green);
         scaleTool.getChild("collision_scale_z").setCullHint(Spatial.CullHint.Always);
-        scaleTool.getChild("scale_view").setMaterial(mat_white);
-        scaleTool.getChild("collision_scale_view").setMaterial(mat_white);
-        scaleTool.getChild("collision_scale_view").setCullHint(Spatial.CullHint.Always);
+//        scaleTool.getChild("scale_view").setMaterial(mat_white);
+//        scaleTool.getChild("collision_scale_view").setMaterial(mat_white);
+//        scaleTool.getChild("collision_scale_view").setCullHint(Spatial.CullHint.Always);
         scaleTool.scale(0.1f);
 
 
@@ -347,7 +347,7 @@ public class EditorTransformManager extends AbstractControl {
                 selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
                 tranformParentNode.detachAllChildren();
 //                tranformParentNode.setro
-                System.out.println(selectionTransformCenter.getRotation().toString());
+//                System.out.println(selectionTransformCenter.getRotation().toString());
 //                transformTool.setLocalTransform(selectedCenter.clone());
                 deltaMoveVector = null;  // clear deltaVector
                 isActive = false;
@@ -362,7 +362,7 @@ public class EditorTransformManager extends AbstractControl {
         if (selectionTransformCenter != null && transformType == transformType.MoveTool && isActive) {
             transformTool.detachAllChildren();
             moveToolObj.moveObjects();
-            System.out.println(selectionTransformCenter.getRotation().toString());
+//            System.out.println(selectionTransformCenter.getRotation().toString());
         } else if (selectionTransformCenter != null && transformType == transformType.RotateTool && isActive) {
             transformTool.detachAllChildren();
 //            transformTool.setLocalRotation(tranformParentNode.getLocalRotation().clone());
