@@ -51,6 +51,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     private AssetManager assetManager;
     private ViewPort guiViewPort;
     private EditorBaseManager base;
+    private Element popupElement;
 
     public EditorGuiManager(EditorBaseManager base) {
         this.base = base;
@@ -134,11 +135,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             selectImage.startEffect(EffectEventId.onFocus);
         }
 
-        
-//        // set popup test
-//        Element popupElement = nifty.createPopup("popupExit");
-//        nifty.showPopup(nifty.getCurrentScreen(), popupElement.getId(), null);
 
+        // set popup test
+        popupElement = nifty.createPopup("popupMoveToLayer");
+        screen.getFocusHandler().resetFocusElements();
     }
 
     public void setMoveManipulator() {
@@ -218,13 +218,15 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             // detach layer
             selectableNode.detachChild(layerToSwitch);
             layerToSwitch.setUserData("isEnabled", false);
-            
+
             // remove layer from selection
             List<Long> selectionList = base.getSelectionManager().getSelectionList();
             for (Spatial sp : layerToSwitch.getChildren()) {
                 Object idObj = sp.getUserData("EntityID");
                 long id = (Long) idObj;
-                if (selectionList.indexOf(id) > -1) selectionList.remove(id);
+                if (selectionList.indexOf(id) > -1) {
+                    selectionList.remove(id);
+                }
             }
             base.getSelectionManager().calculateSelectionCenter();
 
@@ -272,6 +274,41 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
         screen.getFocusHandler().resetFocusElements();
 //        System.out.println("sel" + selectableNode.getChildren().size());
+    }
+
+    public void moveToLayerEnable(String bool) {
+        boolean boolValue = Boolean.valueOf(bool);
+        if (boolValue) {
+            screen.getFocusHandler().resetFocusElements();
+            nifty.showPopup(nifty.getCurrentScreen(), popupElement.getId(), null);
+            screen.getFocusHandler().resetFocusElements();
+        } else {
+            nifty.closePopup(popupElement.getId());
+            screen.getFocusHandler().resetFocusElements();
+        }
+
+    }
+
+    public void moveToLayer(String srtinG) {
+        // move to layer
+        int iInt = Integer.valueOf(srtinG);
+        List<Long> lst = base.getSelectionManager().getSelectionList();
+        for (Long lng : lst) {
+            Node moveNode = (Node) base.getSpatialSystem().getSpatialControl(lng).getGeneralNode();
+            base.getLayerManager().addToLayer(moveNode, iInt);
+        }
+
+        // clear selection if olayer is inactive
+        Object boolObj = base.getLayerManager().getLayer(iInt).getUserData("isEnabled");
+        boolean bool = (Boolean) boolObj;
+        if (bool == false) {
+            base.getSelectionManager().clearSelectionList();
+            base.getSelectionManager().calculateSelectionCenter();
+        }
+
+        nifty.closePopup(popupElement.getId());
+        screen.getFocusHandler().resetFocusElements();
+
     }
 
     private void createGrid() {

@@ -88,7 +88,7 @@ public class EditorTransformMoveTool {
 
         // rotate the plane for constraints
         if (lessAngle == angleX) {
-            System.out.println("XXXAngle");
+//            System.out.println("XXXAngle");
             
                 if (pickedAxis == PickedAxis.X && angleY < angleZ) { 
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));  // if angleZ>angleY no need to ratate                      

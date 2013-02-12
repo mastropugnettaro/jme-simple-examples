@@ -103,11 +103,11 @@ public class EditorTransformScaleTool {
 
         if (disCursor > disDelta) {
             scalevec = baseScale.add(pickedVec.mult(scaleValue * 0.01f));
-            System.out.println("xx");
+//            System.out.println("xx");
         } else {
             scaleValue = Math.min(scaleValue * 0.01f, 0.999f); // remove negateve values
             scalevec = baseScale.subtract(pickedVec.mult((scaleValue)));
-            System.out.println("YY");
+//            System.out.println("YY");
         }
 
         trNode.setLocalScale(scalevec);
