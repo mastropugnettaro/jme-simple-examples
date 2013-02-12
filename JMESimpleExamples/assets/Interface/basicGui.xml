@@ -5,12 +5,90 @@
     <useStyles filename="Interface/Styles/ma_button.xml" />
     <useControls filename="nifty-default-controls.xml" />
   
+    
+
+    
+            
     <screen id="null" controller="com.simpleEditor.EditorGuiManager">
     </screen>  
 
-    <popup id="popupExit" childLayout="center" backgroundColor="#000a">
-        <panel width="400px" height="150px" align="center" valign="center" childLayout="vertical" style="panel_style_02" padding="10" >
+    <popup id="popupExit" childLayout="center" >
+        <panel width="320px" height="350px" align="center" valign="center" childLayout="vertical" style="panel_style_02" padding="10" >
+            <effect>
+                <onStartScreen  name="fade" startColor="#0000" endColor="#000f" length="1000"/>
+                <onEndScreen  name="fade" startColor="#000f" endColor="#0000" length="1000"/>
+            </effect>
             
+            <panel id="menu_left1"  backgroundColor="#5577" width="80px" height="90%" childLayout="vertical">
+            <control name="label" text="Select Layer" />            
+            </panel>
+            
+            <panel id="menu_left1"  backgroundColor="#5577" width="80px" height="90%" childLayout="vertical">
+            <panel id="menu_left1"  backgroundColor="#5577" width="80px" height="90%" childLayout="vertical">
+                <control id="list_layer_1" name="label" text="Layer 1" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>                             
+                <control id="list_layer_2" name="label" text="Layer 2" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>                  
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>                
+            </panel>                         
+            <panel id="menu_left1"  backgroundColor="#5577" width="80px" height="90%" childLayout="vertical">
+                <control id="list_layer_1" name="label" text="Layer 1" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>                             
+                <control id="list_layer_2" name="label" text="Layer 2" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>                  
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>
+                <control id="list_layer_3" name="label" text="Layer 3" label="load_game" visibleToMouse="true">
+                    <interact onClick="newGameContent()"/>
+                </control>                
+            </panel> 
+            </panel> 
         </panel>
     </popup>   
 
@@ -39,7 +117,7 @@
                         <control id="button_move" name="button" style="ma_button" label="Move" visibleToMouse="true">
                             <interact onRelease="setMoveManipulator()"/>
                         </control>              
-                    </panel>  
+                    </panel>  this element can’t be found
         
                     <panel height="30px" align="center" childLayout="vertical">
                         <control id="button_rotate" name="button" style="ma_button" label="Rotate" visibleToMouse="true">
