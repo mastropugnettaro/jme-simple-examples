@@ -134,6 +134,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             selectImage.startEffect(EffectEventId.onFocus);
         }
 
+        
+//        // set popup test
+//        Element popupElement = nifty.createPopup("popupExit");
+//        nifty.showPopup(nifty.getCurrentScreen(), popupElement.getId(), null);
 
     }
 

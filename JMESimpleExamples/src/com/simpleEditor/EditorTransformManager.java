@@ -99,7 +99,7 @@ public class EditorTransformManager extends AbstractControl {
     }
 
     private void createCollisionPlane() {
-        float size = 2000;
+        float size = 200;
         Geometry g = new Geometry("plane", new Quad(size, size));
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
@@ -403,6 +403,7 @@ public class EditorTransformManager extends AbstractControl {
                 transformTool.attachChild(scaleTool);
             }
             updateTransform(selectionTransformCenter);
+//            System.out.println(selectionTransformCenter);
         } else if (base.getSelectionManager().getSelectionList().size() == 0) {
             transformTool.detachAllChildren();
         }
