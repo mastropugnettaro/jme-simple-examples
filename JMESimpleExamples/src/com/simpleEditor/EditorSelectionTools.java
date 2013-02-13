@@ -44,44 +44,43 @@ public class EditorSelectionTools {
         root = (Node) this.app.getViewPort().getScenes().get(0);
         guiNode = (Node) this.app.getGuiViewPort().getScenes().get(0);
         selectable = (Node) root.getChild("selectableNode");
-        
+
         createRectangle();
     }
 
-    
     private void createRectangle() {
-        
+
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", new ColorRGBA(0.5f, 0.2f, 0.3f, 1));
         mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
-        
+
         Line ln1 = new Line(new Vector3f(-0.5f, 0.5f, 0), new Vector3f(0.5f, 0.5f, 0));
         ln1.setLineWidth(1);
         Geometry geoLn1 = new Geometry("ln1", ln1);
         geoLn1.setMaterial(mat);
         rectangleSelection.attachChild(geoLn1);
-                
+
         Line ln2 = new Line(new Vector3f(-0.5f, -0.5f, 0), new Vector3f(0.5f, -0.5f, 0));
         ln2.setLineWidth(1);
         Geometry geoLn2 = new Geometry("ln2", ln2);
         geoLn2.setMaterial(mat);
         rectangleSelection.attachChild(geoLn2);
-        
+
         Line ln3 = new Line(new Vector3f(-0.5f, -0.5f, 0), new Vector3f(-0.5f, 0.5f, 0));
         ln3.setLineWidth(1);
         Geometry geoLn3 = new Geometry("ln3", ln3);
         geoLn3.setMaterial(mat);
         rectangleSelection.attachChild(geoLn3);
-        
+
         Line ln4 = new Line(new Vector3f(0.5f, -0.5f, 0), new Vector3f(0.5f, 0.5f, 0));
-        ln4.setLineWidth(1);        
+        ln4.setLineWidth(1);
         Geometry geoLn4 = new Geometry("ln4", ln4);
         geoLn4.setMaterial(mat);
         rectangleSelection.attachChild(geoLn4);
-        
+
         guiNode.attachChild(rectangleSelection);
-    } 
-    
+    }
+
     protected void selectMouseClick() {
         CollisionResult colResult = null;
         CollisionResults results = new CollisionResults();
@@ -95,51 +94,76 @@ public class EditorSelectionTools {
 
         if (results.size() > 0) {
             colResult = results.getClosestCollision();
-            Object idObj = colResult.getGeometry().getUserData("EntityID");
-            long id = (Long) idObj;
-            selManager.selectEntity(id, selManager.getSelectionMode());
-            selManager.calculateSelectionCenter();
-//            System.out.println("Entity selection");
+            if (colResult.getGeometry().getName() == "SelectionTempMesh" && results.size() > 1) {
+                for (CollisionResult colRes : results) {
+                    if (colRes.getGeometry().getName() != "SelectionTempMesh") {
+                        colResult = colRes;
+                        break;
+                    }
+                }
+                System.out.println("WWWWWWWWW");
+            }
+            //select entity
+            if (colResult.getGeometry().getName() != "SelectionTempMesh") {
+                Object idObj = colResult.getGeometry().getUserData("EntityID");
+                long id = (Long) idObj;
+                selManager.selectEntity(id, selManager.getSelectionMode());
+                selManager.calculateSelectionCenter();
+            } else {
+                if (selManager.getSelectionMode() == EditorSelectionManager.SelectionMode.Normal) {
+                    // remove selection boxes
+                    for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
+                        selManager.removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+                    }
+                    base.getSelectionManager().clearSelectionList();
+                }
+            }
+
         } else {
             if (selManager.getSelectionMode() == EditorSelectionManager.SelectionMode.Normal) {
+                // remove selection boxes
+                for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
+                    selManager.removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+                }
                 base.getSelectionManager().clearSelectionList();
             }
         }
     }
-    
+
     protected void drawRectangle() {
-        
+
         // set first point of rectangle selection
-        if (rectanglePointA == null) rectanglePointA = app.getInputManager().getCursorPosition().clone();
-        
+        if (rectanglePointA == null) {
+            rectanglePointA = app.getInputManager().getCursorPosition().clone();
+        }
+
         // set second point of rectangle selection
         rectanglePointB = app.getInputManager().getCursorPosition();
-        
+
         // calculate position
         rectanglePosition = rectanglePointA.add(rectanglePointB.subtract(rectanglePointA).multLocal(0.5f));
-        
+
         float pointX1 = Math.min(rectanglePointA.getX(), rectanglePointB.getX());
         float pointX2 = Math.max(rectanglePointA.getX(), rectanglePointB.getX());
         float pointY1 = Math.min(rectanglePointA.getY(), rectanglePointB.getY());
         float pointY2 = Math.max(rectanglePointA.getY(), rectanglePointB.getY());
-        
+
         // set position
         rectangleSelection.setLocalTranslation(new Vector3f(rectanglePosition.getX(), rectanglePosition.getY(), 1));
 
-        
-        // set scale
-            rectangleSelection.setLocalScale(new Vector3f((pointX2-pointX1), (pointY2-pointY1), 1));
 
-            guiNode.attachChild(rectangleSelection);
+        // set scale
+        rectangleSelection.setLocalScale(new Vector3f((pointX2 - pointX1), (pointY2 - pointY1), 1));
+
+        guiNode.attachChild(rectangleSelection);
     }
 
     protected Node getRectangleSelection() {
         return rectangleSelection;
-    }    
-    
+    }
+
     protected void clearRectangle() {
         rectanglePointA = null;
         guiNode.detachChild(rectangleSelection);
     }
-    
 }

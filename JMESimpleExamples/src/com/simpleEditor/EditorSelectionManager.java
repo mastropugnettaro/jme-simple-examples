@@ -44,6 +44,7 @@ public class EditorSelectionManager extends AbstractControl {
     private SelectionToolType selectionToolType;
     private EditorSelectionTools selectionTools;
     private boolean isActive = false;
+
     private SelectionMode selectionMode;
 
     protected enum SelectionToolType {
@@ -101,13 +102,20 @@ public class EditorSelectionManager extends AbstractControl {
         Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
 
         if (mode == SelectionMode.Normal) {
+            // remove selection boxes
+            for (Long idToRemove : selectionList) {
+                removeSelectionBox((Node)base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+            }
             selectionList.clear();
+            
+            // add to selection
             selectionList.add(ID);
             createSelectionBox(nodeToSelect);
+            
         } else if (mode == SelectionMode.Additive) {
             if (selectionList.contains(ID)) {
                 selectionList.remove(ID);
-                nodeToSelect.getChild("SelectionTempMesh").removeFromParent(); // remove selection mesh
+                removeSelectionBox(nodeToSelect); // remove selection mesh
             } else {
                 selectionList.add(ID);
                 createSelectionBox(nodeToSelect);
@@ -126,6 +134,10 @@ public class EditorSelectionManager extends AbstractControl {
         Vector3f rectanglePosition = rectangle.getLocalTranslation();
 
         if (selectionMode == SelectionMode.Normal) {
+            // remove selection boxes
+            for (Long idToRemove : selectionList) {
+                removeSelectionBox((Node)base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+            }            
             selectionList.clear();
         }
 
@@ -167,17 +179,25 @@ public class EditorSelectionManager extends AbstractControl {
         }
     }
 
-    private void createSelectionBox(Node nodeSelect) {
+    protected void createSelectionBox(Node nodeSelect) {
         Material mat_box = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
         mat_box.setColor("Color", ColorRGBA.Blue);
         WireBox wbx = new WireBox();
+//        BoundingBox = new BoundingBox();
+        Transform tempScale = nodeSelect.getLocalTransform().clone();
+        nodeSelect.setLocalTransform(new Transform());
         wbx.fromBoundingBox((BoundingBox) nodeSelect.getWorldBound());
-
+        nodeSelect.setLocalTransform(tempScale);
+        
         Geometry bx = new Geometry("SelectionTempMesh", wbx);
         bx.setMaterial(mat_box);
         nodeSelect.attachChild(bx);
 
     }
+    
+    protected void removeSelectionBox(Node nodeSelect) {
+        nodeSelect.detachChild(nodeSelect.getChild("SelectionTempMesh"));
+    }    
 
     protected void clearSelectionList() {
         selectionList.clear();
@@ -191,6 +211,10 @@ public class EditorSelectionManager extends AbstractControl {
         this.selectionCenter = selectionTransform;
     }
 
+    protected boolean isIsActive() {
+        return isActive;
+    }    
+    
     protected void calculateSelectionCenter() {
         if (selectionList.size() == 0) {
             selectionCenter = null;
