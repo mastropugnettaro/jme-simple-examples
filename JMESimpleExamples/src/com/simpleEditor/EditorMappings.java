@@ -75,7 +75,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
             if (baseParts.getTransformTool().isIsActive() == false) {
                 transformResult = baseParts.getTransformTool().activate();
             }
-            if (!transformResult) {
+            if (!transformResult && (baseParts.getSelectionManager().isIsActive() == false)) {
                 selectResult = baseParts.getSelectionManager().activate();
             }
 

@@ -225,6 +225,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 Object idObj = sp.getUserData("EntityID");
                 long id = (Long) idObj;
                 if (selectionList.indexOf(id) > -1) {
+                    Node removeSelBox = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+                    base.getSelectionManager().removeSelectionBox(removeSelBox);
                     selectionList.remove(id);
                 }
             }
@@ -302,6 +304,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         Object boolObj = base.getLayerManager().getLayer(iInt).getUserData("isEnabled");
         boolean bool = (Boolean) boolObj;
         if (bool == false) {
+            // remove selection boxes
+            for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
+                base.getSelectionManager().removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+            }
             base.getSelectionManager().clearSelectionList();
             base.getSelectionManager().calculateSelectionCenter();
         }
