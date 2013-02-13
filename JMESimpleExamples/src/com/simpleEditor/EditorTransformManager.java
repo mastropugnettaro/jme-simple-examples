@@ -66,7 +66,7 @@ public class EditorTransformManager extends AbstractControl {
 
     protected enum PickedAxis {
 
-        X, Y, Z, XY, XZ, YZ, View, None
+        X, Y, Z, XY, XZ, YZ, View, scaleAll, None
     };
 
     public EditorTransformManager(Application app, EditorBaseManager base) {
@@ -86,7 +86,7 @@ public class EditorTransformManager extends AbstractControl {
         root.attachChild(tranformParentNode);
 
         pickedAxis = PickedAxis.None;
-        transformType = TransformToolType.ScaleTool;  //default type
+        transformType = TransformToolType.MoveTool;  //default type
         trCoordinates = TransformCoordinates.LocalCoords;
 
         createCollisionPlane();
@@ -157,8 +157,12 @@ public class EditorTransformManager extends AbstractControl {
 
     public Transform getselectionTransformCenter() {
         return selectionTransformCenter;
-    }    
-    
+    }
+
+    protected boolean isIsActive() {
+        return isActive;
+    }
+
     protected void updateTransform(Transform center) {
         if (center != null) {
             Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
@@ -270,6 +274,12 @@ public class EditorTransformManager extends AbstractControl {
         return result;
     }
 
+    protected void scaleAll() {
+        pickedAxis = PickedAxis.scaleAll;
+        attachSelectedToTransformParent();
+        isActive = true;
+    }
+
     private void attachSelectedToTransformParent() {
 
         tranformParentNode.setLocalTransform(new Transform());  // clear previous transform
@@ -358,16 +368,21 @@ public class EditorTransformManager extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
 
-        // Move Selected Objects!
-        if (selectionTransformCenter != null && transformType == transformType.MoveTool && isActive) {
-            transformTool.detachAllChildren();
-            moveToolObj.moveObjects();
-//            System.out.println(selectionTransformCenter.getRotation().toString());
-        } else if (selectionTransformCenter != null && transformType == transformType.RotateTool && isActive) {
-            transformTool.detachAllChildren();
-//            transformTool.setLocalRotation(tranformParentNode.getLocalRotation().clone());
-            rotateToolObj.rotateObjects();
-        } else if (selectionTransformCenter != null && transformType == transformType.ScaleTool && isActive) {
+        // Transform Selected Objects!
+        if (pickedAxis != PickedAxis.scaleAll && isActive && selectionTransformCenter != null) {
+            if (transformType == transformType.MoveTool) {
+                transformTool.detachAllChildren();
+                moveToolObj.moveObjects();
+            } else if (transformType == transformType.RotateTool) {
+                transformTool.detachAllChildren();
+                rotateToolObj.rotateObjects();
+            } else if (transformType == transformType.ScaleTool) {
+                transformTool.detachAllChildren();
+                scaleToolObj.scaleObjects();
+            }
+
+        } // if scaleAll
+        else if (isActive && selectionTransformCenter != null) {
             transformTool.detachAllChildren();
             scaleToolObj.scaleObjects();
         }
@@ -378,7 +393,7 @@ public class EditorTransformManager extends AbstractControl {
 
             //set Transform
             selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
-            
+
             // set rotation for View and World Modes
             if (trCoordinates == TransformCoordinates.LocalCoords) {
                 selectionTransformCenter = base.getSelectionManager().getSelectionCenter();

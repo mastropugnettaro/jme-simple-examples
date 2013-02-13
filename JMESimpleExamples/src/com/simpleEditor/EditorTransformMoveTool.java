@@ -39,21 +39,21 @@ public class EditorTransformMoveTool {
     }
 
     protected void setCollisionPlane(CollisionResult colResult) {
-        
-        
-       Transform selectedCenter = trManager.getselectionTransformCenter();
-        
+
+
+        Transform selectedCenter = trManager.getselectionTransformCenter();
+
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
-            if (type.indexOf("move_x") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
-            } else if (type.indexOf("move_y") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
-            } else if (type.indexOf("move_z") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
-            } else if (type.indexOf("move_view") > 0) {
-                trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
-            }
+        if (type.indexOf("move_x") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
+        } else if (type.indexOf("move_y") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
+        } else if (type.indexOf("move_z") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
+        } else if (type.indexOf("move_view") > 0) {
+            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
+        }
         PickedAxis pickedAxis = trManager.getpickedAxis();
 
         // select an angle between 0 and 90 degrees (from 0 to 1.57 in radians) (for collisionPlane)
@@ -89,31 +89,38 @@ public class EditorTransformMoveTool {
         // rotate the plane for constraints
         if (lessAngle == angleX) {
 //            System.out.println("XXXAngle");
-            
-                if (pickedAxis == PickedAxis.X && angleY < angleZ) { 
-                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));  // if angleZ>angleY no need to ratate                      
+
+            if (pickedAxis == PickedAxis.X && angleY > angleZ) {
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
+            } else if (pickedAxis == PickedAxis.X && angleY < angleZ) {
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
             } else if (pickedAxis == PickedAxis.Y) {
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
             } else if (pickedAxis == PickedAxis.Z) {
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
             }
         } else if (lessAngle == angleY) {
             if (pickedAxis == PickedAxis.X) {
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
             } else if (pickedAxis == PickedAxis.Y && angleX < angleZ) {
-                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y)); 
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
             } else if (pickedAxis == PickedAxis.Z) {
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
             }
         } else if (lessAngle == angleZ) {
-            if (pickedAxis == PickedAxis.Z && angleY < angleX) {
+            if (pickedAxis == PickedAxis.X) {
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
+            } else if (pickedAxis == PickedAxis.Z && angleY < angleX) {
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
             } else if (pickedAxis == PickedAxis.Z && angleY > angleX) {
                 collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+                collisionPlane.getLocalRotation().multLocal(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
             }
         }
     }
-    
 
     protected void moveObjects() {
         CollisionResults results = new CollisionResults();
