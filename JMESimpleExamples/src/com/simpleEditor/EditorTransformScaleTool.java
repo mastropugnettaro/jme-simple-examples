@@ -50,9 +50,10 @@ public class EditorTransformScaleTool {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
         } else if (type.indexOf("scale_z") > 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
-        } else if (type.indexOf("scale_view") > 0) {
-            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
-        }
+        } 
+//        else if (type.indexOf("scale_view") > 0) {
+//            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
+//        }
         EditorTransformManager.PickedAxis pickedAxis = trManager.getpickedAxis();
 
         // set the collision Plane location and rotation
@@ -85,6 +86,8 @@ public class EditorTransformScaleTool {
             pickedVec = Vector3f.UNIT_Y;
         } else if (pickedAxis == EditorTransformManager.PickedAxis.Z) {
             pickedVec = Vector3f.UNIT_Z;
+        } else if (pickedAxis == EditorTransformManager.PickedAxis.scaleAll) {
+            pickedVec = new Vector3f(1,1,1);
         }
 
 
@@ -105,7 +108,10 @@ public class EditorTransformScaleTool {
             scalevec = baseScale.add(pickedVec.mult(scaleValue * 0.01f));
 //            System.out.println("xx");
         } else {
-            scaleValue = Math.min(scaleValue * 0.01f, 0.999f); // remove negateve values
+            float scaleDownIntencity;
+            if (trManager.getpickedAxis() == EditorTransformManager.PickedAxis.scaleAll) scaleDownIntencity = 0.005f;
+            else scaleDownIntencity = 0.01f;
+            scaleValue = Math.min(scaleValue * scaleDownIntencity, 0.999f); // remove negateve values
             scalevec = baseScale.subtract(pickedVec.mult((scaleValue)));
 //            System.out.println("YY");
         }

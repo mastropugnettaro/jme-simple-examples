@@ -8,8 +8,10 @@ import com.entitysystem.EntitySpatialsControl;
 import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
@@ -21,6 +23,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.scene.debug.WireBox;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author mifth
  */
-public class EditorSelectionManager extends AbstractControl{
+public class EditorSelectionManager extends AbstractControl {
 
     private AssetManager assetMan;
     private Node root, guiNode;
@@ -44,13 +47,15 @@ public class EditorSelectionManager extends AbstractControl{
     private SelectionMode selectionMode;
 
     protected enum SelectionToolType {
+
         All, MouseClick, Rectangle, Polygon
-    };    
-   
+    };
+
     protected enum SelectionMode {
+
         Normal, Additive, Substractive
-    };        
-    
+    };
+
     public EditorSelectionManager(Application app, EditorBaseManager base) {
 
         this.app = app;
@@ -58,17 +63,16 @@ public class EditorSelectionManager extends AbstractControl{
         assetMan = this.app.getAssetManager();
         root = (Node) this.app.getViewPort().getScenes().get(0);
         guiNode = (Node) this.app.getGuiViewPort().getScenes().get(0);
-        
+
         selectionTools = new EditorSelectionTools(this.app, this.base, this);
         selectionToolType = SelectionToolType.MouseClick;
         selectionMode = selectionMode.Normal;
 
     }
-    
-    
+
     protected boolean activate() {
         boolean result = false;
-        
+
         if (selectionToolType == SelectionToolType.MouseClick) {
             selectionTools.selectMouseClick();
             result = true;
@@ -77,11 +81,11 @@ public class EditorSelectionManager extends AbstractControl{
             isActive = true;
             result = true;
         }
-        
+
         return result;
-        
+
     }
-    
+
     protected void deactivate() {
         if (selectionToolType == SelectionToolType.Rectangle) {
             selectEntities();
@@ -90,71 +94,95 @@ public class EditorSelectionManager extends AbstractControl{
             isActive = false;
             System.out.println("deact");
         }
-        
-    }    
-    
+
+    }
+
     protected void selectEntity(long ID, SelectionMode mode) {
+        Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
 
         if (mode == SelectionMode.Normal) {
             selectionList.clear();
             selectionList.add(ID);
+            createSelectionBox(nodeToSelect);
         } else if (mode == SelectionMode.Additive) {
-            if (selectionList.contains(ID)) selectionList.remove(ID);
-            else selectionList.add(ID);
+            if (selectionList.contains(ID)) {
+                selectionList.remove(ID);
+                nodeToSelect.getChild("SelectionTempMesh").removeFromParent(); // remove selection mesh
+            } else {
+                selectionList.add(ID);
+                createSelectionBox(nodeToSelect);
+            }
         }
         // Substractive is not implemented        
-        
+
 //        calculateSelectionCenter();
     }
-    
+
     protected void selectEntities() {
-        
-           List <Node> lst = base.getLayerManager().getLayers();
-           Vector2f centerCam = new Vector2f(app.getCamera().getWidth() * 0.5f, app.getCamera().getHeight() * 0.5f);
-           Node rectangle = selectionTools.getRectangleSelection();
-           Vector3f rectanglePosition = rectangle.getLocalTranslation();
 
-           if (selectionMode == SelectionMode.Normal) selectionList.clear();
-           
-           for (Node layer : lst) {
-               Object boolObj = layer.getUserData("isEnabled");
-               boolean bool = (Boolean) boolObj;
-               if (bool == true) {
-                   for (Spatial sp : layer.getChildren()) {
-                       
-                       Vector3f spScreenPos = app.getCamera().getScreenCoordinates(sp.getWorldTranslation());
-                       float spScreenDistance = centerCam.distance(new Vector2f(spScreenPos.getX(), spScreenPos.getY()));
-                       
-                       if (spScreenPos.getZ() < 1f) {
-                           
-                           float pointMinX = Math.min(rectanglePosition.getX(), spScreenPos.getX());
-                           float pointMaxX = Math.max(rectanglePosition.getX(), spScreenPos.getX());
-                           float pointMinY = Math.min(rectanglePosition.getY(), spScreenPos.getY());
-                           float pointMaxY = Math.max(rectanglePosition.getY(), spScreenPos.getY());
+        List<Node> lst = base.getLayerManager().getLayers();
+        Vector2f centerCam = new Vector2f(app.getCamera().getWidth() * 0.5f, app.getCamera().getHeight() * 0.5f);
+        Node rectangle = selectionTools.getRectangleSelection();
+        Vector3f rectanglePosition = rectangle.getLocalTranslation();
 
-                           float distX = pointMaxX - pointMinX;
-                           float distY = pointMaxY - pointMinY;
-                           
-                           //add to selection the spatial which is in the rectangle area
-                           if (distX <= rectangle.getLocalScale().getX()*0.5f
-                               && distY <= rectangle.getLocalScale().getY()*0.5f){
-                               Object spIdObj = sp.getUserData("EntityID");
-                               long spId = (Long) spIdObj;
-                               if (selectionMode == SelectionMode.Additive) selectEntity(spId, selectionMode);
-                               else if (selectionMode == SelectionMode.Normal) selectionList.add(spId);
-//                               System.out.println(rectanglePosition);
-                               
-                           }
-                       }
-                   }
-               }
-           }
+        if (selectionMode == SelectionMode.Normal) {
+            selectionList.clear();
+        }
+
+        for (Node layer : lst) {
+            Object boolObj = layer.getUserData("isEnabled");
+            boolean bool = (Boolean) boolObj;
+            if (bool == true) {
+                for (Spatial sp : layer.getChildren()) {
+
+                    Vector3f spScreenPos = app.getCamera().getScreenCoordinates(sp.getWorldTranslation());
+                    float spScreenDistance = centerCam.distance(new Vector2f(spScreenPos.getX(), spScreenPos.getY()));
+
+                    if (spScreenPos.getZ() < 1f) {
+
+                        float pointMinX = Math.min(rectanglePosition.getX(), spScreenPos.getX());
+                        float pointMaxX = Math.max(rectanglePosition.getX(), spScreenPos.getX());
+                        float pointMinY = Math.min(rectanglePosition.getY(), spScreenPos.getY());
+                        float pointMaxY = Math.max(rectanglePosition.getY(), spScreenPos.getY());
+
+                        float distX = pointMaxX - pointMinX;
+                        float distY = pointMaxY - pointMinY;
+
+                        //add to selection the spatial which is in the rectangle area
+                        if (distX <= rectangle.getLocalScale().getX() * 0.5f
+                                && distY <= rectangle.getLocalScale().getY() * 0.5f) {
+                            Object spIdObj = sp.getUserData("EntityID");
+                            long spId = (Long) spIdObj;
+                            if (selectionMode == SelectionMode.Additive) {
+                                selectEntity(spId, selectionMode);
+                            } else if (selectionMode == SelectionMode.Normal) {
+                                selectionList.add(spId);
+                                Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(spId).getGeneralNode();
+                                createSelectionBox(nodeToSelect);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-    
+
+    private void createSelectionBox(Node nodeSelect) {
+        Material mat_box = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_box.setColor("Color", ColorRGBA.Blue);
+        WireBox wbx = new WireBox();
+        wbx.fromBoundingBox((BoundingBox) nodeSelect.getWorldBound());
+
+        Geometry bx = new Geometry("SelectionTempMesh", wbx);
+        bx.setMaterial(mat_box);
+        nodeSelect.attachChild(bx);
+
+    }
+
     protected void clearSelectionList() {
         selectionList.clear();
     }
-    
+
     protected Transform getSelectionCenter() {
         return selectionCenter;
     }
@@ -164,19 +192,21 @@ public class EditorSelectionManager extends AbstractControl{
     }
 
     protected void calculateSelectionCenter() {
-        if (selectionList.size() == 0) selectionCenter = null;
-        else if (selectionList.size() == 1) {
+        if (selectionList.size() == 0) {
+            selectionCenter = null;
+        } else if (selectionList.size() == 1) {
             Spatial nd = base.getSpatialSystem().getSpatialControl(selectionList.get(0)).getGeneralNode();
             selectionCenter = nd.getLocalTransform().clone();
-        }
-        else if (selectionList.size() > 1) {
-            
-            if (selectionCenter == null) selectionCenter = new Transform();
-            
+        } else if (selectionList.size() > 1) {
+
+            if (selectionCenter == null) {
+                selectionCenter = new Transform();
+            }
+
             Vector3f posMin = null;
             Vector3f posMax = null;
             Vector3f rotMin = null;
-            Vector3f rotMax = null;            
+            Vector3f rotMax = null;
             for (Long ID : selectionList) {
                 // POSITION
                 Spatial ndPos = base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
@@ -184,29 +214,40 @@ public class EditorSelectionManager extends AbstractControl{
                 if (posMin == null) {
                     posMin = ndPos.getLocalTranslation().clone();
                     posMax = ndPos.getLocalTranslation().clone();
-                }
-                else {
+                } else {
                     // find max values
-                    if (posMax.x < ndPos.getLocalTranslation().getX()) posMax.x = ndPos.getLocalTranslation().getX();
-                    if (posMax.y < ndPos.getLocalTranslation().getY()) posMax.y = ndPos.getLocalTranslation().getY();
-                    if (posMax.z < ndPos.getLocalTranslation().getZ()) posMax.z = ndPos.getLocalTranslation().getZ();
+                    if (posMax.x < ndPos.getLocalTranslation().getX()) {
+                        posMax.x = ndPos.getLocalTranslation().getX();
+                    }
+                    if (posMax.y < ndPos.getLocalTranslation().getY()) {
+                        posMax.y = ndPos.getLocalTranslation().getY();
+                    }
+                    if (posMax.z < ndPos.getLocalTranslation().getZ()) {
+                        posMax.z = ndPos.getLocalTranslation().getZ();
+                    }
                     // find min values
-                    if (posMin.x > ndPos.getLocalTranslation().getX()) posMin.x = ndPos.getLocalTranslation().getX();
-                    if (posMin.y > ndPos.getLocalTranslation().getY()) posMin.y = ndPos.getLocalTranslation().getY();
-                    if (posMin.z > ndPos.getLocalTranslation().getZ()) posMin.z = ndPos.getLocalTranslation().getZ();
-                    
+                    if (posMin.x > ndPos.getLocalTranslation().getX()) {
+                        posMin.x = ndPos.getLocalTranslation().getX();
+                    }
+                    if (posMin.y > ndPos.getLocalTranslation().getY()) {
+                        posMin.y = ndPos.getLocalTranslation().getY();
+                    }
+                    if (posMin.z > ndPos.getLocalTranslation().getZ()) {
+                        posMin.z = ndPos.getLocalTranslation().getZ();
+                    }
+
                 }
             }
-                selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
-                
-                // Rotation of the last selected
-                Quaternion rot = base.getSpatialSystem().getSpatialControl(selectionList.get(selectionList.size()-1)).getGeneralNode().getLocalRotation();
+            selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
+
+            // Rotation of the last selected
+            Quaternion rot = base.getSpatialSystem().getSpatialControl(selectionList.get(selectionList.size() - 1)).getGeneralNode().getLocalRotation();
 //                TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
-                selectionCenter.setRotation(rot); //Local coordinates of the last object            
+            selectionCenter.setRotation(rot); //Local coordinates of the last object            
         }
-        
+
     }
-    
+
     protected List<Long> getSelectionList() {
         return selectionList;
     }
@@ -217,7 +258,7 @@ public class EditorSelectionManager extends AbstractControl{
 
     public void setSelectionTool(SelectionToolType selectionTool) {
         this.selectionToolType = selectionTool;
-    }    
+    }
 
     public SelectionMode getSelectionMode() {
         return selectionMode;
@@ -226,7 +267,7 @@ public class EditorSelectionManager extends AbstractControl{
     public void setSelectionMode(SelectionMode selectionMode) {
         this.selectionMode = selectionMode;
     }
-    
+
     @Override
     protected void controlUpdate(float tpf) {
 
@@ -237,7 +278,5 @@ public class EditorSelectionManager extends AbstractControl{
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
-
     }
-    
 }
