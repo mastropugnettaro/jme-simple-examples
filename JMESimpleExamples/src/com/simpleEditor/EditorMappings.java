@@ -95,7 +95,8 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
         // scaleTool
         if (name.equals("ScaleAll") && isPressed && !name.equals("MoveOrSelect")) {
-            if (baseParts.getTransformTool().isIsActive() == false && baseParts.getSelectionManager().getSelectionList().size() > 0) {
+            if (baseParts.getTransformTool().isIsActive() == false && baseParts.getSelectionManager().getSelectionList().size() > 0
+                    && baseParts.getTransformTool().isIsActive() == false) {
                 baseParts.getTransformTool().scaleAll();
                 transformResult = true;
             }
