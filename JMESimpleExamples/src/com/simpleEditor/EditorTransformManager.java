@@ -348,11 +348,11 @@ public class EditorTransformManager extends AbstractControl {
             if (selectionTransformCenter != null) {
 
                 // set new selection center translation
-                base.getSelectionManager().getSelectionCenter().setTranslation(tranformParentNode.getLocalTranslation().clone());
+//                base.getSelectionManager().getSelectionCenter().setTranslation(tranformParentNode.getLocalTranslation().clone());
                 // set new selection center rotation (there is a trick!)
-                if (transformType == transformType.RotateTool) {
-                    base.getSelectionManager().getSelectionCenter().setRotation(tranformParentNode.getLocalRotation().clone());
-                }
+//                if (transformType == transformType.RotateTool) {
+                    base.getSelectionManager().calculateSelectionCenter();
+//                }
 
                 selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
                 tranformParentNode.detachAllChildren();

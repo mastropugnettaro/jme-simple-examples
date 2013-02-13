@@ -227,44 +227,17 @@ public class EditorSelectionManager extends AbstractControl {
                 selectionCenter = new Transform();
             }
 
-            Vector3f posMin = null;
-            Vector3f posMax = null;
-            Vector3f rotMin = null;
-            Vector3f rotMax = null;
+            // FIND CENTROID OF center POSITION
+            Vector3f centerPosition = new Vector3f();
             for (Long ID : selectionList) {
-                // POSITION
+//                // POSITION
                 Spatial ndPos = base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
-//                TransformComponent trLocation = (TransformComponent) base.getEntityManager().getComponent(idGet, TransformComponent.class);
-                if (posMin == null) {
-                    posMin = ndPos.getLocalTranslation().clone();
-                    posMax = ndPos.getLocalTranslation().clone();
-                } else {
-                    // find max values
-                    if (posMax.x < ndPos.getLocalTranslation().getX()) {
-                        posMax.x = ndPos.getLocalTranslation().getX();
-                    }
-                    if (posMax.y < ndPos.getLocalTranslation().getY()) {
-                        posMax.y = ndPos.getLocalTranslation().getY();
-                    }
-                    if (posMax.z < ndPos.getLocalTranslation().getZ()) {
-                        posMax.z = ndPos.getLocalTranslation().getZ();
-                    }
-                    // find min values
-                    if (posMin.x > ndPos.getLocalTranslation().getX()) {
-                        posMin.x = ndPos.getLocalTranslation().getX();
-                    }
-                    if (posMin.y > ndPos.getLocalTranslation().getY()) {
-                        posMin.y = ndPos.getLocalTranslation().getY();
-                    }
-                    if (posMin.z > ndPos.getLocalTranslation().getZ()) {
-                        posMin.z = ndPos.getLocalTranslation().getZ();
-                    }
-
-                }
+                centerPosition.addLocal(ndPos.getWorldTranslation());
             }
-            selectionCenter.setTranslation(FastMath.interpolateLinear(0.5f, posMin, posMax));
+            centerPosition.divideLocal(selectionList.size());
+            selectionCenter.setTranslation(centerPosition);
 
-            // Rotation of the last selected
+            // Rotation of the last selected is Local Rotation (like in Blender)
             Quaternion rot = base.getSpatialSystem().getSpatialControl(selectionList.get(selectionList.size() - 1)).getGeneralNode().getLocalRotation();
 //                TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
             selectionCenter.setRotation(rot); //Local coordinates of the last object            
