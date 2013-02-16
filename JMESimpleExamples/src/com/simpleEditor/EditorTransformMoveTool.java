@@ -45,15 +45,16 @@ public class EditorTransformMoveTool {
 
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
-        if (type.indexOf("move_x") > 0) {
+        if (type.indexOf("move_x") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
-        } else if (type.indexOf("move_y") > 0) {
+        } else if (type.indexOf("move_y") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
-        } else if (type.indexOf("move_z") > 0) {
+        } else if (type.indexOf("move_z") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
-        } else if (type.indexOf("move_view") > 0) {
-            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
-        }
+        } 
+//        else if (type.indexOf("move_view") > 0) {
+//            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
+//        }
         PickedAxis pickedAxis = trManager.getpickedAxis();
 
         // select an angle between 0 and 90 degrees (from 0 to 1.57 in radians) (for collisionPlane)

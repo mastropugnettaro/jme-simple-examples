@@ -50,6 +50,7 @@ public class EditorCameraManager {
         assetManager = this.app.getAssetManager();
 
         camMoveSpeed = 0.006f;
+        this.cam.setFrustumFar(10000);
 
         setCameraNow();
 //        setOrtho(true);

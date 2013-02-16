@@ -11,6 +11,8 @@
     
             
     <screen id="null" controller="com.simpleEditor.EditorGuiManager">
+        <layer id="emptyLayer" childLayout="center">
+        </layer>
     </screen>  
 
     <!--Move to another layer Popup-->
@@ -27,77 +29,77 @@
                             
                 <panel id="moveTobottomPanel2" width="100%" height="30px" align="center" childLayout="horizontal" >
                                 
-                    <control id="moveTolayer1" name="checkbox" checked="false">
-                        <interact onRelease="moveToLayer(1)" checked="false"/>
+                    <control id="moveTolayer1" name="checkbox" >
+                        <interact onRelease="moveToLayer(1)" />
                     </control>
 
-                    <control id="moveTolayer2" name="checkbox" checked="false" >
+                    <control id="moveTolayer2" name="checkbox"  >
                         <interact onRelease="moveToLayer(2)" />
                     </control>
 
-                    <control id="moveTolayer3" name="checkbox" checked="false" >
+                    <control id="moveTolayer3" name="checkbox"  >
                         <interact onRelease="moveToLayer(3)" />
                     </control>
 
-                    <control id="moveTolayer4" name="checkbox" checked="false" >
+                    <control id="moveTolayer4" name="checkbox"  >
                         <interact onRelease="moveToLayer(4)" />
                     </control>
 
-                    <control id="moveTolayer5" name="checkbox" checked="false" >
+                    <control id="moveTolayer5" name="checkbox"  >
                         <interact onRelease="moveToLayer(5)" />
                     </control>
 
-                    <control id="moveTolayer6" name="checkbox" checked="false" >
+                    <control id="moveTolayer6" name="checkbox" >
                         <interact onRelease="moveToLayer(6)" />
                     </control>
 
-                    <control id="moveTolayer7" name="checkbox" checked="false" >
+                    <control id="moveTolayer7" name="checkbox"  >
                         <interact onRelease="moveToLayer(7)" />
                     </control>
 
-                    <control id="moveTolayer8" name="checkbox" checked="false" >
+                    <control id="moveTolayer8" name="checkbox"  >
                         <interact onRelease="moveToLayer(8)" />
                     </control>
 
-                    <control id="moveTolayer9" name="checkbox" checked="false" >
+                    <control id="moveTolayer9" name="checkbox"    >
                         <interact onRelease="moveToLayer(9)" />
                     </control>
 
-                    <control id="moveTolayer10" name="checkbox" checked="false" >
+                    <control id="moveTolayer10" name="checkbox"    >
                         <interact onRelease="moveToLayer(10)" />
                     </control>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                 </panel> 
                             
                 <panel id="moveTobottomPanel3" width="100%" height="30px" align="center" childLayout="horizontal" >
-                    <control id="moveTolayer11" name="checkbox" checked="false" >
+                    <control id="moveTolayer11" name="checkbox"    >
                         <interact onRelease="moveToLayer(11)" />
                     </control>
-                    <control id="moveTolayer12" name="checkbox" checked="false" >
+                    <control id="moveTolayer12" name="checkbox"    >
                         <interact onRelease="moveToLayer(12)" />
                     </control>
-                    <control id="moveTolayer13" name="checkbox" checked="false" >
+                    <control id="moveTolayer13" name="checkbox"    >
                         <interact onRelease="moveToLayer(13)" />
                     </control>
-                    <control id="moveTolayer14" name="checkbox" checked="false" >
+                    <control id="moveTolayer14" name="checkbox"    >
                         <interact onRelease="moveToLayer(14)" />
                     </control>
-                    <control id="moveTolayer15" name="checkbox" checked="false" >
+                    <control id="moveTolayer15" name="checkbox"    >
                         <interact onRelease="moveToLayer(15)" />
                     </control>
-                    <control id="moveTolayer16" name="checkbox" checked="false" >
+                    <control id="moveTolayer16" name="checkbox"    >
                         <interact onRelease="moveToLayer(16)" />
                     </control>
-                    <control id="moveTolayer17" name="checkbox" checked="false" >
+                    <control id="moveTolayer17" name="checkbox"    >
                         <interact onRelease="moveToLayer(17)" />
                     </control>
-                    <control id="moveTolayer18" name="checkbox" checked="false" >
+                    <control id="moveTolayer18" name="checkbox"    >
                         <interact onRelease="moveToLayer(18)" />
                     </control>
-                    <control id="moveTolayer19" name="checkbox" checked="false" >
+                    <control id="moveTolayer19" name="checkbox"    >
                         <interact onRelease="moveToLayer(19)" />
                     </control>
-                    <control id="moveTolayer20" name="checkbox" checked="false" >
+                    <control id="moveTolayer20" name="checkbox"    >
                         <interact onRelease="moveToLayer(20)" />
                     </control>                                                                                                                                                                                                                                                                                                                                    
                 </panel>
@@ -152,7 +154,7 @@
                     </panel>
         
                     <panel height="10px" padding="10">
-                        add your content here 
+                        
                     </panel>
           
                     <!--Coords-->
@@ -218,7 +220,7 @@
 
                     <panel childLayout="vertical" align="center" valign="center" width="90%" height="48px" backgroundColor="#55a5">
                         <control id="RadioGroup-2" name="radioButtonGroup" />
-<!--                        <control name="label" text="Transforms" />-->
+                        <!--                        <control name="label" text="Transforms" />-->
                         <panel width="10" />
                         <panel childLayout="vertical" paddingLeft="7px" paddingRight="7px" paddingTop="4px" paddingBottom="4px" width="100%">
                             <effect>
@@ -245,35 +247,6 @@
                         </panel>
                     </panel>        
 
-                                        
-                                                                                                                        
-<!--                    <panel height="30px" align="center" childLayout="vertical">
-                        <control id="button_mouse_sel" name="button" style="ma_button" label="Mouse Sel" visibleToMouse="true">
-                            <interact onRelease="setMouseSelection()"/>
-                        </control>              
-                    </panel>   
-        
-                    <panel height="30px" align="center" childLayout="vertical">
-                        <control id="button_rectangle_sel" name="button" style="ma_button" label="Rectangle Sel" visibleToMouse="true">
-                            <interact onRelease="setRectangleSelection()"/>
-                        </control>              
-                    </panel>   -->
-        
-                    <panel height="10px" padding="10">
-                        <!-- add your content here -->
-                    </panel>        
-        
-<!--                    <panel height="30px" align="center" childLayout="vertical">
-                        <control id="button_normal_sel" name="button" style="ma_button" label="Normal Sel" visibleToMouse="true">
-                            <interact onRelease="setNormalSelection()"/>
-                        </control>              
-                    </panel>                          
-
-                    <panel height="30px" align="center" childLayout="vertical">
-                        <control id="button_additive_sel" name="button" style="ma_button" label="Additive Sel" visibleToMouse="true">
-                            <interact onRelease="setAdditiveSelection()"/>
-                        </control>              
-                    </panel>          -->
 
                     <panel height="40px" align="center" childLayout="horizontal">
                         <control id="moveToLayerTrue" name="button" style="ma_button" label="Move Sel" visibleToMouse="true">
@@ -301,77 +274,77 @@
                             
                             <panel id="bottomPanel" width="100%" height="50%" align="center" childLayout="horizontal" >
                                 
-                                <control id="layer1" name="checkbox" checked="false">
-                                    <interact onRelease="switchLayer(1)" checked="false"/>
+                                <control id="layer1" name="checkbox"   >
+                                    <interact onRelease="switchLayer(1)"   />
                                 </control>
 
-                                <control id="layer2" name="checkbox" checked="false" >
+                                <control id="layer2" name="checkbox"    >
                                     <interact onRelease="switchLayer(2)" />
                                 </control>
 
-                                <control id="layer3" name="checkbox" checked="false" >
+                                <control id="layer3" name="checkbox"    >
                                     <interact onRelease="switchLayer(3)" />
                                 </control>
 
-                                <control id="layer4" name="checkbox" checked="false" >
+                                <control id="layer4" name="checkbox"    >
                                     <interact onRelease="switchLayer(4)" />
                                 </control>
 
-                                <control id="layer5" name="checkbox" checked="false" >
+                                <control id="layer5" name="checkbox"    >
                                     <interact onRelease="switchLayer(5)" />
                                 </control>
 
-                                <control id="layer6" name="checkbox" checked="false" >
+                                <control id="layer6" name="checkbox"    >
                                     <interact onRelease="switchLayer(6)" />
                                 </control>
 
-                                <control id="layer7" name="checkbox" checked="false" >
+                                <control id="layer7" name="checkbox"    >
                                     <interact onRelease="switchLayer(7)" />
                                 </control>
 
-                                <control id="layer8" name="checkbox" checked="false" >
+                                <control id="layer8" name="checkbox"    >
                                     <interact onRelease="switchLayer(8)" />
                                 </control>
 
-                                <control id="layer9" name="checkbox" checked="false" >
+                                <control id="layer9" name="checkbox"    >
                                     <interact onRelease="switchLayer(9)" />
                                 </control>
 
-                                <control id="layer10" name="checkbox" checked="false" >
+                                <control id="layer10" name="checkbox"    >
                                     <interact onRelease="switchLayer(10)" />
                                 </control>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                             </panel> 
                             
                             <panel id="bottomPanel" width="100%" height="50%" align="center" childLayout="horizontal" >
-                                <control id="layer11" name="checkbox" checked="false" >
+                                <control id="layer11" name="checkbox"    >
                                     <interact onRelease="switchLayer(11)" />
                                 </control>
-                                <control id="layer12" name="checkbox" checked="false" >
+                                <control id="layer12" name="checkbox"    >
                                     <interact onRelease="switchLayer(12)" />
                                 </control>
-                                <control id="layer13" name="checkbox" checked="false" >
+                                <control id="layer13" name="checkbox"    >
                                     <interact onRelease="switchLayer(13)" />
                                 </control>
-                                <control id="layer14" name="checkbox" checked="false" >
+                                <control id="layer14" name="checkbox"    >
                                     <interact onRelease="switchLayer(14)" />
                                 </control>
-                                <control id="layer15" name="checkbox" checked="false" >
+                                <control id="layer15" name="checkbox"    >
                                     <interact onRelease="switchLayer(15)" />
                                 </control>
-                                <control id="layer16" name="checkbox" checked="false" >
+                                <control id="layer16" name="checkbox"    >
                                     <interact onRelease="switchLayer(16)" />
                                 </control>
-                                <control id="layer17" name="checkbox" checked="false" >
+                                <control id="layer17" name="checkbox"    >
                                     <interact onRelease="switchLayer(17)" />
                                 </control>
-                                <control id="layer18" name="checkbox" checked="false" >
+                                <control id="layer18" name="checkbox"    >
                                     <interact onRelease="switchLayer(18)" />
                                 </control>
-                                <control id="layer19" name="checkbox" checked="false" >
+                                <control id="layer19" name="checkbox"    >
                                     <interact onRelease="switchLayer(19)" />
                                 </control>
-                                <control id="layer20" name="checkbox" checked="false" >
+                                <control id="layer20" name="checkbox"    >
                                     <interact onRelease="switchLayer(20)" />
                                 </control>                                                                                                                                                                                                                                                                                                                                    
                             </panel> 
@@ -386,20 +359,119 @@
                 <!--Settings panel-->
                 <panel id="settingsRightPanel" height="99%" width="256px" valign="center" align="center" childLayout="center" padding="10">
                     <control id="settingsTabsGroup" name="tabGroup">
-                        <control id="tab_1" name="tab" caption="tab 1" group="settingsTabsGroup"  style="nifty-tabs-my">
-                            <panel height="95%" width="90%" align="center" childLayout="vertical" padding="10">
-                                <control id="moveToLayerTrue" name="button" valign="top" align="center" style="ma_button" label="Move Sel" visibleToMouse="true" padding="10">
-                                    <interact onRelease="moveToLayerEnable(true)"/>
-                                </control>   
-                                <control id="scrollbarPanelId" name="scrollPanel" horizontal="true" height="225px" >
-                                    <control id="myListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="4" selection="Multiple">
-                                        <!--<onCustom customKey="select" name="colorBar" post="false" color="#444f" neverStopRendering="true" timeType="infinite" />-->
-                                    </control>                     
-                                </control>
+                        <control id="SceneTab" name="tab" caption="Scene" group="settingsTabsGroup"  style="nifty-tabs-my">
+                            <panel height="95%" width="98%" align="center" childLayout="vertical" padding="10" >
                                 
+                                <panel height="40px" width="100%" align="center" childLayout="horizontal" padding="5" backgroundColor="#55a5">
+                                    <control id="loadScene" name="button" valign="center" align="center" style="ma_button" label="Load Scene" visibleToMouse="true">
+                                        <interact onRelease="moveToLayerEnable(true)"/>
+                                    </control>
+                                    <control id="saveScene" name="button" valign="center" align="center" style="ma_button" label="Save Scene" visibleToMouse="true">
+                                        <interact onRelease="moveToLayerEnable(true)"/>
+                                    </control>
+                                </panel>
+                                
+                                <!--Assets-->
+                                <panel childLayout="vertical" height="400px" width="100%" align="center">
+                                    <!--Assets folder/zip/jar path-->
+                                    <panel childLayout="vertical"  width="100%" align="center">
+                                        <control name="label" text="Assets Folder/ZIP/JAR" />
+                                        <control id="scenePath1" name="textfield" />
+                                        <control id="scenePath2" name="textfield" />
+                                        <control id="scenePath3" name="textfield" />
+                                        <control id="scenePath4" name="textfield" />
+                                        <control id="scenePath5" name="textfield" />
+                                    </panel>
+                                
+                                    <!--Entity lists-->
+                                    <panel childLayout="vertical"  width="100%" align="center">
+                                        <control name="label" text="Entity Lists of Assets (JSON File)" />
+                                        <control id="entityList1" name="textfield" />
+                                        <control id="entityList2" name="textfield" />
+                                        <control id="entityList3" name="textfield" />
+                                        <control id="entityList4" name="textfield" />
+                                        <control id="entityList5" name="textfield" />
+                                    </panel>
+                                    
+                                    <!--Update assets-->
+                                    <control id="updateAssets" name="button" valign="center" align="center" style="ma_button" label="Update Assets" visibleToMouse="true">
+                                        <interact onRelease="moveToLayerEnable(true)"/>
+                                    </control>
+                                    
+                                    <control id="savePreviewJ3O" name="checkbox" >
+                                        <!--<interact onRelease="switchLayer(6)" />-->
+                                    </control>
+                                    
+                                </panel>
                             </panel> 
+                            
                         </control>
-                        <control id="tab_2" name="tab" caption="tab 2" group="settingsTabsGroup" style="nifty-tabs-my">
+                        
+                        
+                        <control id="EntitiesTab" name="tab" caption="Entities" group="settingsTabsGroup" style="nifty-tabs-my">
+
+                            <panel height="95%" width="98%" align="center" childLayout="vertical" padding="10" >
+                                
+                                <panel childLayout="vertical">
+                                    <control id="entitiesListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Multiple">
+                                    </control>
+                                    
+                                    <panel childLayout="horizontal">
+                                        <control id="addEntity" name="button" valign="center" align="center" style="ma_button" label="Add Entity" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                        <control id="removeEntityClones" name="button" valign="center" align="center" style="ma_button" label="Remove Clones" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                    </panel>                  
+                                </panel>
+                                
+                                <panel childLayout="vertical">
+                                    <control id="sceneObjectsListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Multiple">
+                                    </control>
+                                    
+                                    <panel childLayout="horizontal">
+                                        <control id="selectEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Select Entity" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                        <control id="removeEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Remove Entity" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                    </panel>                  
+                                </panel>                                
+                            </panel>
+                        </control>
+                        
+                        <control id="ComponentsTab" name="tab" caption="Components" group="settingsTabsGroup" style="nifty-tabs-my">
+
+                            <panel height="95%" width="98%" align="center" childLayout="vertical" padding="10" >
+                                
+                                
+                                <panel childLayout="vertical">
+                                    <control id="entityComponentsListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Multiple">
+                                    </control>
+                                    
+                                    <panel childLayout="horizontal">
+                                        <control id="addEntityComponent" name="button" valign="center" align="center" style="ma_button" label="Add Component" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                        <control id="removeEntityComponent" name="button" valign="center" align="center" style="ma_button" label="Remove Component" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                    </panel>
+                                    
+                                    <panel childLayout="horizontal">
+                                        <control id="editEntityComponent" name="button" valign="center" align="center" style="ma_button" label="Edit Component" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                        <control id="copyToSelectedEntityComponent" name="button" valign="center" align="center" style="ma_button" label="Copy to Selected" visibleToMouse="true">
+                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        </control> 
+                                    </panel>                                    
+                                </panel>                                
+                                
+                            </panel>
+                            
                         </control>
                     </control>  
                 </panel>    
