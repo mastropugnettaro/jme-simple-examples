@@ -13,29 +13,17 @@ import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.asset.plugins.UrlLocator;
+import com.jme3.asset.plugins.FileLocator;
 import com.jme3.asset.plugins.ZipLocator;
-import com.jme3.bounding.BoundingBox;
-import com.jme3.font.BitmapFont;
-import com.jme3.font.BitmapText;
 import com.jme3.input.FlyByCamera;
-import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
-import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Line;
 
 /**
  *
@@ -63,6 +51,9 @@ public class EditorBaseManager {
     private EditorLayerManager layerManager;
     private EntityManager entityManager;
     private EntitySpatialsSystem spatialSystem = new EntitySpatialsSystem();
+    private EditorSceneManager sceneManager;
+
+
 
     public EditorBaseManager(Application app) {
 
@@ -89,15 +80,16 @@ public class EditorBaseManager {
         transformManager = new EditorTransformManager(this.app, this);
         selectableNode.addControl(transformManager);      
         entityManager = new EntityManager();
-        
+        sceneManager = new EditorSceneManager(this.app, this);
+
         setSomeEntities();
 
         EditorGuiManager gui = new EditorGuiManager(this);
         this.app.getStateManager().attach(gui);        
         
-        // test for entity loading
-//        assetManager.registerLocator("/home/mifth/Desktop/2223/ADAssets.jar",
-//                           ZipLocator.class);
+//        // test for entity loading
+//        assetManager.registerLocator("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/dist/lib/ADAssets.jar", ZipLocator.class);
+////        assetManager.registerLocator("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets", FileLocator.class);
 //        Node model = (Node) assetManager.loadModel("Models/ships/federation/fed_hunter_01/fed_hunter_01.j3o");
 //        rootNode.attachChild(model);
         
@@ -146,6 +138,10 @@ public class EditorBaseManager {
     protected EditorLayerManager getLayerManager() {
         return layerManager;
     }    
+    
+    public EditorSceneManager getSceneManager() {
+        return sceneManager;
+    }
     
     private void setSomeEntities() {
     for (int i=0; i<7 ; i++) {

@@ -28,6 +28,7 @@ import com.jme3.scene.shape.Line;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.NiftyEventSubscriber;
 import de.lessvoid.nifty.controls.CheckBox;
+import de.lessvoid.nifty.controls.ListBox;
 import de.lessvoid.nifty.controls.RadioButtonGroupStateChangedEvent;
 import de.lessvoid.nifty.controls.RadioButtonStateChangedEvent;
 import de.lessvoid.nifty.effects.EffectEventId;
@@ -46,7 +47,7 @@ import java.util.logging.Logger;
  * @author mifth
  */
 public class EditorGuiManager extends AbstractAppState implements ScreenController {
-
+    
     private Screen screen;
     private Nifty nifty;
     private SimpleApplication application;
@@ -55,30 +56,30 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     private ViewPort guiViewPort;
     private EditorBaseManager base;
     private Element popupElement;
-
+    
     public EditorGuiManager(EditorBaseManager base) {
         this.base = base;
     }
-
+    
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
-
+        
         super.initialize(stateManager, app);
         application = (SimpleApplication) app;
         rootNode = application.getRootNode();
         assetManager = app.getAssetManager();
         guiNode = application.getGuiNode();
         guiViewPort = application.getGuiViewPort();
-
+        
         createGrid();
 //        createSimpleGui();
         setLight();
-
+        
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(application.getAssetManager(),
                 application.getInputManager(),
                 application.getAudioRenderer(),
                 guiViewPort);
-
+        
         nifty = niftyDisplay.getNifty();
 //     nifty.loadStyleFile("nifty-default-styles.xml");
 //     nifty.loadControlFile("nifty-default-controls.xml");        
@@ -106,12 +107,12 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         // set checkboxes for layers
         CheckBox lastEnabled = null;
         for (int i = 0; i < 20; i++) {
-            CheckBox cb = screen.findNiftyControl("layer" + (i + 1), CheckBox.class);
+            CheckBox cb = nifty.getScreen("start").findNiftyControl("layer" + (i + 1), CheckBox.class);
             Node layer = base.getLayerManager().getLayer(i + 1);
             Object isEnabledObj = layer.getUserData("isEnabled");
             boolean isEnabled = (Boolean) isEnabledObj;
             if (isEnabled) {
-
+                
                 cb.check();
                 lastEnabled = cb;
             } else {
@@ -119,68 +120,82 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             }
         }
 
-        Node activeLayer = base.getLayerManager().getActiveLayer();
+
         // SET THE LAYER ACTIVE (Red color)
+        Node activeLayer = base.getLayerManager().getActiveLayer();        
         if (activeLayer != null) {
-            screen.getFocusHandler().resetFocusElements();
-            Element selectImage = screen.findElementByName(base.getLayerManager().getActiveLayer().getName());
+            nifty.getScreen("start").getFocusHandler().resetFocusElements();
+            Element selectImage = nifty.getScreen("start").findElementByName(base.getLayerManager().getActiveLayer().getName());
             selectImage.startEffect(EffectEventId.onFocus);
         } // SET LAST SELECTED LAYER (IF IT PARSES NOT SO GOOD)
         else if (activeLayer == null && lastEnabled != null) {
-
-            screen.getFocusHandler().resetFocusElements();
+            
+            nifty.getScreen("start").getFocusHandler().resetFocusElements();
             Element selectImage = lastEnabled.getElement();
             selectImage.startEffect(EffectEventId.onFocus);
+        }
+        
+
+        // Entities List
+        for (int i = 0; i < 80; i++) {
+            ListBox list = nifty.getScreen("start").findNiftyControl("entitiesListBox", ListBox.class);
+            list.addItem("item " + i);
         }
 
 
         // set popup test
         popupElement = nifty.createPopup("popupMoveToLayer");
+        popupElement.disable();
         screen.getFocusHandler().resetFocusElements();
         
         nifty.gotoScreen("start"); // start the screen 
         screen.getFocusHandler().resetFocusElements();        
     }
-    
-  /**
-   * This is called when the RadioButton selection has changed.
-   */
-  @NiftyEventSubscriber(id="RadioGroup-1")
-  public void onRadioGroup1Changed1(final String id, final RadioButtonGroupStateChangedEvent event) {
-      
-    if (event.getSelectedId().equals("mouse_sel")) setMouseSelection();
-    else if (event.getSelectedId().equals("rectangle_sel")) setRectangleSelection();
-  }
 
     /**
-   * This is called when the RadioButton selection has changed.
-   */
-  @NiftyEventSubscriber(id="RadioGroup-2")
-  public void onRadioGroup1Changed2(final String id, final RadioButtonGroupStateChangedEvent event) {
-      
-    if (event.getSelectedId().equals("normal_sel")) setNormalSelection();
-    else if (event.getSelectedId().equals("additive_sel")) setAdditiveSelection();
-  }
-  
-  
+     * This is called when the RadioButton selection has changed.
+     */
+    @NiftyEventSubscriber(id = "RadioGroup-1")
+    public void onRadioGroup1Changed1(final String id, final RadioButtonGroupStateChangedEvent event) {
+        
+        if (event.getSelectedId().equals("mouse_sel")) {
+            setMouseSelection();
+        } else if (event.getSelectedId().equals("rectangle_sel")) {
+            setRectangleSelection();
+        }
+    }
+
+    /**
+     * This is called when the RadioButton selection has changed.
+     */
+    @NiftyEventSubscriber(id = "RadioGroup-2")
+    public void onRadioGroup1Changed2(final String id, final RadioButtonGroupStateChangedEvent event) {
+        
+        if (event.getSelectedId().equals("normal_sel")) {
+            setNormalSelection();
+        } else if (event.getSelectedId().equals("additive_sel")) {
+            setAdditiveSelection();
+        }
+    }
+    
     public void setMoveManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setRotateManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.RotateTool);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setScaleManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.ScaleTool);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setGrid() {
         int indexGrid = rootNode.getChildIndex(gridNode);
         if (indexGrid == -1) {
@@ -190,48 +205,48 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setMouseSelection() {
         base.getSelectionManager().setSelectionTool(EditorSelectionManager.SelectionToolType.MouseClick);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setRectangleSelection() {
         base.getSelectionManager().setSelectionTool(EditorSelectionManager.SelectionToolType.Rectangle);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setLocalCoords() {
         base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.LocalCoords);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setWorldCoords() {
         base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.WorldCoords);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setViewCoords() {
         base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.ViewCoords);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setAdditiveSelection() {
         base.getSelectionManager().setSelectionMode(EditorSelectionManager.SelectionMode.Additive);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void setNormalSelection() {
         base.getSelectionManager().setSelectionMode(EditorSelectionManager.SelectionMode.Normal);
         screen.getFocusHandler().resetFocusElements();
     }
-
+    
     public void switchLayer(String srtinG) {
         int iInt = Integer.valueOf(srtinG);
         Node activeLayer = base.getLayerManager().getActiveLayer(); // active layer
         Node layerToSwitch = base.getLayerManager().getLayer(iInt); // layer to switch on/off
         Node selectableNode = (Node) rootNode.getChild("selectableNode");
-
+        
         Object isEnabledObj = layerToSwitch.getUserData("isEnabled");
         boolean isEnabled = (Boolean) isEnabledObj;
 
@@ -275,9 +290,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             }
         } // switching on
         else {
-
+            
             if (activeLayer != null) {
-
+                
                 Element selectActiveLayerImage = screen.findElementByName(activeLayer.getName());
                 selectActiveLayerImage.stopEffect(EffectEventId.onFocus);
                 selectActiveLayerImage.startEffect(EffectEventId.onEnabled);
@@ -291,7 +306,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             Element selectImage = screen.findElementByName(layerToSwitch.getName());
             selectImage.startEffect(EffectEventId.onFocus);
             base.getLayerManager().setActiveLayer(layerToSwitch);
-
+            
             selectableNode.attachChild(layerToSwitch);
             layerToSwitch.setUserData("isActive", true);
             layerToSwitch.setUserData("isEnabled", true);
@@ -299,20 +314,22 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         screen.getFocusHandler().resetFocusElements();
 //        System.out.println("sel" + selectableNode.getChildren().size());
     }
-
+    
     public void moveToLayerEnable(String bool) {
         boolean boolValue = Boolean.valueOf(bool);
         if (boolValue) {
             screen.getFocusHandler().resetFocusElements();
+            popupElement.enable();
             nifty.showPopup(nifty.getCurrentScreen(), popupElement.getId(), null);
             screen.getFocusHandler().resetFocusElements();
         } else {
             nifty.closePopup(popupElement.getId());
+            popupElement.disable();
             screen.getFocusHandler().resetFocusElements();
         }
-
+        
     }
-
+    
     public void moveToLayer(String srtinG) {
         // move to layer
         int iInt = Integer.valueOf(srtinG);
@@ -333,17 +350,18 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             base.getSelectionManager().clearSelectionList();
             base.getSelectionManager().calculateSelectionCenter();
         }
-
+        
         nifty.closePopup(popupElement.getId());
+        popupElement.disable();
         screen.getFocusHandler().resetFocusElements();
-
+        
     }
-
+    
     private void createGrid() {
         gridNode = new Node("gridNode");
 
         //Create a grid plane
-        Geometry g = new Geometry("GRID", new Grid(1001, 1001, 10f));
+        Geometry g = new Geometry("GRID", new Grid(201, 201, 10f));
         Material floor_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         floor_mat.getAdditionalRenderState().setWireframe(true);
         floor_mat.setColor("Color", new ColorRGBA(0.4f, 0.4f, 0.4f, 0.15f));
@@ -368,11 +386,11 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         gxAxis.setShadowMode(RenderQueue.ShadowMode.Off);
         gxAxis.setMaterial(mat);
         gxAxis.setCullHint(Spatial.CullHint.Never);
-
+        
         gridNode.attachChild(gxAxis);
 
         // Blue line for Z axis
-        final Line zAxis = new Line(new Vector3f(0f, 0f, -500f), new Vector3f(0f, 0f, 500f));
+        final Line zAxis = new Line(new Vector3f(0f, 0f, -1000f), new Vector3f(0f, 0f, 1000f));
         zAxis.setLineWidth(2f);
         Geometry gzAxis = new Geometry("ZAxis", zAxis);
         gzAxis.setModelBound(new BoundingBox());
@@ -385,27 +403,27 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         gzAxis.setMaterial(mat);
         gzAxis.setCullHint(Spatial.CullHint.Never);
         gridNode.attachChild(gzAxis);
-
+        
         rootNode.attachChild(gridNode);
-
+        
     }
-
+    
     public Node getGridNode() {
         return gridNode;
     }
-
+    
     private void setLight() {
-
+        
         DirectionalLight dl = new DirectionalLight();
         dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
         dl.setColor(new ColorRGBA(1, 1, 1, 1));
         rootNode.addLight(dl);
-
+        
         application.getViewPort().setBackgroundColor(ColorRGBA.DarkGray);
     }
-
+    
     private void createSimpleGui() {
-
+        
         BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
@@ -413,14 +431,14 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         ch.setColor(new ColorRGBA(1f, 0.8f, 0.1f, 0.3f));
         ch.setLocalTranslation(application.getCamera().getWidth() * 0.1f, application.getCamera().getHeight() * 0.1f, 0);
         guiNode.attachChild(ch);
-
+        
     }
-
+    
     @Override
     public void update(float tpf) {
         //TODO: implement behavior during runtime
     }
-
+    
     @Override
     public void cleanup() {
         super.cleanup();
@@ -428,15 +446,15 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         //e.g. remove all spatials from rootNode
         //this is called on the OpenGL thread after the AppState has been detached
     }
-
+    
     public void bind(Nifty nifty, Screen screen) {
         this.nifty = nifty;
         this.screen = screen;
     }
-
+    
     public void onStartScreen() {
     }
-
+    
     public void onEndScreen() {
     }
 }

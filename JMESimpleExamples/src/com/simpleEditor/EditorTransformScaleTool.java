@@ -44,11 +44,11 @@ public class EditorTransformScaleTool {
 
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
-        if (type.indexOf("scale_x") > 0) {
+        if (type.indexOf("scale_x") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
-        } else if (type.indexOf("scale_y") > 0) {
+        } else if (type.indexOf("scale_y") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
-        } else if (type.indexOf("scale_z") > 0) {
+        } else if (type.indexOf("scale_z") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
         } 
 //        else if (type.indexOf("scale_view") > 0) {

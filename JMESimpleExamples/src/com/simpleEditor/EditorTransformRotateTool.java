@@ -46,15 +46,17 @@ public class EditorTransformRotateTool {
 
         // Set PickedAxis
         String type = colResult.getGeometry().getName();
-        if (type.indexOf("rot_x") > 0) {
+        if (type.indexOf("rot_x") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.X);
-        } else if (type.indexOf("rot_y") > 0) {
+        } else if (type.indexOf("rot_y") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
-        } else if (type.indexOf("rot_z") > 0) {
+        } else if (type.indexOf("rot_z") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
-        } else if (type.indexOf("rot_view") > 0) {
-            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
-        }
+        } 
+        
+//        else if (type.indexOf("rot_view") >= 0) {
+//            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
+//        }
 
         EditorTransformManager.PickedAxis pickedAxis = trManager.getpickedAxis();
 
