@@ -13,6 +13,8 @@ import com.entitysystem.TransformComponent;
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.asset.plugins.UrlLocator;
+import com.jme3.asset.plugins.ZipLocator;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
@@ -92,6 +94,12 @@ public class EditorBaseManager {
 
         EditorGuiManager gui = new EditorGuiManager(this);
         this.app.getStateManager().attach(gui);        
+        
+        // test for entity loading
+//        assetManager.registerLocator("/home/mifth/Desktop/2223/ADAssets.jar",
+//                           ZipLocator.class);
+//        Node model = (Node) assetManager.loadModel("Models/ships/federation/fed_hunter_01/fed_hunter_01.j3o");
+//        rootNode.attachChild(model);
         
     }
 
