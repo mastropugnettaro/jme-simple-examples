@@ -51,7 +51,7 @@ public class EditorSelectionTools {
     private void createRectangle() {
 
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", new ColorRGBA(0.5f, 0.2f, 0.3f, 1));
+        mat.setColor("Color", new ColorRGBA(0.9f, 0.4f, 0.6f, 1));
         mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
 
         Line ln1 = new Line(new Vector3f(-0.5f, 0.5f, 0), new Vector3f(0.5f, 0.5f, 0));

@@ -89,9 +89,13 @@ public class EditorCameraManager {
         //Here spade bar and middle mouse button
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
 
-        chaseCam.setDefaultDistance(10);
+        
         chaseCam.setMinDistance(0.05f);
-        chaseCam.setMaxDistance(500);
+        chaseCam.setMaxDistance(1000);
+        chaseCam.setDefaultDistance(100);
+        chaseCam.setZoomSensitivity(30f);
+//        chaseCam.setDefaultDistance(800);
+//        chaseCam.se
     }
 
     protected float getCamMoveSpeed() {

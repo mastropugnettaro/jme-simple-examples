@@ -26,7 +26,10 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.shape.Line;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.NiftyEventSubscriber;
 import de.lessvoid.nifty.controls.CheckBox;
+import de.lessvoid.nifty.controls.RadioButtonGroupStateChangedEvent;
+import de.lessvoid.nifty.controls.RadioButtonStateChangedEvent;
 import de.lessvoid.nifty.effects.EffectEventId;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
@@ -68,7 +71,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         guiViewPort = application.getGuiViewPort();
 
         createGrid();
-        createSimpleGui();
+//        createSimpleGui();
         setLight();
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(application.getAssetManager(),
@@ -85,11 +88,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         // attach the nifty display to the gui view port as a processor
         guiViewPort.addProcessor(niftyDisplay);
         application.getInputManager().setCursorVisible(true);
-
-        nifty.gotoScreen("start"); // start the screen 
-        screen.getFocusHandler().resetFocusElements();
-
-
 
 //    Element niftyElement = nifty.getCurrentScreen().findElementByName("button1");
 //    niftyElement.getElementInteraction().getPrimary().setOnClickMethod(new NiftyMethodInvoker(nifty, "printGo()", this));
@@ -139,8 +137,32 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         // set popup test
         popupElement = nifty.createPopup("popupMoveToLayer");
         screen.getFocusHandler().resetFocusElements();
+        
+        nifty.gotoScreen("start"); // start the screen 
+        screen.getFocusHandler().resetFocusElements();        
     }
+    
+  /**
+   * This is called when the RadioButton selection has changed.
+   */
+  @NiftyEventSubscriber(id="RadioGroup-1")
+  public void onRadioGroup1Changed1(final String id, final RadioButtonGroupStateChangedEvent event) {
+      
+    if (event.getSelectedId().equals("mouse_sel")) setMouseSelection();
+    else if (event.getSelectedId().equals("rectangle_sel")) setRectangleSelection();
+  }
 
+    /**
+   * This is called when the RadioButton selection has changed.
+   */
+  @NiftyEventSubscriber(id="RadioGroup-2")
+  public void onRadioGroup1Changed2(final String id, final RadioButtonGroupStateChangedEvent event) {
+      
+    if (event.getSelectedId().equals("normal_sel")) setNormalSelection();
+    else if (event.getSelectedId().equals("additive_sel")) setAdditiveSelection();
+  }
+  
+  
     public void setMoveManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
@@ -321,10 +343,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         gridNode = new Node("gridNode");
 
         //Create a grid plane
-        Geometry g = new Geometry("GRID", new Grid(1001, 1001, 1f));
+        Geometry g = new Geometry("GRID", new Grid(1001, 1001, 10f));
         Material floor_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         floor_mat.getAdditionalRenderState().setWireframe(true);
-        floor_mat.setColor("Color", new ColorRGBA(0.3f, 0.3f, 0.3f, 0.1f));
+        floor_mat.setColor("Color", new ColorRGBA(0.4f, 0.4f, 0.4f, 0.15f));
         floor_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         g.setCullHint(Spatial.CullHint.Never);
         g.setShadowMode(RenderQueue.ShadowMode.Off);
@@ -334,12 +356,12 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         gridNode.attachChild(g);
 
         // Red line for X axis
-        final Line xAxis = new Line(new Vector3f(-500f, 0f, 0f), new Vector3f(500f, 0f, 0f));
+        final Line xAxis = new Line(new Vector3f(-1000f, 0f, 0f), new Vector3f(1000f, 0f, 0f));
         xAxis.setLineWidth(2f);
         Geometry gxAxis = new Geometry("XAxis", xAxis);
         gxAxis.setModelBound(new BoundingBox());
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", new ColorRGBA(1.0f, 0.2f, 0.2f, 0.2f));
+        mat.setColor("Color", new ColorRGBA(1.0f, 0.2f, 0.5f, 0.2f));
         mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         gxAxis.setCullHint(Spatial.CullHint.Never);
         gxAxis.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -379,7 +401,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         dl.setColor(new ColorRGBA(1, 1, 1, 1));
         rootNode.addLight(dl);
 
-        application.getViewPort().setBackgroundColor(ColorRGBA.Gray);
+        application.getViewPort().setBackgroundColor(ColorRGBA.DarkGray);
     }
 
     private void createSimpleGui() {

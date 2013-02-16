@@ -87,7 +87,7 @@ public class EditorTransformManager extends AbstractControl {
 
         pickedAxis = PickedAxis.None;
         transformType = TransformToolType.MoveTool;  //default type
-        trCoordinates = TransformCoordinates.LocalCoords;
+        trCoordinates = TransformCoordinates.WorldCoords;
 
         createCollisionPlane();
         ndParent1.attachChild(ndParent2); // this is for rotation compensation
