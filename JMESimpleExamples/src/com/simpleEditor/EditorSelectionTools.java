@@ -86,7 +86,7 @@ public class EditorSelectionTools {
         CollisionResults results = new CollisionResults();
         Ray ray = new Ray();
         Vector3f pos = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0f).clone();
-        Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0.1f).clone();
+        Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 1f).clone();
         dir.subtractLocal(pos).normalizeLocal();
         ray.setOrigin(pos);
         ray.setDirection(dir);

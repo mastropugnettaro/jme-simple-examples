@@ -30,7 +30,7 @@ public class Editor {
     
     
     protected static JFileChooser mFileCm;
-    protected static FileFilter modFilter = new EditorModelFilter();
+    protected static FileFilter modFilter = new EditorSceneFilter();
     protected static FileFilter texFilter = new EditorTextureFilter();
     protected JList listEntity, listGeo;
     protected DefaultListModel modelEntity, modelGeo;

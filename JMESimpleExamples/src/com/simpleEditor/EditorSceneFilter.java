@@ -7,7 +7,7 @@ import javax.swing.filechooser.*;
  *
  * @author @author Ulrich Nzuzi <ulrichnz@code.google.com>
  */
-public class EditorModelFilter extends FileFilter{
+public class EditorSceneFilter extends FileFilter{
     //Accept j3o and ogre xml files.
     public boolean accept(File f) {
         if (f.isDirectory()) {
@@ -16,11 +16,7 @@ public class EditorModelFilter extends FileFilter{
  
 //        String extension = getExtension(f);
 //        if (extension != null) {
-            if (f.getName().indexOf(".j3o") > 0 ||
-                f.getName().indexOf(".mesh.j3o") > 0 ||
-                f.getName().indexOf(".mesh.xml") > 0 ||
-                f.getName().indexOf(".obj") > 0 ||
-                f.getName().indexOf(".blend") > 0){
+            if (f.getName().indexOf(".swe") > 0){
                     return true;
             } else {
                 return false;
@@ -32,7 +28,7 @@ public class EditorModelFilter extends FileFilter{
  
     //The description of this filter
     public String getDescription() {
-        return "Model (*.j3o),(*.mesh.xml), (*.obj), (*.blend)";
+        return "Scene (*.swe)";
     }
     
     /*
