@@ -87,7 +87,7 @@ public class EditorTransformManager extends AbstractControl {
 
         pickedAxis = PickedAxis.None;
         transformType = TransformToolType.MoveTool;  //default type
-        trCoordinates = TransformCoordinates.WorldCoords;
+        trCoordinates = TransformCoordinates.LocalCoords;
 
         createCollisionPlane();
         ndParent1.attachChild(ndParent2); // this is for rotation compensation
@@ -95,11 +95,13 @@ public class EditorTransformManager extends AbstractControl {
         moveToolObj = new EditorTransformMoveTool(this, this.app, this.base);
         rotateToolObj = new EditorTransformRotateTool(this, this.app, this.base);
         scaleToolObj = new EditorTransformScaleTool(this, this.app, this.base);
+        
+        setTransformToolScale(0.2f);
 
     }
 
     private void createCollisionPlane() {
-        float size = 2000;
+        float size = 3000;
         Geometry g = new Geometry("plane", new Quad(size, size));
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
@@ -162,10 +164,18 @@ public class EditorTransformManager extends AbstractControl {
     protected boolean isIsActive() {
         return isActive;
     }
+    
+    public Vector3f getTransformToolScale() {
+        return transformTool.getLocalScale();
+    }
+
+    public void setTransformToolScale(float newScale) {
+        transformTool.setLocalScale(new Vector3f(newScale, newScale, newScale));
+    }    
 
     protected void updateTransform(Transform center) {
         if (center != null) {
-            Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(1.3f);
+            Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(app.getCamera().getFrustumNear() + 0.1f);
             transformTool.setLocalTranslation(app.getCamera().getLocation().add(vec));
             transformTool.setLocalRotation(center.getRotation());
         }
@@ -244,7 +254,7 @@ public class EditorTransformManager extends AbstractControl {
         CollisionResults results = new CollisionResults();
         Ray ray = new Ray();
         Vector3f pos = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0f).clone();
-        Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 0.1f).clone();
+        Vector3f dir = app.getCamera().getWorldCoordinates(app.getInputManager().getCursorPosition(), 1f).clone();
         dir.subtractLocal(pos).normalizeLocal();
         ray.setOrigin(pos);
         ray.setDirection(dir);

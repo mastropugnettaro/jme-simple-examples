@@ -78,15 +78,15 @@ public final class EntitySpatialsControl extends AbstractControl {
     }
 
     //Read the node child to find geomtry and stored it to the map for later access as submesh
-    public void recurseNode() {
-        Node nd_temp = (Node) spatial;
+    public void recurseNodeID(Node generalNodde) {
+        Node nd_temp = (Node) generalNodde;
         nd_temp.setUserData("EntityID", ID);
         
         for (int i = 0; i < nd_temp.getChildren().size(); i++) {
             
             if (nd_temp.getChildren().get(i) instanceof Node) {
                 nd_temp.getChildren().get(i).setUserData("EntityID", ID);
-                recurseNode();
+                recurseNodeID((Node)nd_temp.getChildren().get(i));
             } else if (nd_temp.getChildren().get(i) instanceof Geometry) {
                 Geometry geom = (Geometry) nd_temp.getChildren().get(i);
                 geom.setUserData("EntityID", ID);

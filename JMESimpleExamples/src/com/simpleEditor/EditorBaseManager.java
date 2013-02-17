@@ -52,7 +52,7 @@ public class EditorBaseManager {
     private EntityManager entityManager;
     private EntitySpatialsSystem spatialSystem = new EntitySpatialsSystem();
     private EditorSceneManager sceneManager;
-
+    private EditorGuiManager gui;
 
 
     public EditorBaseManager(Application app) {
@@ -84,7 +84,7 @@ public class EditorBaseManager {
 
         setSomeEntities();
 
-        EditorGuiManager gui = new EditorGuiManager(this);
+        gui = new EditorGuiManager(this);
         this.app.getStateManager().attach(gui);        
         
 //        // test for entity loading
@@ -142,6 +142,10 @@ public class EditorBaseManager {
     public EditorSceneManager getSceneManager() {
         return sceneManager;
     }
+
+    public EditorGuiManager getGuiManager() {
+        return gui;
+    }
     
     private void setSomeEntities() {
     for (int i=0; i<7 ; i++) {
@@ -184,7 +188,7 @@ public class EditorBaseManager {
         
         EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
         spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
-        spatialControl.recurseNode();
+        spatialControl.recurseNodeID(selectedSp);
 
         layerManager.addToLayer(selectedSp, 1);
         if (i < 3) layerManager.addToLayer(selectedSp, 2);

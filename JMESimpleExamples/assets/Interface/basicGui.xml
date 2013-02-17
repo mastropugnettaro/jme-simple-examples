@@ -362,21 +362,30 @@
                         <control id="SceneTab" name="tab" caption="Scene" group="settingsTabsGroup"  style="nifty-tabs-my">
                             <panel height="95%" width="98%" align="center" childLayout="vertical" padding="10" >
                                 
-                                <panel height="40px" width="100%" align="center" childLayout="horizontal" padding="5" backgroundColor="#55a5">
-                                    <control id="loadScene" name="button" valign="center" align="center" style="ma_button" label="Load Scene" visibleToMouse="true">
-                                        <interact onRelease="moveToLayerEnable(true)"/>
+                                <panel childLayout="horizontal">
+                                    <control id="newScene" name="button" valign="center" align="center" style="ma_button" label="New Scene" visibleToMouse="true">
+                                        <interact onRelease="newSceneButton()"/>
                                     </control>
-                                    <control id="saveScene" name="button" valign="center" align="center" style="ma_button" label="Save Scene" visibleToMouse="true">
-                                        <interact onRelease="moveToLayerEnable(true)"/>
+                                    <control id="loadScene" name="button" valign="center" align="center" style="ma_button" label="Load Scene" visibleToMouse="true">
+                                        <interact onRelease="loadSceneButton()"/>
                                     </control>
                                 </panel>
+                                
+                                <panel childLayout="horizontal">
+                                    <control id="saveScene" name="button" valign="center" align="center" style="ma_button" label="Save Scene" visibleToMouse="true">
+                                        <interact onRelease="saveSceneButton()"/>
+                                    </control>                                    
+                                    <control id="saveAsNewScene" name="button" valign="center" align="center" style="ma_button" label="Save as New" visibleToMouse="true">
+                                        <interact onRelease="saveAsNewSceneButton()"/>
+                                    </control>
+                                </panel>                                
                                 
                                 <!--Assets-->
                                 <panel childLayout="vertical" height="400px" width="100%" align="center">
                                     <!--Assets folder/zip/jar path-->
                                     <panel childLayout="vertical"  width="100%" align="center">
                                         <control name="label" text="Assets Folder/ZIP/JAR" />
-                                        <control id="scenePath1" name="textfield" />
+                                        <control id="scenePath1" name="textfield" text=""/>
                                         <control id="scenePath2" name="textfield" />
                                         <control id="scenePath3" name="textfield" />
                                         <control id="scenePath4" name="textfield" />
@@ -395,13 +404,13 @@
                                     
                                     <!--Update assets-->
                                     <control id="updateAssets" name="button" valign="center" align="center" style="ma_button" label="Update Assets" visibleToMouse="true">
-                                        <interact onRelease="moveToLayerEnable(true)"/>
+                                        <interact onRelease="updateAssetsButton()"/>
                                     </control>
                                     
                                     <control id="savePreviewJ3O" name="checkbox" >
                                         <!--<interact onRelease="switchLayer(6)" />-->
                                     </control>
-                                    
+
                                 </panel>
                             </panel> 
                             
@@ -413,20 +422,24 @@
                             <panel height="95%" width="98%" align="center" childLayout="vertical" padding="10" >
                                 
                                 <panel childLayout="vertical">
-                                    <control id="entitiesListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Multiple">
+                                    <control name="label" text="Assets List" />
+                                    
+                                    <control id="entitiesListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Single">
                                     </control>
                                     
                                     <panel childLayout="horizontal">
                                         <control id="addEntity" name="button" valign="center" align="center" style="ma_button" label="Add Entity" visibleToMouse="true">
-                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                            <interact onRelease="addEntityToSceneButton()"/>
                                         </control> 
                                         <control id="removeEntityClones" name="button" valign="center" align="center" style="ma_button" label="Remove Clones" visibleToMouse="true">
-                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                            <interact onRelease="removeClonesButton()"/>
                                         </control> 
                                     </panel>                  
                                 </panel>
                                 
                                 <panel childLayout="vertical">
+                                    <control name="label" text="Scene Oblects List" />
+                                    
                                     <control id="sceneObjectsListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Multiple">
                                     </control>
                                     

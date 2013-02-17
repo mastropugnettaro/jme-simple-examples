@@ -50,7 +50,11 @@ public class EditorCameraManager {
         assetManager = this.app.getAssetManager();
 
         camMoveSpeed = 0.006f;
-        this.cam.setFrustumFar(10000);
+//        this.cam.setFrustumFar(1000);
+        this.cam.setFrustumPerspective(25f, this.cam.getWidth()/this.cam.getHeight(), 0.3f, 10000f);
+        this.cam.updateViewProjection();
+        this.cam.update();
+//        this.cam.setFrustumNear(0.1f);
 
         setCameraNow();
 //        setOrtho(true);
@@ -106,6 +110,10 @@ public class EditorCameraManager {
     protected void setCamMoveSpeed(float camMoveSpeed) {
         this.camMoveSpeed = camMoveSpeed;
     }
+    
+    protected Node getCamTrackHelper() {
+        return camTrackHelper;
+    }    
 
     protected void moveCamera() {
 
