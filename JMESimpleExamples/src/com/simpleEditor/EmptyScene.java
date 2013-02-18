@@ -12,8 +12,8 @@ public class EmptyScene extends SimpleApplication{
     public static void main(String[] args) {
         EmptyScene app = new EmptyScene();
         AppSettings aps = new AppSettings(true);
-//        aps.setVSync(true);
-        aps.setFrameRate(80);
+        aps.setVSync(true);
+//        aps.setFrameRate(80);
         aps.setResolution(1600, 800);
         app.setSettings(aps);
         app.setShowSettings(false);
