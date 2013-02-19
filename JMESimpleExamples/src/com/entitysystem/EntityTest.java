@@ -63,11 +63,11 @@ public class EntityTest extends SimpleApplication {
         EntityTransformComponent transform = new EntityTransformComponent(tr);
         components.setComponent(transform);
 
-        // Update components
-        components.setUpdateType(ComponentsControl.UpdateType.dynamicServerEntity);
+//         Update components
+//        components.setUpdateType(ComponentsControl.UpdateType.dynamicServerEntity);
         
-        EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
-        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
+        EntitySpatialsControl_2 spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
+        spatialControl.setType(EntitySpatialsControl_2.SpatialType.Node);
         spatialControl.recurseNodeID(selectedSp);
         
         System.out.println(selectedSp.getUserData("EntityID"));
@@ -78,11 +78,11 @@ public class EntityTest extends SimpleApplication {
         System.out.println(entityManager.getComponentControl(2).toString());
         System.out.println(entityManager.getComponentControl(100).toString());
         
-        // make 300 entities static
-        for (int i=0; i<300 ; i++) {
-            entityManager.getComponentControl(i+1).updateOnce(true, ComponentsControl.UpdateType.dynamicServerEntity);
-            System.out.println(i);
-        }
+//        // make 300 entities static
+//        for (int i=0; i<300 ; i++) {
+//            entityManager.getComponentControl(i+1).updateOnce(true, ComponentsControl.UpdateType.dynamicServerEntity);
+//            System.out.println(i);
+//        }
     
     }
 
