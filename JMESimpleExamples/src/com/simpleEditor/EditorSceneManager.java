@@ -9,6 +9,7 @@ import com.entitysystem.EntityManager;
 import com.entitysystem.EntityModelPathComponent;
 import com.entitysystem.EntityNameComponent;
 import com.entitysystem.EntitySpatialsControl;
+import com.entitysystem.EntitySpatialsControl_2;
 import com.entitysystem.EntityTransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
@@ -168,12 +169,12 @@ public class EditorSceneManager {
             EntityTransformComponent transform = new EntityTransformComponent(model.getWorldTransform());
             components.setComponent(transform);
 
-            // Update components
-            components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
-            System.out.println("YYYYY" + model.toString());
+//            // Update components
+//            components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
+//            System.out.println("YYYYY" + model.toString());
             
-            EntitySpatialsControl spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, entityManager.getComponentControl(ent));
-            spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
+            EntitySpatialsControl_2 spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, entityManager.getComponentControl(ent));
+            spatialControl.setType(EntitySpatialsControl_2.SpatialType.Node);
             spatialControl.recurseNodeID(model);
             
             activeLayer.attachChild(model);

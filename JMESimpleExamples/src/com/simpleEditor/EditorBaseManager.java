@@ -82,7 +82,7 @@ public class EditorBaseManager {
         entityManager = new EntityManager();
         sceneManager = new EditorSceneManager(this.app, this);
 
-        setSomeEntities();
+//        setSomeEntities();
 
         gui = new EditorGuiManager(this);
         this.app.getStateManager().attach(gui);        
@@ -147,58 +147,58 @@ public class EditorBaseManager {
         return gui;
     }
     
-    private void setSomeEntities() {
-    for (int i=0; i<7 ; i++) {
-    
-        Box b = new Box(Vector3f.ZERO, 1, 1, 1);
-        Geometry geo = new Geometry("Box"+i, b);
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-//        mat.getAdditionalRenderState().setWireframe(true);
-        geo.setMaterial(mat);
-        Node selectedSp = new Node();
-        selectedSp.attachChild(geo);        
-
-        Geometry geo2 = geo.clone();
-        geo2.scale(0.3f, 0.32f, 1);
-        geo2.move(0, 0, 1);
-        selectedSp.attachChild(geo2);
-        
-        // setup Entity
-        long ent = entityManager.createEntity();                
-        ComponentsControl components = entityManager.getComponentControl(ent);
-        
-        EntityNameComponent name = new EntityNameComponent("ent" + i);
-        components.setComponent(name);
-        
-        // Check for different transform of entity
-        Transform tr = new Transform();
-//        Vector3f loc = new Vector3f((float) Math.random() * 20.0f,(float) Math.random() * 10.0f,(float)Math.random() * 20.0f);
-        Vector3f loc = new Vector3f(0,0,i*3);
-        tr.setTranslation(loc);
+//    private void setSomeEntities() {
+//    for (int i=0; i<7 ; i++) {
+//    
+//        Box b = new Box(Vector3f.ZERO, 1, 1, 1);
+//        Geometry geo = new Geometry("Box"+i, b);
+//        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+////        mat.getAdditionalRenderState().setWireframe(true);
+//        geo.setMaterial(mat);
+//        Node selectedSp = new Node();
+//        selectedSp.attachChild(geo);        
+//
+//        Geometry geo2 = geo.clone();
+//        geo2.scale(0.3f, 0.32f, 1);
+//        geo2.move(0, 0, 1);
+//        selectedSp.attachChild(geo2);
+//        
+//        // setup Entity
+//        long ent = entityManager.createEntity();                
+//        ComponentsControl components = entityManager.getComponentControl(ent);
+//        
+//        EntityNameComponent name = new EntityNameComponent("ent" + i);
+//        components.setComponent(name);
+//        
+//        // Check for different transform of entity
+//        Transform tr = new Transform();
+////        Vector3f loc = new Vector3f((float) Math.random() * 20.0f,(float) Math.random() * 10.0f,(float)Math.random() * 20.0f);
+//        Vector3f loc = new Vector3f(0,0,i*3);
+//        tr.setTranslation(loc);
+////        selectedSp.setLocalTransform(tr);
+//        
+//        EntityTransformComponent transform = new EntityTransformComponent(tr);
+//        components.setComponent(transform);
+//
+//        // Update components
+//        components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
 //        selectedSp.setLocalTransform(tr);
-        
-        EntityTransformComponent transform = new EntityTransformComponent(tr);
-        components.setComponent(transform);
-
-        // Update components
-        components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
-        selectedSp.setLocalTransform(tr);
-        selectedSp.setName("ent" + i);
-//        selectedSp.setLocalRotation(new Quaternion(0.1f,0.2f,0.1f,0.5f));
-        
-        EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
-        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
-        spatialControl.recurseNodeID(selectedSp);
-
-        layerManager.addToLayer(selectedSp, 1);
-        if (i < 3) layerManager.addToLayer(selectedSp, 2);
-//        selectionManager.selectEntity(ent, EditorSelectionManager.SelectionMode.Additive);
-//        selectionManager.calculateSelectionCenter();
-//        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
-        
-        
-        System.out.println(selectedSp.getUserData("EntityID"));
-    }        
-    }
+//        selectedSp.setName("ent" + i);
+////        selectedSp.setLocalRotation(new Quaternion(0.1f,0.2f,0.1f,0.5f));
+//        
+//        EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
+//        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
+//        spatialControl.recurseNodeID(selectedSp);
+//
+//        layerManager.addToLayer(selectedSp, 1);
+//        if (i < 3) layerManager.addToLayer(selectedSp, 2);
+////        selectionManager.selectEntity(ent, EditorSelectionManager.SelectionMode.Additive);
+////        selectionManager.calculateSelectionCenter();
+////        transformManager.setTransformToolType(EditorTransformManager.TransformToolType.MoveTool);        
+//        
+//        
+//        System.out.println(selectedSp.getUserData("EntityID"));
+//    }        
+//    }
 
 }

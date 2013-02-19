@@ -16,19 +16,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class EntitySpatialsSystem {
     
-    private static ConcurrentHashMap <Long, EntitySpatialsControl> spatialControl = new ConcurrentHashMap <Long, EntitySpatialsControl>();    
+    private static ConcurrentHashMap <Long, EntitySpatialsControl_2> spatialControl = new ConcurrentHashMap <Long, EntitySpatialsControl_2>();    
 
     public EntitySpatialsSystem() {
         
     }
     
-    public static EntitySpatialsControl addSpatialControl(Spatial sp, long ID, ComponentsControl control) {
-         EntitySpatialsControl spControl = new EntitySpatialsControl(sp, ID, control);
+    public static EntitySpatialsControl_2 addSpatialControl(Spatial sp, long ID, ComponentsControl control) {
+         EntitySpatialsControl_2 spControl = new EntitySpatialsControl_2(sp, ID, control);
          spatialControl.put(ID, spControl);
          return spControl;
     }    
     
-    public static EntitySpatialsControl getSpatialControl(long ID) {
+    public static EntitySpatialsControl_2 getSpatialControl(long ID) {
         return spatialControl.get(ID);
     }    
 
