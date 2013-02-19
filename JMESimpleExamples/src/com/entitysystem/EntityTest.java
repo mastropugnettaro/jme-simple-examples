@@ -60,7 +60,7 @@ public class EntityTest extends SimpleApplication {
         tr.setTranslation(loc);
 //        selectedSp.setLocalTransform(tr);
         
-        TransformComponent transform = new TransformComponent(tr);
+        EntityTransformComponent transform = new EntityTransformComponent(tr);
         components.setComponent(transform);
 
         // Update components

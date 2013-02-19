@@ -5,7 +5,7 @@
 package com.simpleEditor;
 
 import com.entitysystem.EntitySpatialsControl;
-import com.entitysystem.TransformComponent;
+import com.entitysystem.EntityTransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
@@ -118,17 +118,17 @@ public class EditorSelectionManager extends AbstractControl {
 //                base.getGuiManager().getSceneObjectsListBox().deselectItem(obj);
 //            }
 //            // select item in the objectslist
-//            base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + " (" + ID + ")");
+//            base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + "(" + ID + ")");
 
         } else if (mode == SelectionMode.Additive) {
             if (selectionList.contains(ID)) {
                 selectionList.remove(ID);
                 removeSelectionBox(nodeToSelect); // remove selection mesh
-//                base.getGuiManager().getSceneObjectsListBox().deselectItem(nodeToSelect.getName()  + " (" + ID + ")");
+//                base.getGuiManager().getSceneObjectsListBox().deselectItem(nodeToSelect.getName()  + "(" + ID + ")");
             } else {
                 selectionList.add(ID);
                 createSelectionBox(nodeToSelect);
-//                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName()  + " (" + ID + ")");
+//                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName()  + "(" + ID + ")");
             }
         }
         // Substractive is not implemented        
@@ -188,7 +188,7 @@ public class EditorSelectionManager extends AbstractControl {
                                 selectionList.add(spId);
                                 Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(spId).getGeneralNode();
                                 createSelectionBox(nodeToSelect);
-//                                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + " (" + spId + ")");
+//                                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + "(" + spId + ")");
                             }
                         }
                     }
