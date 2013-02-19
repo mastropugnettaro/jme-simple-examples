@@ -111,20 +111,20 @@ public class EditorSelectionTools {
                 selManager.calculateSelectionCenter();
             } else {
                 if (selManager.getSelectionMode() == EditorSelectionManager.SelectionMode.Normal) {
-                    // remove selection boxes
-                    for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
-                        selManager.removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
-                    }
+//                    // remove selection boxes
+//                    for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
+//                        selManager.removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+//                    }
                     base.getSelectionManager().clearSelectionList();
                 }
             }
 
         } else {
             if (selManager.getSelectionMode() == EditorSelectionManager.SelectionMode.Normal) {
-                // remove selection boxes
-                for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
-                    selManager.removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
-                }
+//                // remove selection boxes
+//                for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
+//                    selManager.removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+//                }
                 base.getSelectionManager().clearSelectionList();
             }
         }

@@ -207,7 +207,7 @@ public class EditorSceneManager {
             long ent = entityManager.createEntity();
             ComponentsControl components = entityManager.getComponentControl(ent);
 
-            EntityNameComponent nameComponent = new EntityNameComponent(name + "_ID_" + ent);
+            EntityNameComponent nameComponent = new EntityNameComponent(name + "_ID" + ent);
             components.setComponent(nameComponent);
             model.setName(nameComponent.getName());
 
@@ -230,27 +230,45 @@ public class EditorSceneManager {
     }
 
     protected void removeClones(String name) {
-        String nameToRemove = name + "_ID_";
+        String nameToRemove = name + "_ID";
         List<Long> selList = base.getSelectionManager().getSelectionList();
         List<Long> idsToRemove = new ArrayList<Long>();
         for (Long id : selList) {
 
+            // remove objects from the scene
             EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
             if (nameComp.getName().indexOf(nameToRemove) == 0) {
-                base.getEntityManager().removeEntity(id);
-                base.getSpatialSystem().removeSpatialControl(id);
-                base.getGuiManager().getSceneObjectsListBox().removeItem(nameComp.getName());
                 idsToRemove.add(id);
             }
         }
-        
+
         for (Long removeID : idsToRemove) {
-            selList.remove(removeID);
+            removeEntityObject(removeID);
         }
         idsToRemove.clear();
         idsToRemove = null;
-        base.getGuiManager().getSceneObjectsListBox().sortAllItems();
         base.getSelectionManager().calculateSelectionCenter();
+        base.getGuiManager().getSceneObjectsListBox().sortAllItems();
+        base.getGuiManager().setSelectedObjectsList();        
+    }
+
+    protected void removeEntityObject(long id) {
+        // remove item from scene list
+        EntityNameComponent nameComp = (EntityNameComponent)base.getEntityManager().getComponent(id, EntityNameComponent.class);
+//        base.getGuiManager().getSceneObjectsListBox().removeItem(nameComp.getName() + " (" + id + ")");
+        
+        //remove item from selection
+        List<Long> selList = base.getSelectionManager().getSelectionList();
+        if (selList.contains(id)) {
+            selList.remove(id);
+            Node nd = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+            base.getSelectionManager().removeSelectionBox(nd);
+            nd = null;
+        }
+        
+        // destroy entity
+        base.getEntityManager().removeEntity(id);
+        base.getSpatialSystem().removeSpatialControl(id);        
     }
 
     protected static List<String> getAssetsList() {
