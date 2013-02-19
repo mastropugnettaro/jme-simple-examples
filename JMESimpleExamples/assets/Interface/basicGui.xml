@@ -444,13 +444,18 @@
                                     </control>
                                     
                                     <panel childLayout="horizontal">
-                                        <control id="selectEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Select Entity" visibleToMouse="true">
-                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        <control id="selectEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Select Entities" visibleToMouse="true">
+                                            <interact onRelease="selectEntitiesButton()"/>
                                         </control> 
-                                        <control id="removeEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Remove Entity" visibleToMouse="true">
-                                            <interact onRelease="moveToLayerEnable(true)"/>
+                                        <control id="removeEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Remove Selected" visibleToMouse="true">
+                                            <interact onRelease="removeSelectedButton()"/>
                                         </control> 
                                     </panel>                  
+                                    <panel childLayout="horizontal">
+                                        <control id="cloneSelectedButton()" name="button" valign="center" align="center" style="ma_button" label="Clone Selected" visibleToMouse="true">
+                                            <interact onRelease="cloneSelectedButton()"/>
+                                        </control>                                         
+                                    </panel>
                                 </panel>                                
                             </panel>
                         </control>

@@ -25,6 +25,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.debug.WireBox;
 import com.jme3.scene.shape.Quad;
+import de.lessvoid.nifty.controls.ListBox;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +45,6 @@ public class EditorSelectionManager extends AbstractControl {
     private SelectionToolType selectionToolType;
     private EditorSelectionTools selectionTools;
     private boolean isActive = false;
-
     private SelectionMode selectionMode;
 
     protected enum SelectionToolType {
@@ -100,33 +100,45 @@ public class EditorSelectionManager extends AbstractControl {
 
     protected void selectEntity(long ID, SelectionMode mode) {
         Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
+//        List selectedList = base.getGuiManager().getSceneObjectsListBox().getSelection();
 
         if (mode == SelectionMode.Normal) {
             // remove selection boxes
             for (Long idToRemove : selectionList) {
-                removeSelectionBox((Node)base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+                removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
             }
             selectionList.clear();
-            
+
             // add to selection
             selectionList.add(ID);
             createSelectionBox(nodeToSelect);
-            
+
+//            // deselect all items in the objectsList
+//            for (Object obj : selectedList) {
+//                base.getGuiManager().getSceneObjectsListBox().deselectItem(obj);
+//            }
+//            // select item in the objectslist
+//            base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + " (" + ID + ")");
+
         } else if (mode == SelectionMode.Additive) {
             if (selectionList.contains(ID)) {
                 selectionList.remove(ID);
                 removeSelectionBox(nodeToSelect); // remove selection mesh
+//                base.getGuiManager().getSceneObjectsListBox().deselectItem(nodeToSelect.getName()  + " (" + ID + ")");
             } else {
                 selectionList.add(ID);
                 createSelectionBox(nodeToSelect);
+//                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName()  + " (" + ID + ")");
             }
         }
         // Substractive is not implemented        
 
-//        calculateSelectionCenter();
+        base.getGuiManager().setSelectedObjectsList();
     }
 
     protected void selectEntities() {
+
+//        List selectedList = base.getGuiManager().getSceneObjectsListBox().getSelection();
 
         List<Node> lst = base.getLayerManager().getLayers();
         Vector2f centerCam = new Vector2f(app.getCamera().getWidth() * 0.5f, app.getCamera().getHeight() * 0.5f);
@@ -136,9 +148,14 @@ public class EditorSelectionManager extends AbstractControl {
         if (selectionMode == SelectionMode.Normal) {
             // remove selection boxes
             for (Long idToRemove : selectionList) {
-                removeSelectionBox((Node)base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
-            }            
+                removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+            }
+
+            // clear selectionList
             selectionList.clear();
+//            for (Object obj : selectedList) {
+//                base.getGuiManager().getSceneObjectsListBox().deselectItem(obj);
+//            }
         }
 
         for (Node layer : lst) {
@@ -171,11 +188,16 @@ public class EditorSelectionManager extends AbstractControl {
                                 selectionList.add(spId);
                                 Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(spId).getGeneralNode();
                                 createSelectionBox(nodeToSelect);
+//                                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + " (" + spId + ")");
                             }
                         }
                     }
                 }
             }
+        }
+        // select item in the objectslist        
+        if (selectionMode == SelectionMode.Normal) {
+            base.getGuiManager().setSelectedObjectsList();
         }
     }
 
@@ -188,18 +210,21 @@ public class EditorSelectionManager extends AbstractControl {
         nodeSelect.setLocalTransform(new Transform());
         wbx.fromBoundingBox((BoundingBox) nodeSelect.getWorldBound());
         nodeSelect.setLocalTransform(tempScale);
-        
+
         Geometry bx = new Geometry("SelectionTempMesh", wbx);
         bx.setMaterial(mat_box);
         nodeSelect.attachChild(bx);
 
     }
-    
+
     protected void removeSelectionBox(Node nodeSelect) {
         nodeSelect.detachChild(nodeSelect.getChild("SelectionTempMesh"));
-    }    
+    }
 
     protected void clearSelectionList() {
+        for (Long id : selectionList) {
+            removeSelectionBox((Node)base.getSpatialSystem().getSpatialControl(id).getGeneralNode());
+        }
         selectionList.clear();
     }
 
@@ -213,8 +238,8 @@ public class EditorSelectionManager extends AbstractControl {
 
     protected boolean isIsActive() {
         return isActive;
-    }    
-    
+    }
+
     protected void calculateSelectionCenter() {
         if (selectionList.size() == 0) {
             selectionCenter = null;

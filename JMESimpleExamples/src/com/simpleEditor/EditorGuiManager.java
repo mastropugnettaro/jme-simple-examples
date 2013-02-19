@@ -30,6 +30,7 @@ import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.NiftyEventSubscriber;
 import de.lessvoid.nifty.controls.CheckBox;
 import de.lessvoid.nifty.controls.ListBox;
+import de.lessvoid.nifty.controls.ListBoxSelectionChangedEvent;
 import de.lessvoid.nifty.controls.RadioButtonGroupStateChangedEvent;
 import de.lessvoid.nifty.controls.RadioButtonStateChangedEvent;
 import de.lessvoid.nifty.controls.TextField;
@@ -48,6 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.omg.CosNaming.NameComponent;
 
 /**
  *
@@ -63,7 +65,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     private ViewPort guiViewPort;
     private EditorBaseManager base;
     private Element popupElement;
-    
     private ListBox entitiesListBox, sceneObjectsListBox;
 
     public EditorGuiManager(EditorBaseManager base) {
@@ -152,10 +153,11 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         // ListBoxes
         entitiesListBox = nifty.getScreen("start").findNiftyControl("entitiesListBox", ListBox.class);
         sceneObjectsListBox = nifty.getScreen("start").findNiftyControl("sceneObjectsListBox", ListBox.class);
-        
-//        //Temp
-//        nifty.getScreen("start").findNiftyControl("entityList1", TextField.class).setText("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets/Scripts/Entities/entities.json");
-//        nifty.getScreen("start").findNiftyControl("scenePath1", TextField.class).setText("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets");
+        sceneObjectsListBox.changeSelectionMode(ListBox.SelectionMode.Multiple, false);
+
+        //Temp
+        nifty.getScreen("start").findNiftyControl("entityList1", TextField.class).setText("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets/Scripts/Entities/entities.json");
+        nifty.getScreen("start").findNiftyControl("scenePath1", TextField.class).setText("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets");
 
         nifty.gotoScreen("start"); // start the screen 
         screen.getFocusHandler().resetFocusElements();
@@ -187,6 +189,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
     }
 
+//    // for sceneObjectsListBox manipulation
+//    @NiftyEventSubscriber(id = "sceneObjectsListBox")
+//    public void onListBoxSelectionChanged(final String id, final ListBoxSelectionChangedEvent changed) {
+//    }
     public void setMoveManipulator() {
         System.out.println("Manipulator is changed");
         base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
@@ -269,14 +275,14 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         base.getSceneManager().saveAsNewScene();
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public ListBox getEntitiesListBox() {
         return entitiesListBox;
     }
 
     public ListBox getSceneObjectsListBox() {
         return sceneObjectsListBox;
-    }    
+    }
 
     public void updateAssetsButton() {
         // update assets
@@ -302,8 +308,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
 
         // update list of all entities
-        ConcurrentHashMap<String, JSONObject> x = base.getSceneManager().getEntitiesListsList();
-        for (JSONObject js : x.values()) {
+        ConcurrentHashMap<String, JSONObject> entList = base.getSceneManager().getEntitiesListsList();
+        entitiesListBox.clear();
+        for (JSONObject js : entList.values()) {
             if (js.size() > 0) {
                 Object[] entitiesList = js.keySet().toArray();
                 for (Object key : entitiesList) {
@@ -321,18 +328,76 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         if (entitiesListBox.getSelection().size() > 0) {
             long id = base.getSceneManager().addEntityToScene(entitiesListBox.getSelection().get(0).toString());
 
+            // clear selection
+            base.getSelectionManager().clearSelectionList();
+            base.getSelectionManager().selectEntity(id, base.getSelectionManager().getSelectionMode());
+            base.getSelectionManager().calculateSelectionCenter();
+
             // add entty to sceneList
             EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
-            sceneObjectsListBox.addItem(nameComp.getName());
+            sceneObjectsListBox.addItem(nameComp.getName() + " (" + id + ")");
             sceneObjectsListBox.sortAllItems();
+            setSelectedObjectsList();
         }
 
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
+    // This is just visual representation of selected objects
+    protected void setSelectedObjectsList() {
+
+        List<Long> selList = base.getSelectionManager().getSelectionList();
+
+        for (Object indexDeselect : sceneObjectsListBox.getSelection()) {
+            sceneObjectsListBox.deselectItem(indexDeselect);
+        }
+
+        for (Long id : selList) {
+            EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
+            String objectString = nameComp.getName() + " (" + id + ")";
+            sceneObjectsListBox.selectItem(objectString);
+        }
+    }
+
     public void removeClonesButton() {
-        base.getSceneManager().removeClones(entitiesListBox.getSelection().get(0).toString());
+        if (entitiesListBox.getSelection().size() > 0) {
+            base.getSceneManager().removeClones(entitiesListBox.getSelection().get(0).toString());
+        }
         screen.getFocusHandler().resetFocusElements();
+    }
+
+    // select entities from the list of seceneObjectsList
+    public void selectEntitiesButton() {
+//        List<Long> selList = base.getSelectionManager().getSelectionList();
+        base.getSelectionManager().clearSelectionList();
+        for (Object obj : sceneObjectsListBox.getSelection()) {
+            String objStr = (String) obj;
+            long id = Long.valueOf(objStr.substring(objStr.indexOf(" (") + 2, objStr.indexOf(")")));
+            Node entNode = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+            base.getSelectionManager().getSelectionList().add(id);
+            base.getSelectionManager().createSelectionBox(entNode);
+        }
+        base.getSelectionManager().calculateSelectionCenter();
+        screen.getFocusHandler().resetFocusElements();
+    }
+
+    public void removeSelectedButton() {
+        base.getSelectionManager().clearSelectionList();
+        base.getSelectionManager().calculateSelectionCenter();
+
+        for (Object obj : sceneObjectsListBox.getSelection()) {
+            String objStr = (String) obj;
+            long id = Long.valueOf(objStr.substring(objStr.indexOf(" (") + 2, objStr.indexOf(")")));
+            base.getSceneManager().removeEntityObject(id);
+            sceneObjectsListBox.removeItem(obj);
+        }
+        setSelectedObjectsList();
+        screen.getFocusHandler().resetFocusElements();
+    }
+    
+    public void cloneSelectedButton() {
+        List<Long> selList = base.getSelectionManager().getSelectionList();
+        
     }
 
     public void switchLayer(String srtinG) {
