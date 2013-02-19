@@ -121,10 +121,10 @@ public final class EntitySpatialsControl extends AbstractControl {
 
         // Update transforms
         if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicServerEntity) {
-            TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
+            EntityTransformComponent transform = (EntityTransformComponent) components.getComponent(EntityTransformComponent.class);
             spatial.setLocalTransform(transform.getTransform());
         } else if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicClientEntity) {
-            TransformComponent transform = (TransformComponent) components.getComponent(TransformComponent.class);
+            EntityTransformComponent transform = (EntityTransformComponent) components.getComponent(EntityTransformComponent.class);
             transform.getTransform().set(spatial.getLocalTransform());
         }
         

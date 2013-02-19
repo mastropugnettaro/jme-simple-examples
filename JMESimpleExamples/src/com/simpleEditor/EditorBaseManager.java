@@ -9,7 +9,7 @@ import com.entitysystem.EntityManager;
 import com.entitysystem.EntityNameComponent;
 import com.entitysystem.EntitySpatialsControl;
 import com.entitysystem.EntitySpatialsSystem;
-import com.entitysystem.TransformComponent;
+import com.entitysystem.EntityTransformComponent;
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.asset.AssetManager;
@@ -177,7 +177,7 @@ public class EditorBaseManager {
         tr.setTranslation(loc);
 //        selectedSp.setLocalTransform(tr);
         
-        TransformComponent transform = new TransformComponent(tr);
+        EntityTransformComponent transform = new EntityTransformComponent(tr);
         components.setComponent(transform);
 
         // Update components
