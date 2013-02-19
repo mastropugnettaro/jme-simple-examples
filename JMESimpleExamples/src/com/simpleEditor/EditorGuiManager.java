@@ -374,10 +374,26 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             String objStr = (String) obj;
             long id = Long.valueOf(objStr.substring(objStr.indexOf(" (") + 2, objStr.indexOf(")")));
             Node entNode = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
-            base.getSelectionManager().getSelectionList().add(id);
-            base.getSelectionManager().createSelectionBox(entNode);
+
+            // check if entity is in selected layer
+            Node selectableNode = (Node) rootNode.getChild("selectableNode");
+            boolean isEntityInLayer = false;
+            for (Spatial sp : selectableNode.getChildren()) {
+                Node selectedLayer = (Node) sp;
+                if (entNode.hasAncestor(selectableNode)) {
+                    isEntityInLayer = true;
+                }
+            }
+
+            // if entity is in a selected layer, so it will be selected
+            if (isEntityInLayer) {
+                base.getSelectionManager().getSelectionList().add(id);
+                base.getSelectionManager().createSelectionBox(entNode);
+            }
+
         }
         base.getSelectionManager().calculateSelectionCenter();
+        setSelectedObjectsList();
         screen.getFocusHandler().resetFocusElements();
     }
 
@@ -394,10 +410,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         setSelectedObjectsList();
         screen.getFocusHandler().resetFocusElements();
     }
-    
+
     public void cloneSelectedButton() {
         List<Long> selList = base.getSelectionManager().getSelectionList();
-        
+
     }
 
     public void switchLayer(String srtinG) {
@@ -470,6 +486,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             layerToSwitch.setUserData("isActive", true);
             layerToSwitch.setUserData("isEnabled", true);
         }
+        
+        setSelectedObjectsList();
         screen.getFocusHandler().resetFocusElements();
 //        System.out.println("sel" + selectableNode.getChildren().size());
     }
