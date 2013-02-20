@@ -517,14 +517,14 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             base.getLayerManager().addToLayer(moveNode, iInt);
         }
 
-        // clear selection if olayer is inactive
+        // clear selection if layer is inactive
         Object boolObj = base.getLayerManager().getLayer(iInt).getUserData("isEnabled");
         boolean bool = (Boolean) boolObj;
         if (bool == false) {
             // remove selection boxes
-            for (Long idToRemove : base.getSelectionManager().getSelectionList()) {
-                base.getSelectionManager().removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
-            }
+//            for (Long idToRemove : lst) {
+//                base.getSelectionManager().removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(idToRemove).getGeneralNode());
+//            }
             base.getSelectionManager().clearSelectionList();
             base.getSelectionManager().calculateSelectionCenter();
         }
