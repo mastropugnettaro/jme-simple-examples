@@ -46,6 +46,7 @@ public class EditorSelectionManager extends AbstractControl {
     private EditorSelectionTools selectionTools;
     private boolean isActive = false;
     private SelectionMode selectionMode;
+    private long lastSelected;
 
     protected enum SelectionToolType {
 
@@ -138,8 +139,6 @@ public class EditorSelectionManager extends AbstractControl {
 
     protected void selectEntities() {
 
-//        List selectedList = base.getGuiManager().getSceneObjectsListBox().getSelection();
-
         List<Node> lst = base.getLayerManager().getLayers();
         Vector2f centerCam = new Vector2f(app.getCamera().getWidth() * 0.5f, app.getCamera().getHeight() * 0.5f);
         Node rectangle = selectionTools.getRectangleSelection();
@@ -153,14 +152,13 @@ public class EditorSelectionManager extends AbstractControl {
 
             // clear selectionList
             selectionList.clear();
-//            for (Object obj : selectedList) {
-//                base.getGuiManager().getSceneObjectsListBox().deselectItem(obj);
-//            }
         }
 
         for (Node layer : lst) {
+            // check if layer is enabled
             Object boolObj = layer.getUserData("isEnabled");
             boolean bool = (Boolean) boolObj;
+
             if (bool == true) {
                 for (Spatial sp : layer.getChildren()) {
 
@@ -188,7 +186,6 @@ public class EditorSelectionManager extends AbstractControl {
                                 selectionList.add(spId);
                                 Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(spId).getGeneralNode();
                                 createSelectionBox(nodeToSelect);
-//                                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + "(" + spId + ")");
                             }
                         }
                     }
@@ -203,7 +200,7 @@ public class EditorSelectionManager extends AbstractControl {
 
     protected void createSelectionBox(Node nodeSelect) {
         Material mat_box = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_box.setColor("Color", ColorRGBA.Blue);
+        mat_box.setColor("Color", new ColorRGBA(0.6f, 0.4f, 0.1f, 1));
         WireBox wbx = new WireBox();
 //        BoundingBox = new BoundingBox();
         Transform tempScale = nodeSelect.getLocalTransform().clone();
@@ -223,7 +220,7 @@ public class EditorSelectionManager extends AbstractControl {
 
     protected void clearSelectionList() {
         for (Long id : selectionList) {
-            removeSelectionBox((Node)base.getSpatialSystem().getSpatialControl(id).getGeneralNode());
+            removeSelectionBox((Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode());
         }
         selectionList.clear();
     }
@@ -266,6 +263,23 @@ public class EditorSelectionManager extends AbstractControl {
             Quaternion rot = base.getSpatialSystem().getSpatialControl(selectionList.get(selectionList.size() - 1)).getGeneralNode().getLocalRotation();
 //                TransformComponent trLastSelected = (TransformComponent) base.getEntityManager().getComponent(selectionList.get(selectionList.size() - 1), TransformComponent.class);
             selectionCenter.setRotation(rot); //Local coordinates of the last object            
+        }
+
+        //set the last selected color
+        if (selectionList.size() > 0) {
+            // set for previous selected
+            if (selectionList.size() > 1 && selectionList.contains(lastSelected)) {
+                Node ndPrevious = (Node) base.getSpatialSystem().getSpatialControl(lastSelected).getGeneralNode();
+                Geometry geoBoxPrevious = (Geometry) ndPrevious.getChild("SelectionTempMesh");
+                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.55f, 0.35f, 0.03f, 1)); 
+            }
+            
+            // set for new selected
+            long lastID = selectionList.get(selectionList.size() - 1);
+            Node ndLast = (Node) base.getSpatialSystem().getSpatialControl(lastID).getGeneralNode();
+            Geometry geoBoxLast = (Geometry) ndLast.getChild("SelectionTempMesh");
+            geoBoxLast.getMaterial().setColor("Color", new ColorRGBA(0.8f, 0.6f, 0.2f, 1)); 
+            lastSelected = lastID;
         }
 
     }
