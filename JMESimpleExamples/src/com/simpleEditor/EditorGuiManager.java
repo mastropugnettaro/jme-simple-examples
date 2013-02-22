@@ -472,7 +472,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             List<Long> list = base.getSelectionManager().getSelectionList();
             for (long id : list) {
                 if (id != lastIdOfComponentList
-                        && base.getDataManager().getEntityData(id).contains(strDataName)) {
+                        && base.getDataManager().getEntityData(id).containsKey(strDataName) == true) {
                     base.getDataManager().getEntityData(id).remove(strDataName);
                 }
             }
