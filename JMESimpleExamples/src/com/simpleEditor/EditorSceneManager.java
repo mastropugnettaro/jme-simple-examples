@@ -146,7 +146,7 @@ public class EditorSceneManager {
             EntityModelPathComponent modelPath = new EntityModelPathComponent(path);
             components.setComponent(modelPath);
             
-            EntityNameComponent nameComponent = new EntityNameComponent(name + "_ID" + ent);
+            EntityNameComponent nameComponent = new EntityNameComponent(name + "_IDX" + ent);
             components.setComponent(nameComponent);
             model.setName(nameComponent.getName());
             
@@ -164,7 +164,7 @@ public class EditorSceneManager {
     }
     
     protected void removeClones(String name) {
-        String nameToRemove = name + "_ID";
+        String nameToRemove = name + "_IDX";
         List<Long> selList = base.getSelectionManager().getSelectionList();
         List<Long> idsToRemove = new ArrayList<Long>();
         for (Long id : selList) {
@@ -178,8 +178,8 @@ public class EditorSceneManager {
         
         for (Long removeID : idsToRemove) {
             EntityNameComponent nameToRemoveReal = (EntityNameComponent) base.getEntityManager().getComponent(removeID, EntityNameComponent.class);
-            base.getGuiManager().getSceneObjectsListBox().removeItem(nameToRemoveReal.getName() + "(" + removeID + ")");
-            System.out.println("yeeee" + nameToRemoveReal.getName() + "(" + removeID + ")");
+            base.getGuiManager().getSceneObjectsListBox().removeItem(nameToRemoveReal.getName() );
+            System.out.println("yeeee" + nameToRemoveReal.getName());
             removeEntityObject(removeID);
         }
         idsToRemove.clear();
@@ -199,7 +199,7 @@ public class EditorSceneManager {
             EntityNameComponent modelNameSelected = (EntityNameComponent) compControlSelected.getComponent(EntityNameComponent.class);
             
             // new entity
-            String selectedName = modelNameSelected.getName().substring(0, modelNameSelected.getName().indexOf("_ID"));
+            String selectedName = modelNameSelected.getName().substring(0, modelNameSelected.getName().indexOf("_IDX"));
             long newID = createEntityModel(selectedName, modelPathSelected.getModelPath());
             Node newModel = (Node) base.getSpatialSystem().getSpatialControl(newID).getGeneralNode();
             newModel.setLocalTransform(selectedModel.getWorldTransform());

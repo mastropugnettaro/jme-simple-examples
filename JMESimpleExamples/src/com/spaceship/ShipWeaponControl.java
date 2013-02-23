@@ -34,9 +34,9 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
     
     private Geometry bullet;
     private Vector3f aim;
-    private boolean fire = false;
-    float bulletTimer = 0f;
-    private Node bullets = new Node("bullets");
+    private boolean fire;
+    float bulletTimer;
+    private Node bullets;
     private Node shipNode;
     private SimpleApplication asm;
     private CollisionShape shape;
@@ -48,6 +48,9 @@ public class ShipWeaponControl extends  AbstractControl implements Savable, Clon
         this.asm = asm;
         
          shape = new BoxCollisionShape(new Vector3f(0.15f, 0.15f, 0.5f));
+         bullets = new Node("bullets");
+         bulletTimer = 0f;
+         fire = false;
         
         // Setup Bullet
         Box b = new Box(Vector3f.ZERO, 0.15f, 0.15f, 0.5f);

@@ -34,8 +34,8 @@ public class AimingControl extends AbstractControl {
 
     private SimpleApplication app;
     private AssetManager asm;
-    private List<Spatial> list = new LinkedList<Spatial>();
-    private float timer = 0f;
+    private List<Spatial> list;
+    private float timer;
     private Camera cam;
     private Node player;
     private Spatial aim;
@@ -50,6 +50,8 @@ public class AimingControl extends AbstractControl {
         cam = app.getCamera();
         this.player = player;
 
+        list = new LinkedList<Spatial>();
+        timer = 0f;
         centerCam = new Vector2f(cam.getWidth() / 2, cam.getHeight() / 2);
         distanceToRemove = 300f;
 

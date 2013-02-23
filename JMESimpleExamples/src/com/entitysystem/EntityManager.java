@@ -29,6 +29,11 @@ public final class EntityManager {
         return componentControl.get(ID);
     }        
     
+    public static boolean containsID(long ID) {
+        return componentControl.containsKey(ID);
+    }            
+    
+    
     public static Object getComponent(long ID, Class getClass) {
         return componentControl.get(ID).getComponent(getClass);
     }      

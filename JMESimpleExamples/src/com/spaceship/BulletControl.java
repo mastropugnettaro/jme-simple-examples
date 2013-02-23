@@ -37,9 +37,9 @@ public class BulletControl extends AbstractControl implements Savable, Cloneable
     private Geometry bullet;
     private Vector3f vecMove, bornPlace, contactPoint;
     private BulletAppState state;
-    private boolean work = true;
+    private boolean work;
     private float bulletLength;
-    private float hit = 1000f;
+    private float hit;
     private Spatial sp;
     private SimpleApplication asm;
     
@@ -51,8 +51,11 @@ public class BulletControl extends AbstractControl implements Savable, Cloneable
         this.bornPlace = bornPlace.clone();
         this.asm = asm;
         
+        hit = 1000f;
+        
         vecMove = bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(7f);        
         bulletLength = 100f;
+        work = true;
         
 //        // testRay
 //        Geometry geoRay = new Geometry("line", new Line(bullet.getLocalTranslation().clone(), bullet.getLocalTranslation().add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength))));

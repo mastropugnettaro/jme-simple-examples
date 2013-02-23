@@ -50,10 +50,13 @@ public class EditorBaseManager {
     private EditorSelectionManager selectionManager;
     private EditorLayerManager layerManager;
     private EntityManager entityManager;
-    private EntitySpatialsSystem spatialSystem = new EntitySpatialsSystem();
+    private EntitySpatialsSystem spatialSystem;
     private EditorSceneManager sceneManager;
     private EditorGuiManager gui;
     private EditorDataManager dataManager;
+    private EditorHistoryManager historyManager;
+
+
 
 
     public EditorBaseManager(Application app) {
@@ -75,12 +78,14 @@ public class EditorBaseManager {
 
 
         // setup global tools
+        historyManager = new EditorHistoryManager(this.app, this);
         dataManager = new EditorDataManager();
         layerManager = new EditorLayerManager(this.app, this);
         selectionManager = new EditorSelectionManager(this.app, this);
         selectableNode.addControl(selectionManager);
         transformManager = new EditorTransformManager(this.app, this);
-        selectableNode.addControl(transformManager);      
+        selectableNode.addControl(transformManager);   
+        spatialSystem = new EntitySpatialsSystem();
         entityManager = new EntityManager();
         sceneManager = new EditorSceneManager(this.app, this);
 
@@ -103,15 +108,13 @@ public class EditorBaseManager {
         rootNode.attachChild(selectableNode);
 
         hidedNode = new Node("hidedNode");
-
-
     }
 
     protected EditorCameraManager getCamManager() {
         return camManager;
     }    
     
-    protected EditorTransformManager getTransformTool() {
+    protected EditorTransformManager getTransformManager() {
         return transformManager;
     }
 
@@ -135,11 +138,11 @@ public class EditorBaseManager {
         return layerManager;
     }    
     
-    public EditorSceneManager getSceneManager() {
+    protected EditorSceneManager getSceneManager() {
         return sceneManager;
     }
 
-    public EditorGuiManager getGuiManager() {
+    protected EditorGuiManager getGuiManager() {
         return gui;
     }
     
@@ -149,6 +152,10 @@ public class EditorBaseManager {
 
     protected void setDataManager(EditorDataManager dataManager) {
         this.dataManager = dataManager;
+    }    
+    
+    protected EditorHistoryManager getHistoryManager() {
+        return historyManager;
     }    
 
 }

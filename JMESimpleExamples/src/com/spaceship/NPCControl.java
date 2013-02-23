@@ -33,16 +33,16 @@ import java.io.IOException;
  */
 public class NPCControl extends AbstractControl implements Savable, Cloneable {
 
-    private boolean doMove = true;
-    private boolean doRotate = true;
+    private boolean doMove;
+    private boolean doRotate;
     private float angle, distance;
     private ShipPhysicsControl shipControl;
     private Node generalNode, enemyShip;
     private Geometry geotest;
-    private Vector3f randomVec = new Vector3f();
-    private boolean randomMoveVec = false;
+    private Vector3f randomVec;
+    private boolean randomMoveVec;
     private Vector3f pathVec;
-    private Quaternion qua = new Quaternion();    
+    private Quaternion qua;    
     private AssetManager asm;
     private float rotateSpeed;
     private BulletAppState bulletAppState;
@@ -53,6 +53,13 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
         this.generalNode = parentNode;
         this.asm = asm;
         this.bulletAppState = bulletAppState;
+        
+        randomVec = new Vector3f();
+        randomMoveVec = false;
+        qua = new Quaternion(); 
+        doRotate = true;
+        doMove = true;
+        
 
         this.shipControl = shipControl;
         shipControl.setMoveSpeed(60f);

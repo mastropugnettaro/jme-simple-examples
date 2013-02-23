@@ -196,19 +196,19 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 //    }
     public void setMoveManipulator() {
         System.out.println("Manipulator is changed");
-        base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
+        base.getTransformManager().setTransformType(EditorTransformManager.TransformToolType.MoveTool);
 //        screen.getFocusHandler().resetFocusElements();
     }
 
     public void setRotateManipulator() {
         System.out.println("Manipulator is changed");
-        base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.RotateTool);
+        base.getTransformManager().setTransformType(EditorTransformManager.TransformToolType.RotateTool);
 //        screen.getFocusHandler().resetFocusElements();
     }
 
     public void setScaleManipulator() {
         System.out.println("Manipulator is changed");
-        base.getTransformTool().setTransformType(EditorTransformManager.TransformToolType.ScaleTool);
+        base.getTransformManager().setTransformType(EditorTransformManager.TransformToolType.ScaleTool);
 //        screen.getFocusHandler().resetFocusElements();
     }
 
@@ -233,17 +233,17 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     }
 
     public void setLocalCoords() {
-        base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.LocalCoords);
+        base.getTransformManager().setTrCoordinates(EditorTransformManager.TransformCoordinates.LocalCoords);
 //        screen.getFocusHandler().resetFocusElements();
     }
 
     public void setWorldCoords() {
-        base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.WorldCoords);
+        base.getTransformManager().setTrCoordinates(EditorTransformManager.TransformCoordinates.WorldCoords);
 //        screen.getFocusHandler().resetFocusElements();
     }
 
     public void setViewCoords() {
-        base.getTransformTool().setTrCoordinates(EditorTransformManager.TransformCoordinates.ViewCoords);
+        base.getTransformManager().setTrCoordinates(EditorTransformManager.TransformCoordinates.ViewCoords);
 //        screen.getFocusHandler().resetFocusElements();
     }
 
@@ -317,7 +317,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
             // add entty to sceneList
             EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
-            sceneObjectsListBox.addItem(nameComp.getName() + "(" + id + ")");
+            sceneObjectsListBox.addItem(nameComp.getName());
             sceneObjectsListBox.sortAllItems();
             setSelectedObjectsList();
         }
@@ -334,7 +334,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
         for (Long id : selList) {
             EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
-            String objectString = nameComp.getName() + "(" + id + ")";
+            String objectString = nameComp.getName();
             sceneObjectsListBox.selectItem(objectString);
         }
     }
@@ -354,7 +354,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         base.getSelectionManager().clearSelectionList();
         for (Object obj : sceneObjectsListBox.getSelection()) {
             String objStr = (String) obj;
-            long id = Long.valueOf(objStr.substring(objStr.indexOf("(") + 1, objStr.indexOf(")")));
+            long id = Long.valueOf(objStr.substring(objStr.indexOf("_IDX") + 4, objStr.length()));
             Node entNode = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
 
             // check if entity is in selected layer
@@ -374,7 +374,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             }
 
         }
-        base.getSelectionManager().calculateSelectionCenter();
+        base.getHistoryManager().prepareNewHistory();
+        base.getSelectionManager().deactivate();
         setSelectedObjectsList();
     }
 
@@ -384,7 +385,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
         for (Object obj : sceneObjectsListBox.getSelection()) {
             String objStr = (String) obj;
-            long id = Long.valueOf(objStr.substring(objStr.indexOf("(") + 1, objStr.indexOf(")")));
+            long id = Long.valueOf(objStr.substring(objStr.indexOf("_IDX") + 4, objStr.length()));
             base.getSceneManager().removeEntityObject(id);
             sceneObjectsListBox.removeItem(obj);
         }
@@ -396,8 +397,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             List<Long> list = base.getSceneManager().cloneSelectedEntities();
             for (Long id : list) {
                 EntityNameComponent newRealName = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
-                base.getGuiManager().getSceneObjectsListBox().addItem(newRealName.getName() + "(" + id + ")");
+                base.getGuiManager().getSceneObjectsListBox().addItem(newRealName.getName());
             }
+            setSelectedObjectsList();
         }
     }
 

@@ -24,8 +24,8 @@ public class EditorMappings implements AnalogListener, ActionListener {
     private Camera camera;
     private EditorBaseManager baseParts;
     private EditorCameraManager camMan;
-    private boolean transformResult = false;
-    private boolean selectResult = false;
+    private boolean transformResult;
+    private boolean selectResult;
 
     public EditorMappings(Application app, EditorBaseManager baseParts) {
 
@@ -35,6 +35,9 @@ public class EditorMappings implements AnalogListener, ActionListener {
         camHelper = (Node) root.getChild("camTrackHelper");
         camera = app.getCamera();
         camMan = baseParts.getCamManager();
+
+        transformResult = false;
+        selectResult = false;
 
         setupKeys();
 
@@ -47,7 +50,9 @@ public class EditorMappings implements AnalogListener, ActionListener {
         String[] mappings = new String[]{
             "MoveCameraHelper",
             "MoveOrSelect",
-            "ScaleAll"
+            "ScaleAll",
+            "HistoryUndo",
+            "HistoryRedo"
         };
 
 
@@ -56,6 +61,8 @@ public class EditorMappings implements AnalogListener, ActionListener {
         app.getInputManager().addMapping("MoveCameraHelper", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         app.getInputManager().addMapping("MoveOrSelect", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         app.getInputManager().addMapping("ScaleAll", new KeyTrigger(KeyInput.KEY_S));
+        app.getInputManager().addMapping("HistoryUndo", new KeyTrigger(KeyInput.KEY_Z));
+        app.getInputManager().addMapping("HistoryRedo", new KeyTrigger(KeyInput.KEY_X));
 
     }
 
@@ -72,16 +79,17 @@ public class EditorMappings implements AnalogListener, ActionListener {
         // Select or transformTool an entity
         if (name.equals("MoveOrSelect") && isPressed && !name.equals("ScaleAll")) {
 
-            if (baseParts.getTransformTool().isIsActive() == false) {
-                transformResult = baseParts.getTransformTool().activate();
+            if (baseParts.getTransformManager().isIsActive() == false) {
+                baseParts.getHistoryManager().prepareNewHistory();
+                transformResult = baseParts.getTransformManager().activate();
             }
             if (!transformResult && (baseParts.getSelectionManager().isIsActive() == false)) {
                 selectResult = baseParts.getSelectionManager().activate();
             }
 
-        } else if (name.equals("MoveOrSelect") && !isPressed && !name.equals("ScaleAll")) {
+        } else if (name.equals("MoveOrSelect") && !isPressed) {
             if (transformResult) {
-                baseParts.getTransformTool().deactivate();
+                baseParts.getTransformManager().deactivate();
                 transformResult = false;
             }
             if (selectResult) {
@@ -95,18 +103,25 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
         // scaleTool
         if (name.equals("ScaleAll") && isPressed && !name.equals("MoveOrSelect")) {
-            if (baseParts.getTransformTool().isIsActive() == false && baseParts.getSelectionManager().getSelectionList().size() > 0
-                    && baseParts.getTransformTool().isIsActive() == false) {
-                baseParts.getTransformTool().scaleAll();
+            if (baseParts.getTransformManager().isIsActive() == false && baseParts.getSelectionManager().getSelectionList().size() > 0
+                    && baseParts.getTransformManager().isIsActive() == false) {
+                baseParts.getHistoryManager().prepareNewHistory();
+                baseParts.getTransformManager().scaleAll();
                 transformResult = true;
             }
         } 
-//        else if (name.equals("ScaleAll") && !isPressed && !name.equals("MoveOrSelect")) {
-//            if (baseParts.getTransformTool().isIsActive() == false) {
-//                baseParts.getTransformTool().deactivate();
-//                transformResult = false;
-//            }
-//        }
+        
+        // Undo/Redo
+        if (name.equals("HistoryUndo") && isPressed) {
+            if (!transformResult && !selectResult) {
+                baseParts.getHistoryManager().historyUndo();
+            }
 
+        } else if (name.equals("HistoryRedo") && isPressed) {
+            if (!transformResult && !selectResult) {
+                baseParts.getHistoryManager().historyRedo();
+            }
+
+        }
     }
 }
