@@ -41,7 +41,7 @@ public class EditorTransformManager extends AbstractControl {
     private PickedAxis pickedAxis;
     private AssetManager assetMan;
     private Application app;
-    private boolean isActive = false;
+    private boolean isActive;
 //    private Geometry testGeo;
     private Vector3f deltaMoveVector;
     private EditorBaseManager base;
@@ -50,8 +50,8 @@ public class EditorTransformManager extends AbstractControl {
     private EditorTransformMoveTool moveToolObj;
     private EditorTransformRotateTool rotateToolObj;
     private EditorTransformScaleTool scaleToolObj;
-    private Node ndParent1 = new Node();
-    private Node ndParent2 = new Node();
+    private Node ndParent1;
+    private Node ndParent2;
     private TransformCoordinates trCoordinates;
 
     protected enum TransformToolType {
@@ -77,6 +77,10 @@ public class EditorTransformManager extends AbstractControl {
         root = (Node) app.getViewPort().getScenes().get(0);
         guiNode = (Node) app.getGuiViewPort().getScenes().get(0);
 
+        isActive = false;
+        ndParent1 = new Node();
+        ndParent2 = new Node();
+
         transformTool = new Node("transformTool");
         root.attachChild(transformTool);
 
@@ -95,7 +99,7 @@ public class EditorTransformManager extends AbstractControl {
         moveToolObj = new EditorTransformMoveTool(this, this.app, this.base);
         rotateToolObj = new EditorTransformRotateTool(this, this.app, this.base);
         scaleToolObj = new EditorTransformScaleTool(this, this.app, this.base);
-        
+
         setTransformToolScale(0.2f);
 
     }
@@ -164,20 +168,34 @@ public class EditorTransformManager extends AbstractControl {
     protected boolean isIsActive() {
         return isActive;
     }
-    
+
     public Vector3f getTransformToolScale() {
         return transformTool.getLocalScale();
     }
 
     public void setTransformToolScale(float newScale) {
         transformTool.setLocalScale(new Vector3f(newScale, newScale, newScale));
-    }    
+    }
 
-    protected void updateTransform(Transform center) {
+    protected void updateTransformWidget(Transform center) {
         if (center != null) {
             Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(app.getCamera().getFrustumNear() + 0.1f);
             transformTool.setLocalTranslation(app.getCamera().getLocation().add(vec));
             transformTool.setLocalRotation(center.getRotation());
+        }
+    }
+
+    protected void updateTransformCoords() {
+        if (trCoordinates == TransformCoordinates.LocalCoords) {
+            selectionTransformCenter = base.getSelectionManager().getSelectionCenter();
+        } else if (trCoordinates == TransformCoordinates.WorldCoords) {
+            selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
+            selectionTransformCenter.setRotation(new Quaternion());
+        } else if (trCoordinates == TransformCoordinates.ViewCoords) {
+            selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
+//                Quaternion viewRot = new Quaternion();
+//                viewRot.lookAt(app.getCamera().getLocation(), Vector3f.UNIT_Y);
+            selectionTransformCenter.setRotation(app.getCamera().getRotation().mult(new Quaternion().fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y)));
         }
     }
 
@@ -290,7 +308,7 @@ public class EditorTransformManager extends AbstractControl {
         isActive = true;
     }
 
-    private void attachSelectedToTransformParent() {
+    protected void attachSelectedToTransformParent() {
 
         tranformParentNode.setLocalTransform(new Transform());  // clear previous transform
         tranformParentNode.setLocalTranslation(selectionTransformCenter.getTranslation().clone());
@@ -352,28 +370,45 @@ public class EditorTransformManager extends AbstractControl {
     protected void deactivate() {
         if (pickedAxis != PickedAxis.None) {
 
-            pickedAxis = PickedAxis.None;
             detachSelectedFromTransformParent();
 
             if (selectionTransformCenter != null) {
-
-                // set new selection center translation
-//                base.getSelectionManager().getSelectionCenter().setTranslation(tranformParentNode.getLocalTranslation().clone());
-                // set new selection center rotation (there is a trick!)
-//                if (transformType == transformType.RotateTool) {
-                    base.getSelectionManager().calculateSelectionCenter();
-//                }
+                base.getSelectionManager().calculateSelectionCenter();
 
                 selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
                 tranformParentNode.detachAllChildren();
-//                tranformParentNode.setro
-//                System.out.println(selectionTransformCenter.getRotation().toString());
-//                transformTool.setLocalTransform(selectedCenter.clone());
+
                 deltaMoveVector = null;  // clear deltaVector
                 isActive = false;
+                
+                // SET HISTORY
+                base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
+                base.getHistoryManager().getHistoryList().get(base.getHistoryManager().getHistoryCurrentNumber()).setDoTransform(true);
             }
+
+            pickedAxis = PickedAxis.None;
         }
     }
+
+//    protected void setHistory() {
+//        System.out.println("prepareTransHistory");
+//        base.getHistoryManager().setNewTransformHistory(tranformParentNode.getWorldTransform().clone(), trCoordinates);
+//        base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
+//        EditorHistoryObject hisObject = base.getHistoryManager().getHistoryObject(base.getHistoryManager().getHistoryList().size() - 1);
+//        hisObject.setDoTransform(true);
+//        
+////        // if objects are scaled
+////        if ()
+//    
+//    }
+
+//    // for HistoryManager only
+//    protected void deactivateUndoRedo() {
+//        detachSelectedFromTransformParent();
+//        base.getSelectionManager().calculateSelectionCenter();
+//        selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
+//        tranformParentNode.detachAllChildren();
+//    }
 
     @Override
     protected void controlUpdate(float tpf) {
@@ -399,23 +434,14 @@ public class EditorTransformManager extends AbstractControl {
 
 
         // update transform tool
-        if (!isActive && base.getSelectionManager().getSelectionList().size() > 0) {
+        if (!isActive && base.getSelectionManager().getSelectionList().size() > 0
+                && base.getSelectionManager().getSelectionCenter() != null) {
 
             //set Transform
             selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
 
             // set rotation for View and World Modes
-            if (trCoordinates == TransformCoordinates.LocalCoords) {
-                selectionTransformCenter = base.getSelectionManager().getSelectionCenter();
-            } else if (trCoordinates == TransformCoordinates.WorldCoords) {
-                selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
-                selectionTransformCenter.setRotation(new Quaternion());
-            } else if (trCoordinates == TransformCoordinates.ViewCoords) {
-                selectionTransformCenter = base.getSelectionManager().getSelectionCenter().clone();
-//                Quaternion viewRot = new Quaternion();
-//                viewRot.lookAt(app.getCamera().getLocation(), Vector3f.UNIT_Y);
-                selectionTransformCenter.setRotation(app.getCamera().getRotation().mult(new Quaternion().fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y)));
-            }
+            updateTransformCoords();
 
 
             // Update transform tool
@@ -427,7 +453,7 @@ public class EditorTransformManager extends AbstractControl {
             } else if (transformType == transformType.ScaleTool) {
                 transformTool.attachChild(scaleTool);
             }
-            updateTransform(selectionTransformCenter);
+            updateTransformWidget(selectionTransformCenter);
 //            System.out.println(selectionTransformCenter);
         } else if (base.getSelectionManager().getSelectionList().size() == 0) {
             transformTool.detachAllChildren();

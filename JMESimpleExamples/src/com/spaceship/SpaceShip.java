@@ -38,7 +38,7 @@ public class SpaceShip extends SimpleApplication {
     }
 
     private Geometry geom;     
-    private Node instNodes = new Node();  
+    private Node instNodes;  
     private BulletAppState bulletAppState;
     private Node ship;
     private ChaseCamera chaseCam;
@@ -53,6 +53,7 @@ public class SpaceShip extends SimpleApplication {
         flyCam.setEnabled(false);
 //        flyCam.setMoveSpeed(30);
         viewPort.setBackgroundColor(ColorRGBA.Gray);
+        instNodes = new Node(); 
         
         setPhysics();
         UI();

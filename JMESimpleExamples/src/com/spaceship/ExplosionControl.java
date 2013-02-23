@@ -32,13 +32,14 @@ public class ExplosionControl extends AbstractControl {
     private Vector3f position;
     private AssetManager asm;
     private Node parent;
-    private float timer = 0.3f;
+    private float timer;
     private Geometry expl;
     
     public ExplosionControl(Vector3f position, Node parent, AssetManager asm) {
         this.position = position;
         this.asm = asm;
         this.parent = parent;
+        timer = 0.3f;
 
         // Setup Explosion
         Box b = new Box(Vector3f.ZERO, 1f, 1f, 1f);        

@@ -40,11 +40,11 @@ public class EditorSelectionManager extends AbstractControl {
     private Node root, guiNode;
     private Application app;
     private EditorBaseManager base;
-    private static List<Long> selectionList = new ArrayList<Long>();
-    private Transform selectionCenter = null;
+    private static List<Long> selectionList;
+    private Transform selectionCenter;
     private SelectionToolType selectionToolType;
     private EditorSelectionTools selectionTools;
-    private boolean isActive = false;
+    private boolean isActive;
     private SelectionMode selectionMode;
     private long lastSelected;
 
@@ -66,9 +66,14 @@ public class EditorSelectionManager extends AbstractControl {
         root = (Node) this.app.getViewPort().getScenes().get(0);
         guiNode = (Node) this.app.getGuiViewPort().getScenes().get(0);
 
+        isActive = false;
+        selectionCenter = null;
+        selectionList = new ArrayList<Long>();
+
         selectionTools = new EditorSelectionTools(this.app, this.base, this);
         selectionToolType = SelectionToolType.MouseClick;
         selectionMode = selectionMode.Normal;
+
 
     }
 
@@ -77,6 +82,7 @@ public class EditorSelectionManager extends AbstractControl {
 
         if (selectionToolType == SelectionToolType.MouseClick) {
             selectionTools.selectMouseClick();
+            base.getGuiManager().setSelectedObjectsList();
             result = true;
         } else if (selectionToolType == SelectionToolType.Rectangle) {
 //            selectionTools.drawRectangle();
@@ -89,19 +95,26 @@ public class EditorSelectionManager extends AbstractControl {
     }
 
     protected void deactivate() {
+
+        // SELECT ENTITIES OF THE RECTANGLE TOOL
         if (selectionToolType == SelectionToolType.Rectangle) {
             selectEntities();
-            calculateSelectionCenter();
             selectionTools.clearRectangle();
-            isActive = false;
             System.out.println("deact");
         }
+
+        isActive = false;
+        calculateSelectionCenter();
+
+        // SET HISTORY
+        System.out.println("selHistory");
+        base.getHistoryManager().setNewSelectionHistory(selectionList);
+
 
     }
 
     protected void selectEntity(long ID, SelectionMode mode) {
         Node nodeToSelect = (Node) base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
-//        List selectedList = base.getGuiManager().getSceneObjectsListBox().getSelection();
 
         if (mode == SelectionMode.Normal) {
             // remove selection boxes
@@ -114,22 +127,13 @@ public class EditorSelectionManager extends AbstractControl {
             selectionList.add(ID);
             createSelectionBox(nodeToSelect);
 
-//            // deselect all items in the objectsList
-//            for (Object obj : selectedList) {
-//                base.getGuiManager().getSceneObjectsListBox().deselectItem(obj);
-//            }
-//            // select item in the objectslist
-//            base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName() + "(" + ID + ")");
-
         } else if (mode == SelectionMode.Additive) {
             if (selectionList.contains(ID)) {
                 selectionList.remove(ID);
                 removeSelectionBox(nodeToSelect); // remove selection mesh
-//                base.getGuiManager().getSceneObjectsListBox().deselectItem(nodeToSelect.getName()  + "(" + ID + ")");
             } else {
                 selectionList.add(ID);
                 createSelectionBox(nodeToSelect);
-//                base.getGuiManager().getSceneObjectsListBox().selectItem(nodeToSelect.getName()  + "(" + ID + ")");
             }
         }
         // Substractive is not implemented        
@@ -271,14 +275,14 @@ public class EditorSelectionManager extends AbstractControl {
             if (selectionList.size() > 1 && selectionList.contains(lastSelected)) {
                 Node ndPrevious = (Node) base.getSpatialSystem().getSpatialControl(lastSelected).getGeneralNode();
                 Geometry geoBoxPrevious = (Geometry) ndPrevious.getChild("SelectionTempMesh");
-                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.55f, 0.35f, 0.03f, 1)); 
+                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.55f, 0.35f, 0.03f, 1));
             }
-            
+
             // set for new selected
             long lastID = selectionList.get(selectionList.size() - 1);
             Node ndLast = (Node) base.getSpatialSystem().getSpatialControl(lastID).getGeneralNode();
             Geometry geoBoxLast = (Geometry) ndLast.getChild("SelectionTempMesh");
-            geoBoxLast.getMaterial().setColor("Color", new ColorRGBA(0.8f, 0.6f, 0.2f, 1)); 
+            geoBoxLast.getMaterial().setColor("Color", new ColorRGBA(0.8f, 0.6f, 0.2f, 1));
             lastSelected = lastID;
         }
 
