@@ -61,7 +61,10 @@ public class EditorHistoryObject {
     protected void clearHistoryObject() {
         addDeleteEntitiesList.clear();
 
-        if (selectDeselectEntitiesList != null) selectDeselectEntitiesList.clear();
+        if (selectDeselectEntitiesList != null) {
+            selectDeselectEntitiesList.clear();
+            selectDeselectEntitiesList = null;
+        }
         selectionChanges = SelectionHistory.None;
 
         tranformOfParentNode = null;

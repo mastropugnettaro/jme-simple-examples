@@ -163,6 +163,12 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         nifty.gotoScreen("start"); // start the screen 
         screen.getFocusHandler().resetFocusElements();
     }
+    
+    protected void clearGui() {
+        entitiesListBox.clear();
+        sceneObjectsListBox.clear();
+        componentsListBox.clear();
+    }
 
     /**
      * This is called when the RadioButton selection has changed.
@@ -320,6 +326,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             sceneObjectsListBox.addItem(nameComp.getName());
             sceneObjectsListBox.sortAllItems();
             setSelectedObjectsList();
+
+            // set history
+            base.getHistoryManager().prepareNewHistory();
+            base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
         }
     }
 
@@ -346,6 +356,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         base.getGuiManager().getSceneObjectsListBox().sortAllItems();
         base.getGuiManager().setSelectedObjectsList();
         screen.getFocusHandler().resetFocusElements();
+
+//        // set history
+//        base.getHistoryManager().prepareNewHistory();
+//        base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
     }
 
     // select entities from the list of seceneObjectsList
@@ -373,9 +387,12 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                     }
                 }
             }
-            base.getHistoryManager().prepareNewHistory();
-            base.getSelectionManager().deactivate();
+            base.getSelectionManager().calculateSelectionCenter();
             setSelectedObjectsList();
+            
+            // set history
+            base.getHistoryManager().prepareNewHistory();
+            base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());            
         }
     }
 
@@ -400,6 +417,10 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 base.getGuiManager().getSceneObjectsListBox().addItem(newRealName.getName());
             }
             setSelectedObjectsList();
+            
+//            // set history
+//            base.getHistoryManager().prepareNewHistory();
+//            base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
         }
     }
 
@@ -506,6 +527,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     }
 
     public void switchLayer(String srtinG) {
+        CheckBox cb = screen.findNiftyControl("layer" + srtinG, CheckBox.class);
+        
         int iInt = Integer.valueOf(srtinG);
         Node activeLayer = base.getLayerManager().getActiveLayer(); // active layer
         Node layerToSwitch = base.getLayerManager().getLayer(iInt); // layer to switch on/off
@@ -516,6 +539,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
         // Switching off
         if (isEnabled == true) {
+            //set checkbox effect off
+            cb.uncheck();
+            
             // detach layer
             selectableNode.detachChild(layerToSwitch);
             layerToSwitch.setUserData("isEnabled", false);
@@ -554,6 +580,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             }
         } // switching on
         else {
+            //set checkbox effect on
+            cb.check();            
 
             if (activeLayer != null) {
 

@@ -27,6 +27,9 @@ public class EditorDataManager {
     }      
 
     protected static void clearEntityData() {
+        for (Long ID : entityDataList.keySet()) {
+            entityDataList.get(ID).clear();
+        }
         EditorDataManager.entityDataList.clear();
     }          
 }
