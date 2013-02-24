@@ -350,33 +350,33 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     // select entities from the list of seceneObjectsList
     public void selectEntitiesButton() {
-//        List<Long> selList = base.getSelectionManager().getSelectionList();
-        base.getSelectionManager().clearSelectionList();
-        for (Object obj : sceneObjectsListBox.getSelection()) {
-            String objStr = (String) obj;
-            long id = Long.valueOf(objStr.substring(objStr.indexOf("_IDX") + 4, objStr.length()));
-            Node entNode = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+//        List<Long> lectlList = base.getSelectionManager().getSelectionList();
 
-            // check if entity is in selected layer
-            Node selectableNode = (Node) rootNode.getChild("selectableNode");
-            boolean isEntityInLayer = false;
-            for (Spatial sp : selectableNode.getChildren()) {
-                Node selectedLayer = (Node) sp;
-                if (entNode.hasAncestor(selectableNode)) {
-                    isEntityInLayer = true;
+        if (sceneObjectsListBox.getSelection().size() > 0) {
+
+            base.getSelectionManager().clearSelectionList();
+            for (Object obj : sceneObjectsListBox.getSelection()) {
+                String objStr = (String) obj;
+                long id = Long.valueOf(objStr.substring(objStr.indexOf("_IDX") + 4, objStr.length()));
+                Node entNode = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+                System.out.println(objStr.substring(objStr.indexOf("_IDX") + 4, objStr.length()));
+
+                // check if entity is in selected layer
+                Node possibleLayer = (Node) entNode.getParent();
+                if (possibleLayer != null) {
+                    Object isEnabledObj = possibleLayer.getUserData("isEnabled");
+                    if (isEnabledObj != null) {
+                        boolean isEnabled = (Boolean) isEnabledObj;
+                        if (isEnabled == true) {
+                            base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
+                        }
+                    }
                 }
             }
-
-            // if entity is in a selected layer, so it will be selected
-            if (isEntityInLayer) {
-                base.getSelectionManager().getSelectionList().add(id);
-                base.getSelectionManager().createSelectionBox(entNode);
-            }
-
+            base.getHistoryManager().prepareNewHistory();
+            base.getSelectionManager().deactivate();
+            setSelectedObjectsList();
         }
-        base.getHistoryManager().prepareNewHistory();
-        base.getSelectionManager().deactivate();
-        setSelectedObjectsList();
     }
 
     public void removeSelectedButton() {
@@ -425,7 +425,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 && base.getSelectionManager().getSelectionList().contains(lastIdOfComponentList)) {
             String strName = (String) componentsListBox.getSelection().get(0);
             base.getDataManager().getEntityData(lastIdOfComponentList).remove(strName);
-            
+
             componentsListBox.removeItem(strName);
         }
 

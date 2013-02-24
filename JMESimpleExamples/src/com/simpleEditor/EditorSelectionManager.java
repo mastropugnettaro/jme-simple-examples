@@ -97,7 +97,7 @@ public class EditorSelectionManager extends AbstractControl {
     protected void deactivate() {
 
         // SELECT ENTITIES OF THE RECTANGLE TOOL
-        if (selectionToolType == SelectionToolType.Rectangle) {
+        if (selectionToolType == SelectionToolType.Rectangle && isActive) {
             selectEntities();
             selectionTools.clearRectangle();
             System.out.println("deact");
@@ -138,7 +138,7 @@ public class EditorSelectionManager extends AbstractControl {
         }
         // Substractive is not implemented        
 
-        base.getGuiManager().setSelectedObjectsList();
+//        base.getGuiManager().setSelectedObjectsList();
     }
 
     protected void selectEntities() {
