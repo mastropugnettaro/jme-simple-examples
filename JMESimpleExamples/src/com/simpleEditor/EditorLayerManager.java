@@ -22,7 +22,7 @@ public class EditorLayerManager {
     private Application app;
     private EditorBaseManager base;
     private Node selectableNode;
-    private static List<Node> layersList = new ArrayList<Node>();
+    private static List<Node> layersList;
     private Node activeLayer;
 
     public EditorLayerManager(Application app, EditorBaseManager base) {
@@ -32,7 +32,7 @@ public class EditorLayerManager {
         root = (Node) this.app.getViewPort().getScenes().get(0);
         guiNode = (Node) this.app.getGuiViewPort().getScenes().get(0);
         selectableNode = (Node) root.getChild("selectableNode");
-        
+        layersList = new ArrayList<Node>();
         createLayers();
     }
 
@@ -55,18 +55,18 @@ public class EditorLayerManager {
     }
 
     protected Node getLayer(int layerNumber) {
-        Node nd = layersList.get(layerNumber-1);  // compensate the list number
+        Node nd = layersList.get(layerNumber - 1);  // compensate the list number
         return nd;
     }
 
-    protected List <Node> getLayers() {
+    protected List<Node> getLayers() {
         return layersList;
     }
 
     protected void addToLayer(Spatial sp, int layerNumber) {
         getLayer(layerNumber).attachChild(sp);
     }
-    
+
     protected Node getActiveLayer() {
         return activeLayer;
     }
@@ -74,5 +74,14 @@ public class EditorLayerManager {
     protected void setActiveLayer(Node activeLayer) {
         this.activeLayer = activeLayer;
     }
-    
+
+    protected void clearLayerManager() {
+        for (Node layer : layersList) {
+            layer.detachAllChildren();
+            layer.setUserData("isEnabled", false);
+            layer.setUserData("isActive", false);
+        }
+        selectableNode.detachAllChildren();
+        activeLayer = null;
+    }
 }

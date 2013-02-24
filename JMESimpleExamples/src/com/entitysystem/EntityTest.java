@@ -66,8 +66,8 @@ public class EntityTest extends SimpleApplication {
 //         Update components
 //        components.setUpdateType(ComponentsControl.UpdateType.dynamicServerEntity);
         
-        EntitySpatialsControl_2 spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
-        spatialControl.setType(EntitySpatialsControl_2.SpatialType.Node);
+        EntitySpatialsControl spatialControl = spatialSystem.addSpatialControl(selectedSp, ent, entityManager.getComponentControl(ent));
+        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
         spatialControl.recurseNodeID(selectedSp);
         
         System.out.println(selectedSp.getUserData("EntityID"));

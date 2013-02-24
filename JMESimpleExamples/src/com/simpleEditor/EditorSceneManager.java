@@ -7,10 +7,11 @@ package com.simpleEditor;
 import com.entitysystem.ComponentsControl;
 import com.entitysystem.EntityModelPathComponent;
 import com.entitysystem.EntityNameComponent;
-import com.entitysystem.EntitySpatialsControl_2;
+import com.entitysystem.EntitySpatialsControl;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
+import com.jme3.asset.ModelKey;
 import com.jme3.asset.plugins.FileLocator;
 import com.jme3.asset.plugins.ZipLocator;
 import com.jme3.math.Transform;
@@ -42,12 +43,10 @@ public class EditorSceneManager {
     private Application app;
     private EditorBaseManager base;
     private final JFileChooser mFileCm;
-    private FileFilter modFilter = new EditorSceneFilter();
-    private String scenePath = null;
-    private static List<String> assetsList = new ArrayList<String>();
-//    private static List<String> entitiesListsList = new ArrayList<String>();
-    private static ConcurrentHashMap<String, String> entitiesList = new ConcurrentHashMap<String, String>();
-    private static ConcurrentHashMap<String, Spatial> spatialsList = new ConcurrentHashMap<String, Spatial>();
+    private FileFilter modFilter;
+    private static List<String> assetsList;
+    private static ConcurrentHashMap<String, String> entitiesList;
+    private static ConcurrentHashMap<String, Spatial> spatialsList;
 //    private EntityManager entityManager;
     private DesktopAssetManager dsk;
 
@@ -61,15 +60,19 @@ public class EditorSceneManager {
 
         mFileCm = new JFileChooser();
         mFileCm.addChoosableFileFilter(modFilter);
-//        mFileCm.addChoosableFileFilter(texFilter);
         mFileCm.setAcceptAllFileFilterUsed(false);
         mFileCm.setPreferredSize(new Dimension(800, 600));
+        modFilter = new EditorSceneFilter();
 
+        assetsList = new ArrayList<String>();
+        entitiesList = new ConcurrentHashMap<String, String>();
+        spatialsList = new ConcurrentHashMap<String, Spatial>();
         dsk = (DesktopAssetManager) assetMan;
 //        entityManager = base.getEntityManager();
     }
 
     protected void newScene() {
+        clearScene();
     }
 
     protected void loadScene() {
@@ -81,8 +84,16 @@ public class EditorSceneManager {
         int returnVal = mFileCm.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-//            File file = mFileCm.getSelectedFile();
-            System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRR");
+            File selectedFile = mFileCm.getSelectedFile();
+
+            if (selectedFile.getName().indexOf(".") != 0 && selectedFile.getName().length() > 0) {
+                String filePath = selectedFile.getParent();
+                filePath = correctPath(filePath);
+
+
+//                saveSweFile(filePath);
+//                saveSwesFile(filePath);
+            }
         }
     }
 
@@ -109,77 +120,118 @@ public class EditorSceneManager {
                 if (fileName.indexOf(".") > 0) {
                     fileName = fileName.substring(0, fileName.indexOf("."));
                 }
-                fileName = fileName + ".swe";
                 String fullPath = filePath + fileName;
 
-                JSONObject saveSceneJson = new JSONObject();
-//                JSONArray listLayers = new JSONArray();
+                saveSweFile(fullPath);
+                saveSwsFile(fullPath);
+            }
+        }
+    }
 
-                //save layers
-                for (Node layerNode : base.getLayerManager().getLayers()) {
-                    JSONObject layerToSave = new JSONObject();
+    private void saveSweFile(String pathToSave) {
+        JSONObject saveSceneJson = new JSONObject();
 
-                    // save ID entities
-                    for (Spatial sp : layerNode.getChildren()) {
-                        JSONObject entityToSave = new JSONObject();
+        saveSceneJson.put("LastIDX", (Long)base.getEntityManager().getIdx());
+        
 
-                        Object idObj = sp.getUserData("EntityID");
-                        long idLong = (Long) idObj;
+        //save layers
+        for (Node layerNode : base.getLayerManager().getLayers()) {
+            JSONObject layerToSave = new JSONObject();
+            
+            // save layer states
+            Object isActObj = layerNode.getUserData("isActive");
+            layerToSave.put("isActive", (Boolean)isActObj);
+            Object isEnObj = layerNode.getUserData("isEnabled");
+            layerToSave.put("isEnabled", (Boolean)isEnObj);
 
-                        // save name
-                        EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(idLong, EntityNameComponent.class);
-                        entityToSave.put("IDName", nameComp.getName());
+            // save ID entities
+            JSONObject entitiesToSave = new JSONObject();
+            for (Spatial sp : layerNode.getChildren()) {
+                JSONObject entityJSON = new JSONObject();
+                
+                Object idObj = sp.getUserData("EntityID");
+                long idLong = (Long) idObj;
+
+                // save name
+                EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(idLong, EntityNameComponent.class);
+                entityJSON.put("IDName", nameComp.getName());
 
 //                        EntityModelPathComponent pathComp = (EntityModelPathComponent) base.getEntityManager().getComponent(idLong, EntityModelPathComponent.class);
-                        entityToSave.put("IDModel", nameComp.getName().substring(0, nameComp.getName().indexOf("_IDX")) + ".j3o");
+                entityJSON.put("IDModel", nameComp.getName().substring(0, nameComp.getName().indexOf("_IDX")) + ".j3o");
 
-                        // save transforms
-                        Transform trID = sp.getWorldTransform();
-                        JSONObject transformToSave = new JSONObject();
-                        transformToSave.put("translationX", trID.getTranslation().getX());
-                        transformToSave.put("translationY", trID.getTranslation().getY());
-                        transformToSave.put("translationZ", trID.getTranslation().getZ());
-                        transformToSave.put("rotationX", trID.getRotation().getX());
-                        transformToSave.put("rotationY", trID.getRotation().getY());
-                        transformToSave.put("rotationZ", trID.getRotation().getZ());
-                        transformToSave.put("rotationW", trID.getRotation().getW());
-                        transformToSave.put("scaleX", trID.getScale().getX());
-                        transformToSave.put("scaleY", trID.getScale().getY());
-                        transformToSave.put("scaleZ", trID.getScale().getZ());
-                        entityToSave.put("IDTransform", transformToSave);
+                // save transforms
+                Transform trID = sp.getWorldTransform();
+                JSONObject transformToSave = new JSONObject();
+                transformToSave.put("translationX", trID.getTranslation().getX());
+                transformToSave.put("translationY", trID.getTranslation().getY());
+                transformToSave.put("translationZ", trID.getTranslation().getZ());
+                transformToSave.put("rotationX", trID.getRotation().getX());
+                transformToSave.put("rotationY", trID.getRotation().getY());
+                transformToSave.put("rotationZ", trID.getRotation().getZ());
+                transformToSave.put("rotationW", trID.getRotation().getW());
+                transformToSave.put("scaleX", trID.getScale().getX());
+                transformToSave.put("scaleY", trID.getScale().getY());
+                transformToSave.put("scaleZ", trID.getScale().getZ());
+                entityJSON.put("IDTransform", transformToSave);
 
-                        // seve data components of entity
-                        ConcurrentHashMap<String, String> entityData = base.getDataManager().getEntityData(idLong);
-                        for (String strKey : entityData.keySet()) {
-                            JSONObject dataComponentsToSave = new JSONObject();
-                            dataComponentsToSave.put(strKey, entityData.get(strKey));
-                            entityToSave.put("IDDataComponents", dataComponentsToSave);
-                        }
-
-                        layerToSave.put(idLong, entityToSave);
-                    }
-//                    layer.
-                    saveSceneJson.put(layerNode.getName(), layerToSave);
-//                    saveSceneJson.
-//                    listLayers.add(layerNode.getName());
+                // seve data components of entity
+                ConcurrentHashMap<String, String> entityData = base.getDataManager().getEntityData(idLong);
+                for (String strKey : entityData.keySet()) {
+                    JSONObject dataComponentsToSave = new JSONObject();
+                    dataComponentsToSave.put(strKey, entityData.get(strKey));
+                    entityJSON.put("IDDataComponents", dataComponentsToSave);
                 }
-//                saveSceneJson.put("messages", listLayers);
 
-                try {
-                    File saveFile = new File(fullPath);
-                    saveFile.setReadable(true);
-                    saveFile.setWritable(true);
-
-                    FileWriter fileToSave = new FileWriter(saveFile);
-                    fileToSave.write(saveSceneJson.toJSONString());
-                    fileToSave.flush();
-                    fileToSave.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRR" + fullPath);
+                entitiesToSave.put((Long)idLong, entityJSON);
             }
+
+            layerToSave.put("Entities", entitiesToSave);
+            saveSceneJson.put(layerNode.getName(), layerToSave);
+
+        }
+
+        try {
+            File saveFile = new File(pathToSave + ".swe");
+            saveFile.setReadable(true);
+            saveFile.setWritable(true);
+
+            FileWriter fileToSave = new FileWriter(saveFile);
+            fileToSave.write(saveSceneJson.toJSONString());
+            fileToSave.flush();
+            fileToSave.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("File saved: " + pathToSave + ".swe");
+    }
+
+    private void saveSwsFile(String pathToSave) {
+        JSONObject saveSceneSettings = new JSONObject();
+
+        // save assets paths
+        JSONObject assetsToSave = new JSONObject();
+        for (int i = 0; i < assetsList.size(); i++) {
+
+            assetsToSave.put("AssetPath" + i, assetsList.get(i));
+        }
+        saveSceneSettings.put("AssetsPaths", assetsToSave);
+        
+        // save version of the Simple World Editor
+        saveSceneSettings.put("EditorVersion", base.getEditorVersoin());
+
+        try {
+            File saveFile = new File(pathToSave + ".sws");
+            saveFile.setReadable(true);
+            saveFile.setWritable(true);
+
+            FileWriter fileToSave = new FileWriter(saveFile);
+            fileToSave.write(saveSceneSettings.toJSONString());
+            fileToSave.flush();
+            fileToSave.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -189,24 +241,13 @@ public class EditorSceneManager {
         base.getSelectionManager().calculateSelectionCenter();
 
         // remove all spatials from layers
-        for (Node layer : base.getLayerManager().getLayers()) {
-            layer.detachAllChildren();
-            layer.getParent().detachChild(layer);
-        }
+        base.getLayerManager().clearLayerManager();
 
         // clear history
-        ArrayList<EditorHistoryObject> hList = base.getHistoryManager().getHistoryList();
-        for (EditorHistoryObject hObj : hList) {
-            hObj.clearHistoryObject();
-            hObj = null;
-        }
-        hList.clear();
+        base.getHistoryManager().clearHistory();
 
         // clear data components
         base.getDataManager().clearEntityData();
-        
-        //clear gui
-        base.getGuiManager().clearGui();
 
         // clear entities
         ConcurrentHashMap<Long, ComponentsControl> allControls = base.getEntityManager().getAllControls();
@@ -215,13 +256,24 @@ public class EditorSceneManager {
             base.getSpatialSystem().removeSpatialControl(ID);
         }
         allControls.clear();
-        dsk.clearCache(); // clear all loaded models
-        
+
         // clear assets list
+        clearAssets();
+    }
+
+    protected void clearAssets() {
+        for (String str : spatialsList.keySet()) {
+            dsk.deleteFromCache(new ModelKey(str));
+        }
+        spatialsList.clear();
+
         for (String str : assetsList) {
-            assetMan.unregisterLocator(str, FileLocator.class);
+            dsk.unregisterLocator(str, FileLocator.class);
         }
         assetsList.clear();
+
+        dsk.clearCache(); // clear all loaded models        
+        dsk.clearAssetEventListeners();
     }
 
     protected void addAsset(String path) {
@@ -230,14 +282,7 @@ public class EditorSceneManager {
 
         // registerLoacetor
         if (fl.exists() && assetsList.contains(thePath) == false) {
-            
-            // unsupported now
-//            if (thePath.endsWith(".jar") || thePath.endsWith(".zip")) {
-//                assetMan.registerLocator(thePath, ZipLocator.class);
-//            } 
-            
-                assetMan.registerLocator(thePath, FileLocator.class);
-            
+            dsk.registerLocator(thePath, FileLocator.class);
 
             assetsList.add(thePath);
             findFiles(thePath, "j3o");
@@ -275,8 +320,8 @@ public class EditorSceneManager {
 
 
 
-            EntitySpatialsControl_2 spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, base.getEntityManager().getComponentControl(ent));
-            spatialControl.setType(EntitySpatialsControl_2.SpatialType.Node);
+            EntitySpatialsControl spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, base.getEntityManager().getComponentControl(ent));
+            spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
             spatialControl.recurseNodeID(model);
 
             activeLayer.attachChild(model);
