@@ -36,7 +36,7 @@ public class EditorHistoryManager {
 
         historyList = new ArrayList<EditorHistoryObject>();
         historycurrentNumber = 0;
-        historyMaximumnumber = 10;
+        historyMaximumnumber = 30;
 
         initializeHistoryList();
 
