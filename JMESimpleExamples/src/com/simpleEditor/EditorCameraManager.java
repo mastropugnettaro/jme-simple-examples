@@ -84,8 +84,8 @@ public class EditorCameraManager {
 
         //Uncomment this to look 3 world units above the target
 //    chaseCam.setLookAtOffset(Vector3f.UNIT_Y.mult(3));
-        chaseCam.setMinVerticalRotation(-FastMath.PI * 0.45f);
-        chaseCam.setMaxVerticalRotation(FastMath.PI * 0.45f);
+        chaseCam.setMinVerticalRotation(-FastMath.PI * 0.499f);
+        chaseCam.setMaxVerticalRotation(FastMath.PI * 0.499f);
         //Uncomment this to enable rotation when the middle mouse button is pressed (like Blender)
         //WARNING : setting this trigger disable the rotation on right and left mouse button click
 //    chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));

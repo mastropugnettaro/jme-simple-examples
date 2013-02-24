@@ -4,18 +4,9 @@
  */
 package com.entitysystem;
 
-import com.jme3.export.InputCapsule;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.export.OutputCapsule;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.AbstractControl;
-import com.jme3.scene.control.Control;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +14,7 @@ import java.util.List;
  *
  * @author mifth
  */
-public final class EntitySpatialsControl extends AbstractControl {
+public final class EntitySpatialsControl {
     
     private Spatial spatial;
     private static List<Geometry> mapChildMeshes = new ArrayList<Geometry>(); //Collection of meshes
@@ -37,7 +28,7 @@ public final class EntitySpatialsControl extends AbstractControl {
         this.ID = ID;
         this.components = components;
         spatial = sp;
-        spatial.addControl(this);
+//        spatial.addControl(this);
         
         
     }
@@ -112,50 +103,50 @@ public final class EntitySpatialsControl extends AbstractControl {
     public void destroy() {
         mapChildMeshes.clear();
         spatial.removeFromParent();
-        spatial.removeControl(this);
+//        spatial.removeControl(this);
         spatial = null;
     }
     
-    @Override
-    protected void controlUpdate(float tpf) {
-
-        // Update transforms
-        if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicServerEntity) {
-            EntityTransformComponent transform = (EntityTransformComponent) components.getComponent(EntityTransformComponent.class);
-            spatial.setLocalTransform(transform.getTransform());
-        } else if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicClientEntity) {
-            EntityTransformComponent transform = (EntityTransformComponent) components.getComponent(EntityTransformComponent.class);
-            transform.getTransform().set(spatial.getLocalTransform());
-        }
-        
-        if (components.isDoUpdateOnce()) {
-            components.updateOnce(false, ComponentsControl.UpdateType.staticEntity);
-//            components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
-        }
-    }
-    
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-        
-    }
-    
-    public Control cloneForSpatial(Spatial spatial) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    @Override
-    public void read(JmeImporter im) throws IOException {
-        super.read(im);
-        InputCapsule in = im.getCapsule(this);
-        //TODO: load properties of this Control, e.g.
-        //this.value = in.readFloat("name", defaultValue);
-    }
-    
-    @Override
-    public void write(JmeExporter ex) throws IOException {
-        super.write(ex);
-        OutputCapsule out = ex.getCapsule(this);
-        //TODO: save properties of this Control, e.g.
-        //out.write(this.value, "name", defaultValue);
-    }    
+//    @Override
+//    protected void controlUpdate(float tpf) {
+//
+//        // Update transforms
+//        if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicServerEntity) {
+//            EntityTransformComponent transform = (EntityTransformComponent) components.getComponent(EntityTransformComponent.class);
+//            spatial.setLocalTransform(transform.getTransform());
+//        } else if (components.getUpdateType() == ComponentsControl.UpdateType.dynamicClientEntity) {
+//            EntityTransformComponent transform = (EntityTransformComponent) components.getComponent(EntityTransformComponent.class);
+//            transform.getTransform().set(spatial.getLocalTransform());
+//        }
+//        
+//        if (components.isDoUpdateOnce()) {
+//            components.updateOnce(false, ComponentsControl.UpdateType.staticEntity);
+////            components.setUpdateType(ComponentsControl.UpdateType.staticEntity);
+//        }
+//    }
+//    
+//    @Override
+//    protected void controlRender(RenderManager rm, ViewPort vp) {
+//        
+//    }
+//    
+//    public Control cloneForSpatial(Spatial spatial) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
+//    
+//    @Override
+//    public void read(JmeImporter im) throws IOException {
+//        super.read(im);
+//        InputCapsule in = im.getCapsule(this);
+//        //TODO: load properties of this Control, e.g.
+//        //this.value = in.readFloat("name", defaultValue);
+//    }
+//    
+//    @Override
+//    public void write(JmeExporter ex) throws IOException {
+//        super.write(ex);
+//        OutputCapsule out = ex.getCapsule(this);
+//        //TODO: save properties of this Control, e.g.
+//        //out.write(this.value, "name", defaultValue);
+//    }    
 }

@@ -7,7 +7,6 @@ package com.simpleEditor;
 import com.entitysystem.ComponentsControl;
 import com.entitysystem.EntityManager;
 import com.entitysystem.EntityNameComponent;
-import com.entitysystem.EntitySpatialsControl;
 import com.entitysystem.EntitySpatialsSystem;
 import com.entitysystem.EntityTransformComponent;
 import com.jme3.app.Application;
@@ -39,7 +38,6 @@ public class EditorBaseManager {
     
     // Global Nodes
     private Node rootNode, guiNode;
-
     private Node selectableNode, hidedNode;
     private Node camTrackHelper;
     
@@ -56,8 +54,8 @@ public class EditorBaseManager {
     private EditorDataManager dataManager;
     private EditorHistoryManager historyManager;
 
-
-
+    // Version of the Editor
+    private static String editorVersoin;
 
     public EditorBaseManager(Application app) {
 
@@ -65,6 +63,8 @@ public class EditorBaseManager {
         sceneCamera = this.app.getCamera();
         viewPort = this.app.getViewPort();
         assetManager = this.app.getAssetManager();
+        
+        editorVersoin = "0.1";
 
         flyCam = this.app.getStateManager().getState(FlyCamAppState.class).getCamera();
         flyCam.setEnabled(false);
@@ -110,6 +110,10 @@ public class EditorBaseManager {
         hidedNode = new Node("hidedNode");
     }
 
+    protected static String getEditorVersoin() {
+        return editorVersoin;
+    }    
+    
     protected EditorCameraManager getCamManager() {
         return camManager;
     }    

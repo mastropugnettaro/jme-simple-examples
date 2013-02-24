@@ -36,47 +36,28 @@ public class EditorHistoryManager {
 
         historyList = new ArrayList<EditorHistoryObject>();
         historycurrentNumber = 0;
-        historyMaximumnumber = 30;
+        historyMaximumnumber = 60;
 
-        initializeHistoryList();
+        setDefaultHistoryObject();
 
     }
 
-    private void initializeHistoryList() {
-        // set temp List
-        EditorHistoryObject hObj = new EditorHistoryObject();
-        hObj.createSelectDeselectEntitiesList();
-        historyList.add(0, hObj);
-//        if (hObj.getTransformOfParentNode() == null
-//                && hObj.getSelectDeselectEntitiesList() != null) {
-//            setNewTransformHistory(new Transform(), base.getTransformManager().getTrCoordinates());
-//        }
-    }
 
     protected static ArrayList<EditorHistoryObject> getHistoryList() {
         return historyList;
+    }
+
+    protected void setDefaultHistoryObject() {
+        // set default history object
+        EditorHistoryObject hObj = new EditorHistoryObject();
+        hObj.createSelectDeselectEntitiesList();
+        historyList.add(0, hObj);
     }
 
     protected void historyUndo() {
         if (historycurrentNumber > 0) {
             int prevHistoryNumber = historycurrentNumber - 1;
             EditorHistoryObject historyPreviousObj = historyList.get(prevHistoryNumber);
-
-//            // transform changes
-//            if (historyPreviousObj.getTransformOfParentNode() != null
-//                    && historyList.get(historycurrentNumber).isDoTransform() == true) {
-//                // set transform coords
-//                EditorTransformManager.TransformCoordinates tempCoords = base.getTransformManager().getTrCoordinates();
-//                base.getTransformManager().setTrCoordinates(historyPreviousObj.getTransformCoords());
-//                // change transform
-//                base.getTransformManager().attachSelectedToTransformParent();
-////                base.getSelectionManager().getSelectionCenter().set(historyPreviousObj.getTransformOfParentNode().clone());
-//                base.getTransformManager().updateTransformCoords();
-//                base.getTransformManager().getTranformParentNode().setLocalTransform(historyPreviousObj.getTransformOfParentNode().clone());
-//                base.getTransformManager().deactivateUndoRedo();
-//                base.getTransformManager().setTrCoordinates(tempCoords);
-//
-//            }            
 
             // selection changes
             if (historyPreviousObj.getSelectDeselectEntitiesList() != null) {
@@ -93,9 +74,7 @@ public class EditorHistoryManager {
                         }
                         base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
                     }
-
                 }
-
                 base.getSelectionManager().calculateSelectionCenter();
 //                System.out.println("SelListUndo2" + PreviousSelectionlist.size());
 //                System.out.println("SelListUndo2" + base.getSelectionManager().getSelectionList().size());
@@ -169,21 +148,18 @@ public class EditorHistoryManager {
             Transform trID = base.getSpatialSystem().getSpatialControl(base.getSelectionManager().getSelectionList().get(i)).getGeneralNode().getWorldTransform().clone();
             historyObj.getSelectDeselectEntitiesList().put(selectionIDList.get(i), trID);
         }
-//        System.out.println("historyObject_SelectList_Hash2" + historyObj.getSelectDeselectEntitiesList().size());
-
-//        System.out.println("historyListObj" + historycurrentNumber);
-
     }
 
-//    protected void setNewTransformHistory(Transform parentNodeTransform,
-//            EditorTransformManager.TransformCoordinates transformCoords) {
-//
-//        EditorHistoryObject historyObj = historyList.get(historycurrentNumber);
-//        historyObj.setTransformOfParentNode(parentNodeTransform);
-////        historyObj.setTransformOfselectionTransformCenter(transformedTransform);
-//        historyObj.setTransformCoords(transformCoords);
-//
-//    }
+    protected void clearHistory() {
+        for (EditorHistoryObject hObj : historyList) {
+            hObj.clearHistoryObject();
+            hObj = null;
+        }
+        historyList.clear();        
+        historycurrentNumber = 0;
+        setDefaultHistoryObject();
+    }
+
     protected static void setHistoryObject(int historyNumber, EditorHistoryObject historyObject) {
         historyList.add(historyNumber, historyObject);
     }

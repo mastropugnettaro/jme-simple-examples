@@ -4,15 +4,11 @@
  */
 package com.simpleEditor;
 
-import com.entitysystem.EntitySpatialsControl;
-import com.entitysystem.EntityTransformComponent;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
@@ -24,11 +20,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.debug.WireBox;
-import com.jme3.scene.shape.Quad;
-import de.lessvoid.nifty.controls.ListBox;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
