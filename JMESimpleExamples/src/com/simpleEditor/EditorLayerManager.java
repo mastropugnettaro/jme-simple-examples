@@ -22,6 +22,8 @@ public class EditorLayerManager {
     private Application app;
     private EditorBaseManager base;
     private Node selectableNode;
+
+
     private static List<Node> layersList;
     private Node activeLayer;
 
@@ -54,6 +56,11 @@ public class EditorLayerManager {
         }
     }
 
+
+    protected Node getSelectableNode() {
+        return selectableNode;
+    }    
+    
     protected Node getLayer(int layerNumber) {
         Node nd = layersList.get(layerNumber - 1);  // compensate the list number
         return nd;

@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 public class EditorGuiManager extends AbstractAppState implements ScreenController {
 
     private Screen screen;
-    private Nifty nifty;
+    private static Nifty nifty;
     private SimpleApplication application;
     private Node gridNode, rootNode, guiNode;
     private AssetManager assetManager;
@@ -165,9 +165,12 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     }
 
     protected void clearGui() {
+        // clear gui lists
         entitiesListBox.clear();
         sceneObjectsListBox.clear();
         componentsListBox.clear();
+
+        // clear layers
         for (int i = 0; i < 20; i++) {
             CheckBox cb = screen.findNiftyControl("layer" + (i + 1), CheckBox.class);
             cb.uncheck();
@@ -175,8 +178,19 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             selectActiveLayerImage.stopEffect(EffectEventId.onFocus);
             selectActiveLayerImage.startEffect(EffectEventId.onEnabled);
         }
+
+        // clear assets
+        for (int i = 0; i < 7; i++) {
+            String strID = "scenePath" + (i + 1);
+            nifty.getScreen("start").findNiftyControl(strID, TextField.class).setText("");
+        }
+
         screen.getFocusHandler().resetFocusElements();
 
+    }
+
+    public static Nifty getNifty() {
+        return nifty;
     }
 
     /**
@@ -275,12 +289,46 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     public void newSceneButton() {
         clearGui();
         base.getSceneManager().newScene();
-
-
     }
 
     public void LoadSceneButton() {
+        clearGui();
+        base.getSceneManager().newScene();
         base.getSceneManager().loadScene();
+
+        // reload assets lists
+        int guiAssetLine = 1;
+        for (String obj : base.getSceneManager().getAssetsList()) {
+            // show assets at the gui
+            if (guiAssetLine <= 7) {
+                String strAssetLine = "scenePath" + guiAssetLine;
+                nifty.getScreen("start").findNiftyControl(strAssetLine, TextField.class).setText((String) obj);
+                guiAssetLine += 1;
+            }
+
+        }
+
+        // update list of all entities
+        ConcurrentHashMap<String, String> entList = base.getSceneManager().getEntitiesListsList();
+        entitiesListBox.clear();
+        for (String str : entList.keySet()) {
+            entitiesListBox.addItem(str);
+        }
+
+
+        // update list of objects
+        for (Node ndLayer : base.getLayerManager().getLayers()) {
+            for (Spatial spEntity : ndLayer.getChildren()) {
+                Object obj = spEntity.getUserData("EntityID");
+                long idObj = (Long) obj;
+                EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(idObj, EntityNameComponent.class);
+                sceneObjectsListBox.addItem(nameComp.getName());
+            }
+
+        }
+
+//        sceneObjectsListBox.
+//        System.out.println(base.getEntityManager().getAllControls().size());
 //        screen.getFocusHandler().resetFocusElements();
     }
 
@@ -304,7 +352,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     public void updateAssetsButton() {
         // update assets
-        base.getSceneManager().clearAssets();
+//        base.getSceneManager().clearAssets();
 
         for (int i = 0; i < 7; i++) {
             String strID = "scenePath" + (i + 1);

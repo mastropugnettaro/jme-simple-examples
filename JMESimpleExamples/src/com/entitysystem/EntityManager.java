@@ -13,11 +13,11 @@ public final class EntityManager {
 
     public static long createEntity() {
         idx++;
-        addComponentControl(idx);
+//        addComponentControl(idx);
         return idx;
     }
 
-    private static ComponentsControl addComponentControl(long ID) {
+    public static ComponentsControl addComponentControl(long ID) {
         ComponentsControl component = componentControl.get(ID);
         if (component == null) {
             component = new ComponentsControl(ID);

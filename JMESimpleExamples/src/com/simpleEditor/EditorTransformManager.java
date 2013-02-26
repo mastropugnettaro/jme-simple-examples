@@ -385,9 +385,8 @@ public class EditorTransformManager extends AbstractControl {
                 base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
                 base.getHistoryManager().getHistoryList().get(base.getHistoryManager().getHistoryCurrentNumber()).setDoTransform(true);
             }
-
-            pickedAxis = PickedAxis.None;
         }
+        pickedAxis = PickedAxis.None;
     }
 
 //    protected void setHistory() {
