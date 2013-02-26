@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class EntitySpatialsSystem {
     
-    private static ConcurrentHashMap <Long, EntitySpatialsControl> spatialControl = new ConcurrentHashMap <Long, EntitySpatialsControl>();    
+    private static ConcurrentHashMap <Long, EntitySpatialsControl> spatialControl;    
 
     public EntitySpatialsSystem() {
-        
+         spatialControl = new ConcurrentHashMap <Long, EntitySpatialsControl>();
     }
     
     public static EntitySpatialsControl addSpatialControl(Spatial sp, long ID, ComponentsControl control) {

@@ -49,7 +49,7 @@ public class EntityTest extends SimpleApplication {
 
         // setup Entity
         long ent = entityManager.createEntity();                
-        ComponentsControl components = entityManager.getComponentControl(ent);
+        ComponentsControl components = entityManager.addComponentControl(ent);
         
         EntityNameComponent name = new EntityNameComponent("ent" + i);
         components.setComponent(name);
