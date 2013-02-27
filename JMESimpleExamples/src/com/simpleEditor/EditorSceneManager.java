@@ -14,9 +14,11 @@ import com.jme3.asset.DesktopAssetManager;
 import com.jme3.asset.ModelKey;
 import com.jme3.asset.plugins.FileLocator;
 import com.jme3.asset.plugins.ZipLocator;
+import com.jme3.export.binary.BinaryExporter;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.AssetLinkNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.TangentBinormalGenerator;
@@ -55,6 +57,7 @@ public class EditorSceneManager {
     private static ConcurrentHashMap<String, Spatial> spatialsList;
 //    private EntityManager entityManager;
     private DesktopAssetManager dsk;
+    private String scenePathCache, sceneNameCache;
 
     public EditorSceneManager(Application app, EditorBaseManager base) {
 
@@ -70,15 +73,14 @@ public class EditorSceneManager {
         mFileCm.setPreferredSize(new Dimension(800, 600));
         modFilter = new EditorSceneFilter();
 
+        scenePathCache = null;
+        sceneNameCache = null;
+
         assetsList = new ArrayList<String>();
         entitiesList = new ConcurrentHashMap<String, String>();
         spatialsList = new ConcurrentHashMap<String, Spatial>();
         dsk = (DesktopAssetManager) assetMan;
 //        entityManager = base.getEntityManager();
-    }
-
-    protected void newScene() {
-        clearScene();
     }
 
     protected void loadScene() {
@@ -101,6 +103,11 @@ public class EditorSceneManager {
                     fileName = fileName.substring(0, fileName.indexOf("."));
                 }
                 String fullPath = filePath + fileName;
+
+                // set scene paths to cache
+                sceneNameCache = fileName;
+                scenePathCache = filePath;
+
                 loadSwsFile(fullPath);
                 loadSweFile(fullPath);
             }
@@ -116,16 +123,9 @@ public class EditorSceneManager {
 
         // load assets
         JSONObject jsPaths = (JSONObject) jsSettings.get("AssetsPaths");
-//        int guiAssetLine = 1;
         for (Object obj : jsPaths.keySet()) {
-            addAsset((String)jsPaths.get(obj));
-
-//            // show assets at the gui
-//            if (guiAssetLine <= 7) {
-//                String strAssetLine = "scenePath" + guiAssetLine;
-//                nifty.getScreen("start").findNiftyControl(strAssetLine, TextField.class).setText((String)obj);
-//                guiAssetLine += 1;
-//            }
+            System.out.println("Loaded Path: " + (String) jsPaths.get(obj));
+            addAsset((String) jsPaths.get(obj));
         }
         System.out.println("sws is loaded!");
     }
@@ -134,7 +134,7 @@ public class EditorSceneManager {
         JSONObject jsScene = loadToJsonFile(filePath + ".swe");
 
         // set new IDX
-        long lastIDX = Long.valueOf((String)jsScene.get("LastIDX")) ;
+        long lastIDX = Long.valueOf((String) jsScene.get("LastIDX"));
         base.getEntityManager().setIdx(lastIDX);
 
         // load layers
@@ -161,18 +161,18 @@ public class EditorSceneManager {
             if (isEnabled) {
                 base.getLayerManager().getSelectableNode().attachChild(layerNode);
                 layerNode.setUserData("isEnabled", true);
-            }              
-            
+            }
+
 
             // create entities
             JSONObject jsEntities = (JSONObject) jslayer.get("Entities");
             for (Object objID : jsEntities.keySet()) {
-                long ID = Long.valueOf((String)objID);
+                long ID = Long.valueOf((String) objID);
                 JSONObject jsEntity = (JSONObject) jsEntities.get(objID);
 
                 String idName = (String) jsEntity.get("IDName");
                 idName = idName.substring(0, idName.indexOf("_IDX"));
-                
+
                 String idNumber = (String) jsEntity.get("IDName");
                 idNumber = idNumber.substring(idNumber.indexOf("_IDX") + 4, idNumber.length());
 
@@ -184,30 +184,36 @@ public class EditorSceneManager {
                 //set Transform for the entity
                 JSONObject jsTransform = (JSONObject) jsEntity.get("IDTransform");
                 Transform entTransform = new Transform();
-                entTransform.setTranslation( Float.valueOf((String)jsTransform.get("translationX")), Float.valueOf((String)jsTransform.get("translationY")), 
-                        Float.valueOf((String)jsTransform.get("translationZ")));
+                entTransform.setTranslation(Float.valueOf((String) jsTransform.get("translationX")), Float.valueOf((String) jsTransform.get("translationY")),
+                        Float.valueOf((String) jsTransform.get("translationZ")));
                 entTransform.setRotation(new Quaternion(
-                        Float.valueOf((String)jsTransform.get("rotationX")), Float.valueOf((String)jsTransform.get("rotationY")), Float.valueOf((String)jsTransform.get("rotationZ")),
-                        Float.valueOf((String)jsTransform.get("rotationW"))));
-                entTransform.setScale(Float.valueOf((String)jsTransform.get("scaleX")), Float.valueOf((String)jsTransform.get("scaleY")), Float.valueOf((String)jsTransform.get("scaleZ")));
+                        Float.valueOf((String) jsTransform.get("rotationX")), Float.valueOf((String) jsTransform.get("rotationY")), Float.valueOf((String) jsTransform.get("rotationZ")),
+                        Float.valueOf((String) jsTransform.get("rotationW"))));
+                entTransform.setScale(Float.valueOf((String) jsTransform.get("scaleX")), Float.valueOf((String) jsTransform.get("scaleY")), Float.valueOf((String) jsTransform.get("scaleZ")));
                 entityNode.setLocalTransform(entTransform);
-                
+
                 System.out.println(entTransform.toString());
-                
+
                 layerNode.attachChild(entityNode);
 
                 //set data components for the entity
                 JSONObject jsDataComponents = (JSONObject) jsEntity.get("IDDataComponents");
                 for (Object strKey : jsDataComponents.keySet()) {
-                    String value = (String)jsDataComponents.get(strKey);
-                    base.getDataManager().getEntityData(ID).put((String)strKey, value);
+                    String value = (String) jsDataComponents.get(strKey);
+                    base.getDataManager().getEntityData(ID).put((String) strKey, value);
                 }
             }
-          
+
         }
     }
 
     protected void saveScene() {
+        if (scenePathCache != null && sceneNameCache != null) {
+            saveSwsFile(scenePathCache + sceneNameCache);
+            saveSweFile(scenePathCache + sceneNameCache);
+            savePreviewScene(scenePathCache, sceneNameCache);
+        }
+
     }
 
     protected void saveAsNewScene() {
@@ -231,8 +237,14 @@ public class EditorSceneManager {
                     fileName = fileName.substring(0, fileName.indexOf("."));
                 }
                 String fullPath = filePath + fileName;
+
+                // set paths to cache
+                scenePathCache = filePath;
+                sceneNameCache = fileName;
+
                 saveSwsFile(fullPath);
                 saveSweFile(fullPath);
+                savePreviewScene(filePath, fileName);
             }
         }
     }
@@ -315,7 +327,7 @@ public class EditorSceneManager {
             layerToSave.put("Entities", entitiesToSave);
             allLayersJs.put(layerNode.getName(), layerToSave);
         }
-        
+
         saveSceneJson.put("Layers", allLayersJs);
         saveJsonFile(pathToSave + ".swe", saveSceneJson);
         System.out.println("File saved: " + pathToSave + ".swe");
@@ -342,6 +354,10 @@ public class EditorSceneManager {
             base.getSpatialSystem().removeSpatialControl(ID);
         }
         allControls.clear();
+
+        // clear paths cache
+        sceneNameCache = null;
+        scenePathCache = null;
 
         // clear assets list
         clearAssets();
@@ -375,6 +391,73 @@ public class EditorSceneManager {
         }
     }
 
+    protected void savePreviewScene(String pathToSave, String sceneName) {
+        // Saving scene with linked Nodes to j3o (for scene viewing)
+        Node sceneSaveView = new Node(sceneName);
+
+        for (Node layerToParse : base.getLayerManager().getLayers()) {
+            Node layerToSave = new Node(layerToParse.getName());
+            layerToSave.setCullHint(Spatial.CullHint.Always);
+
+            for (Spatial spEntity : layerToParse.getChildren()) {
+
+
+                // load entity
+                Object IDObj = spEntity.getUserData("EntityID");
+                Object pathComponent = base.getEntityManager().getComponent((Long) IDObj, EntityModelPathComponent.class);
+                EntityModelPathComponent modelPath = (EntityModelPathComponent) pathComponent;
+                ModelKey mkLinkToScene = new ModelKey(modelPath.getModelPath());
+                AssetLinkNode linkedEntity = new AssetLinkNode(mkLinkToScene);
+
+                // general node of the entity
+                Node entityNode = new Node();
+                entityNode.attachChild(linkedEntity);
+
+                // set name
+                Object modelNameObj = base.getEntityManager().getComponent((Long) IDObj, EntityNameComponent.class);
+                EntityNameComponent modmodelName = (EntityNameComponent) modelNameObj;
+                entityNode.setName(modmodelName.getName());
+                entityNode.setLocalTransform(spEntity.getWorldTransform());
+
+                // set components
+                ConcurrentHashMap<String, String> dataComponents = base.getDataManager().getEntityData((Long) IDObj);
+                for (String key : dataComponents.keySet()) {
+                    entityNode.setUserData(key, dataComponents.get(key));
+                }
+                // add entity to a layer
+                layerToSave.attachChild(entityNode);
+            }
+
+            sceneSaveView.attachChild(layerToSave);
+
+        }
+        // save node
+        binaryExport(pathToSave + sceneName + "_preview", sceneSaveView);
+
+        // clear node
+        sceneSaveView.detachAllChildren();
+        sceneSaveView = null;
+    }
+
+    private void binaryExport(String fullPath, Node saveNode) {
+
+        File MaFile = new File(fullPath + ".j3o");
+        MaFile.setWritable(true);
+        MaFile.canWrite();
+        MaFile.canRead();
+
+
+        try {
+            BinaryExporter exporter = BinaryExporter.getInstance();
+            exporter.save(saveNode, MaFile);
+//            BinaryExporter.getInstance().save(saveNode, MaFile);
+        } catch (IOException ex) {
+            System.out.println("Baddddd Saveee");
+
+        }
+
+    }
+
     private Long createEntityModel(String name, String path, Long existedID) {
         Node activeLayer = base.getLayerManager().getActiveLayer();
 
@@ -382,7 +465,7 @@ public class EditorSceneManager {
             // setup Entity
             Node model = null;
             if (spatialsList.contains(path) == false) {
-               Node loadedModel = (Node) dsk.loadModel(path);
+                Node loadedModel = (Node) dsk.loadModel(path);
                 spatialsList.put(path, loadedModel);
                 model = loadedModel.clone(false);
             } else {
@@ -475,13 +558,13 @@ public class EditorSceneManager {
             layerToClone.attachChild(newModel);
         }
 
-        // clear selection
-        base.getSelectionManager().clearSelectionList();
-
-        for (Long id : tempList) {
-            base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
-        }
-        base.getSelectionManager().calculateSelectionCenter();
+//        // clear selection
+//        base.getSelectionManager().clearSelectionList();
+//
+//        for (Long id : tempList) {
+//            base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
+//        }
+//        base.getSelectionManager().calculateSelectionCenter();
         return tempList;
     }
 
@@ -595,5 +678,25 @@ public class EditorSceneManager {
 
     protected static ConcurrentHashMap<String, String> getEntitiesListsList() {
         return entitiesList;
+    }
+
+    protected String getScenePath() {
+        return scenePathCache;
+    }
+
+    protected void setScenePath(String scenePath) {
+        scenePath = scenePath;
+    }
+
+    protected String getSceneName() {
+        return sceneNameCache;
+    }
+
+    protected void setSceneName(String sceneName) {
+        sceneName = sceneName;
+    }
+
+    protected void newScene() {
+        clearScene();
     }
 }

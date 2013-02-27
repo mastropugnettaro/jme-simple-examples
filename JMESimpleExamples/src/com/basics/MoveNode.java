@@ -37,7 +37,7 @@ public class MoveNode extends SimpleApplication {
        
        System.out.println(remainingDist);
               
-       if (move < remainingDist) {
+       if (move < remainingDist && remainingDist != 0) {
            
            vectry2 = vectry.interpolate(vecmove, move / remainingDist);
            geom.setLocalTranslation(vectry2);

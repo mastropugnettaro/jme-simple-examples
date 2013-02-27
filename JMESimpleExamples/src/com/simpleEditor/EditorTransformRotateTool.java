@@ -26,8 +26,9 @@ public class EditorTransformRotateTool {
     private EditorBaseManager base;
     private EditorTransformManager trManager;
     private Node collisionPlane;
+    private EditorTransformConstraint constraintTool;
 
-    public EditorTransformRotateTool(EditorTransformManager trManager, Application app, EditorBaseManager base) {
+    public EditorTransformRotateTool(EditorTransformManager trManager, Application app, EditorBaseManager base, EditorTransformConstraint constraintTool) {
 
         this.app = app;
         this.base = base;
@@ -35,6 +36,7 @@ public class EditorTransformRotateTool {
         root = (Node) this.app.getViewPort().getScenes().get(0);
         this.trManager = trManager;
         collisionPlane = trManager.getCollisionPlane();
+        this.constraintTool = constraintTool;
     }
 
     protected void setCollisionPlane(CollisionResult colResult) {
@@ -95,6 +97,7 @@ public class EditorTransformRotateTool {
         // rotate according to angle
         Vector2f vec1 = selectedCoords.subtract(cursorPos).normalizeLocal();
         float angle = vec1.angleBetween(new Vector2f(trManager.getDeltaMoveVector().getX(), trManager.getDeltaMoveVector().getY()));
+        angle = constraintTool.constraintValue(FastMath.RAD_TO_DEG * angle) * FastMath.DEG_TO_RAD;
         Quaternion rotationOfSelection = trManager.getselectionTransformCenter().getRotation();
         
         Vector3f axisToRotate = rotationOfSelection.mult(pickedVec);

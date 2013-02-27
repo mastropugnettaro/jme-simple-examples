@@ -18,6 +18,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.ViewPort;
@@ -196,8 +197,25 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     /**
      * This is called when the RadioButton selection has changed.
      */
-    @NiftyEventSubscriber(id = "RadioGroup-1")
-    public void onRadioGroup1Changed1(final String id, final RadioButtonGroupStateChangedEvent event) {
+    @NiftyEventSubscriber(id = "RadioGroupConstraints")
+    public void RadioGroupConstraintsChanged(final String id, final RadioButtonGroupStateChangedEvent event) {
+
+        if (event.getSelectedId().equals("constraint_none")) {
+            base.getTransformManager().getConstraintTool().setConstraint(0);
+        } else if (event.getSelectedId().equals("constraint_1")) {
+            base.getTransformManager().getConstraintTool().setConstraint(1.0f);
+        } else if (event.getSelectedId().equals("constraint_5")) {
+            base.getTransformManager().getConstraintTool().setConstraint(5.0f);
+        } else if (event.getSelectedId().equals("constraint_10")) {
+            base.getTransformManager().getConstraintTool().setConstraint(10.0f);
+        }
+    }    
+    
+    /**
+     * This is called when the RadioButton selection has changed.
+     */
+    @NiftyEventSubscriber(id = "RadioGroupSelection")
+    public void RadioGroupSelectionChanged(final String id, final RadioButtonGroupStateChangedEvent event) {
 
         if (event.getSelectedId().equals("mouse_sel")) {
             setMouseSelection();
@@ -209,8 +227,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     /**
      * This is called when the RadioButton selection has changed.
      */
-    @NiftyEventSubscriber(id = "RadioGroup-2")
-    public void onRadioGroup1Changed2(final String id, final RadioButtonGroupStateChangedEvent event) {
+    @NiftyEventSubscriber(id = "RadioGroupSelectionAdditive")
+    public void RadioGroupSelectionAdditiveChanged(final String id, final RadioButtonGroupStateChangedEvent event) {
 
         if (event.getSelectedId().equals("normal_sel")) {
             setNormalSelection();
@@ -239,6 +257,26 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         System.out.println("Manipulator is changed");
         base.getTransformManager().setTransformType(EditorTransformManager.TransformToolType.ScaleTool);
 //        screen.getFocusHandler().resetFocusElements();
+    }
+
+    public void clearTransform(String transformType) {
+        for (Long id : base.getSelectionManager().getSelectionList()) {
+            Node entity = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+            if (transformType.equals("Translation")) {
+                entity.setLocalTranslation(new Vector3f());
+            } else if (transformType.equals("Rotation")) {
+                entity.setLocalRotation(new Quaternion());
+            } else if (transformType.equals("Scale")) {
+                entity.setLocalScale(new Vector3f(1, 1, 1));
+            }
+
+        }
+        base.getSelectionManager().calculateSelectionCenter();
+
+        // set history
+        base.getHistoryManager().prepareNewHistory();
+        base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
+        base.getHistoryManager().getHistoryList().get(base.getHistoryManager().getHistoryCurrentNumber()).setDoTransform(true);
     }
 
     public void setGrid() {
@@ -352,7 +390,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     public void updateAssetsButton() {
         // update assets
-//        base.getSceneManager().clearAssets();
+        base.getSceneManager().clearAssets();
 
         for (int i = 0; i < 7; i++) {
             String strID = "scenePath" + (i + 1);
@@ -477,7 +515,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 EntityNameComponent newRealName = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
                 base.getGuiManager().getSceneObjectsListBox().addItem(newRealName.getName());
             }
-            setSelectedObjectsList();
+//            setSelectedObjectsList();
 
 //            // set history
 //            base.getHistoryManager().prepareNewHistory();

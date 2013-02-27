@@ -33,7 +33,7 @@ public class EditorCameraManager {
     private Camera cam;
     private Node camTrackHelper;
     private InputManager imputMan;
-    private ChaseCamera chaseCam;
+    private EditorChaseCamera chaseCam;
     private Application app;
     private EditorBaseManager base;
     private float camMoveSpeed;
@@ -64,7 +64,7 @@ public class EditorCameraManager {
     private void setCameraNow() {
 
         // Enable a chase cam
-        chaseCam = new ChaseCamera(cam, camTrackHelper, imputMan);
+        chaseCam = new EditorChaseCamera(cam, camTrackHelper, imputMan);
 
         //Uncomment this to invert the camera's vertical rotation Axis 
         chaseCam.setInvertVerticalAxis(true);
@@ -93,7 +93,7 @@ public class EditorCameraManager {
         //Uncomment this to set mutiple triggers to enable rotation of the cam
         //Here spade bar and middle mouse button
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
-
+//        chaseCam.setZoomInTrigger(triggers)
         
         chaseCam.setMinDistance(0.05f);
         chaseCam.setMaxDistance(2500);
@@ -131,9 +131,19 @@ public class EditorCameraManager {
 
         Vector3f camMoveY = cam.getUp();
         camMoveY.normalizeLocal();
-
-        camTrackHelper.move(camMoveX.mult((endPosMouse.x - ceneterScr.x) / cam.getWidth()).addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / cam.getHeight())).normalizeLocal().multLocal(mouseDist * camMoveSpeed));
+        
+        Vector3f vecToMove = camMoveX.mult((endPosMouse.x - ceneterScr.x) / cam.getWidth());
+        vecToMove.addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / cam.getHeight())).normalizeLocal();
+        vecToMove.multLocal(mouseDist * camMoveSpeed * (1.0f + (chaseCam.getDistanceToTarget()*0.005f)));
+//        System.out.println("target" + chaseCam.getDistanceToTarget());
+//        System.out.println(mouseDist * camMoveSpeed);
+        
+        camTrackHelper.move(vecToMove);
     }
+    
+     protected void moveCameraToSelection() {
+         
+     }
 
     protected void setCamTracker() {
 

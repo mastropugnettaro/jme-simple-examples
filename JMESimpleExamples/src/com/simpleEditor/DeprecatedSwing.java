@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
-public class Editor {
+public class DeprecatedSwing {
     
     
     protected static JFileChooser mFileCm;
@@ -43,7 +43,7 @@ public class Editor {
     protected  static JScrollPane logScrollPane;
     private static Container currentPanel;
     protected static JTabbedPane tabbedPane, tabbedPaneOpt;
-    private static final String appClass = EmptyScene.class.getName();
+    private static final String appClass = SimpleEditor.class.getName();
     protected static JMenu menuTortureMethods;    
     protected static JTextArea LogArea;
 
@@ -51,7 +51,7 @@ public class Editor {
     protected static AppSettings settings;
     private static EditorBaseManager baseParts;
     
-    public Editor() {
+    public DeprecatedSwing() {
         
             //Create a file chooser for Models
         mFileCm = new JFileChooser();

@@ -53,6 +53,7 @@ public class EditorTransformManager extends AbstractControl {
     private Node ndParent1;
     private Node ndParent2;
     private TransformCoordinates trCoordinates;
+    private EditorTransformConstraint constraintTool;
 
     protected enum TransformToolType {
 
@@ -96,9 +97,10 @@ public class EditorTransformManager extends AbstractControl {
         createCollisionPlane();
         ndParent1.attachChild(ndParent2); // this is for rotation compensation
 
-        moveToolObj = new EditorTransformMoveTool(this, this.app, this.base);
-        rotateToolObj = new EditorTransformRotateTool(this, this.app, this.base);
-        scaleToolObj = new EditorTransformScaleTool(this, this.app, this.base);
+        constraintTool = new EditorTransformConstraint();
+        moveToolObj = new EditorTransformMoveTool(this, this.app, this.base, constraintTool);
+        rotateToolObj = new EditorTransformRotateTool(this, this.app, this.base, constraintTool);
+        scaleToolObj = new EditorTransformScaleTool(this, this.app, this.base, constraintTool);
 
         setTransformToolScale(0.2f);
 
@@ -153,15 +155,15 @@ public class EditorTransformManager extends AbstractControl {
         return tranformParentNode;
     }
 
-    public TransformCoordinates getTrCoordinates() {
+    protected TransformCoordinates getTrCoordinates() {
         return trCoordinates;
     }
 
-    public void setTrCoordinates(TransformCoordinates trCoordinates) {
+    protected void setTrCoordinates(TransformCoordinates trCoordinates) {
         this.trCoordinates = trCoordinates;
     }
 
-    public Transform getselectionTransformCenter() {
+    protected Transform getselectionTransformCenter() {
         return selectionTransformCenter;
     }
 
@@ -169,14 +171,18 @@ public class EditorTransformManager extends AbstractControl {
         return isActive;
     }
 
-    public Vector3f getTransformToolScale() {
+    protected Vector3f getTransformToolScale() {
         return transformTool.getLocalScale();
     }
 
-    public void setTransformToolScale(float newScale) {
+    protected void setTransformToolScale(float newScale) {
         transformTool.setLocalScale(new Vector3f(newScale, newScale, newScale));
     }
 
+    protected EditorTransformConstraint getConstraintTool() {
+        return constraintTool;
+    }    
+    
     protected void updateTransformWidget(Transform center) {
         if (center != null) {
             Vector3f vec = center.getTranslation().subtract(app.getCamera().getLocation()).normalize().multLocal(app.getCamera().getFrustumNear() + 0.1f);
