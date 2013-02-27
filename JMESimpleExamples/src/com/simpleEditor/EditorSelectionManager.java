@@ -268,7 +268,7 @@ public class EditorSelectionManager extends AbstractControl {
             if (selectionList.size() > 1 && selectionList.contains(lastSelected)) {
                 Node ndPrevious = (Node) base.getSpatialSystem().getSpatialControl(lastSelected).getGeneralNode();
                 Geometry geoBoxPrevious = (Geometry) ndPrevious.getChild("SelectionTempMesh");
-                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.7f, 0.5f, 0.03f, 1));
+                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.5f, 0.3f, 0.1f, 1));
             }
 
             // set for new selected
