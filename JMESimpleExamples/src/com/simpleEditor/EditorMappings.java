@@ -16,6 +16,7 @@ import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import de.lessvoid.nifty.elements.Element;
 
 public class EditorMappings implements AnalogListener, ActionListener {
 
@@ -40,8 +41,6 @@ public class EditorMappings implements AnalogListener, ActionListener {
         selectResult = false;
 
         setupKeys();
-
-
     }
 
     private void setupKeys() {
@@ -53,7 +52,9 @@ public class EditorMappings implements AnalogListener, ActionListener {
             "MoveOrSelect",
             "ScaleAll",
             "HistoryUndo",
-            "HistoryRedo"
+            "HistoryRedo",
+            "ShowHideRightPanel",
+            "SelectDeselectAll"
         };
 
 
@@ -65,6 +66,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
         app.getInputManager().addMapping("ScaleAll", new KeyTrigger(KeyInput.KEY_S));
         app.getInputManager().addMapping("HistoryUndo", new KeyTrigger(KeyInput.KEY_Z));
         app.getInputManager().addMapping("HistoryRedo", new KeyTrigger(KeyInput.KEY_X));
+        app.getInputManager().addMapping("ShowHideRightPanel", new KeyTrigger(KeyInput.KEY_TAB));
 
     }
 
@@ -119,6 +121,13 @@ public class EditorMappings implements AnalogListener, ActionListener {
              selectionCenter = null;
             }
             
+        } else if ((name.equals("MoveCameraHelperToSelection") && isPressed && !name.equals("MoveOrSelect"))) {
+            if (!transformResult && !selectResult) {
+                if (base.getSelectionManager().getSelectionList().size() > 0) {
+                    base.getSelectionManager().clearSelectionList();
+//                    base.getGuiManager().c
+                }
+            }
         }
 
         // Undo/Redo
@@ -132,6 +141,18 @@ public class EditorMappings implements AnalogListener, ActionListener {
                 base.getHistoryManager().historyRedo();
             }
 
+        } 
+         if (name.equals("ShowHideRightPanel") && isPressed) {
+//            base.getGuiManager().getScreen().getFocusHandler().resetFocusElements();
+            Element rightPanel = base.getGuiManager().getRightPanel();
+            if (rightPanel.isVisible()) {
+                rightPanel.hide();
+//                rightPanel.disable();
+            } else {
+                rightPanel.show();
+//                rightPanel.enable();                
+            }
+//            base.getGuiManager().getNifty().getScreen("start").getFocusHandler().resetFocusElements();
         }
     }
 }

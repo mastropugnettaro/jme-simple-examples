@@ -15,6 +15,9 @@ import com.jme3.asset.ModelKey;
 import com.jme3.asset.plugins.FileLocator;
 import com.jme3.asset.plugins.ZipLocator;
 import com.jme3.export.binary.BinaryExporter;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
@@ -23,6 +26,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.TangentBinormalGenerator;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.builder.LayerBuilder;
 import de.lessvoid.nifty.controls.TextField;
 import java.awt.Dimension;
 import java.io.File;
@@ -58,6 +62,9 @@ public class EditorSceneManager {
 //    private EntityManager entityManager;
     private DesktopAssetManager dsk;
     private String scenePathCache, sceneNameCache;
+    private boolean savePreviewJ3o;
+    private DirectionalLight dl;
+    private AmbientLight al;
 
     public EditorSceneManager(Application app, EditorBaseManager base) {
 
@@ -80,6 +87,15 @@ public class EditorSceneManager {
         entitiesList = new ConcurrentHashMap<String, String>();
         spatialsList = new ConcurrentHashMap<String, Spatial>();
         dsk = (DesktopAssetManager) assetMan;
+
+//        tempLighting = true;
+//        setTempLighting(true);
+//        root.attachChild(tempLighting);
+        initializeTempLighting();
+
+        app.getViewPort().setBackgroundColor(ColorRGBA.DarkGray);
+
+        savePreviewJ3o = false;
 //        entityManager = base.getEntityManager();
     }
 
@@ -120,6 +136,9 @@ public class EditorSceneManager {
 
         // version of the editor which the scene was saved
         String SWEVersion = (String) jsSettings.get("EditorVersion");
+        
+        // SevePreviewj3O
+        savePreviewJ3o = (Boolean) jsSettings.get("savePreviewJ3o");
 
         // load assets
         JSONObject jsPaths = (JSONObject) jsSettings.get("AssetsPaths");
@@ -244,7 +263,10 @@ public class EditorSceneManager {
 
                 saveSwsFile(fullPath);
                 saveSweFile(fullPath);
-                savePreviewScene(filePath, fileName);
+
+                if (savePreviewJ3o) {
+                    savePreviewScene(filePath, fileName); // save j3o
+                }
             }
         }
     }
@@ -262,6 +284,8 @@ public class EditorSceneManager {
 
         // save version of the Simple World Editor
         saveSceneSettings.put("EditorVersion", base.getEditorVersoin());
+        saveSceneSettings.put("savePreviewJ3o", savePreviewJ3o);
+        
         saveJsonFile(pathToSave + ".sws", saveSceneSettings);
 
     }
@@ -619,6 +643,35 @@ public class EditorSceneManager {
 
     }
 
+    private void initializeTempLighting() {
+
+        dl = new DirectionalLight();
+        dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
+        dl.setColor(new ColorRGBA(1.1f, 1, 0.95f, 1));
+        root.addLight(dl);
+
+        al = new AmbientLight();
+        al.setColor(new ColorRGBA(1, 1, 2, 1));
+        root.addLight(al);
+    }
+
+//    protected void setTempLighting(boolean tempLighting) {
+//        if (tempLighting) {
+//            root.addLight(dl);
+//            root.addLight(al);
+//            tempLighting = true;
+//
+//        } else {
+//            root.removeLight(dl);
+//            root.removeLight(al);
+//            tempLighting = false;
+//        }
+//    }
+
+//    protected boolean getTempLighting() {
+//        return tempLighting;
+//    }
+
     protected JSONObject loadToJsonFile(String path) {
         // Load JSON script
         JSONParser json = new JSONParser();
@@ -698,5 +751,14 @@ public class EditorSceneManager {
 
     protected void newScene() {
         clearScene();
+    }
+
+    protected boolean getSavePreviewJ3o() {
+        return savePreviewJ3o;
+    }
+
+    protected void setSavePreviewJ3o(boolean savePreviewJ3o) {
+        this.savePreviewJ3o = savePreviewJ3o;
+        System.out.println(savePreviewJ3o);
     }
 }
