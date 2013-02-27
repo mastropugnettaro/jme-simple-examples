@@ -8,7 +8,7 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
-public class EditorMenuItems extends Editor {
+public class EditorMenuItems extends DeprecatedSwing {
     
     
    public EditorMenuItems() {

@@ -211,13 +211,84 @@
                         <!-- add your content here -->
                     </panel>        
 
+                    <!--Clear Transforms-->
+                    <panel height="30px" align="center" childLayout="vertical">
+                        <control id="button_clear_location" name="button" style="ma_button" label="Clear Location" visibleToMouse="true">
+                            <interact onClick="clearTransform(Translation)"/>
+                        </control>              
+                    </panel>                       
+        
+                    <panel height="30px" align="center" childLayout="vertical">
+                        <control id="button_clear_rotation" name="button" style="ma_button" label="Clear Rotation" visibleToMouse="true">
+                            <interact onClick="clearTransform(Rotation)"/>
+                        </control>              
+                    </panel>                               
+        
+                    <panel height="30px" align="center" childLayout="vertical">
+                        <control id="button_clear_scale" name="button" style="ma_button" label="Clear Scale" visibleToMouse="true">
+                            <interact onClick="clearTransform(Scale)"/>
+                        </control>              
+                    </panel>           
+        
+                    <panel height="10px" padding="10">
+                        <!-- add your content here -->
+                    </panel>        
 
 
 
+                    <!--Constraints-->
+                    <panel childLayout="vertical" align="center" valign="center" width="90%" height="90px" backgroundColor="#55a5">
+                        <control id="RadioGroupConstraints" name="radioButtonGroup" />
+                        <panel width="10" />
+                        <panel childLayout="vertical" paddingLeft="7px" paddingRight="7px" paddingTop="4px" paddingBottom="4px" width="100%">
+                            <effect>
+                                <onActive name="border" color="#0008" />
+                            </effect>
+                            <panel childLayout="horizontal" width="100%" align="right">
+                                <panel childLayout="horizontal" width="70%" align="right">
+                                    <control name="label" text="None" with="100%"/>
+                                </panel>                        
+                                <panel childLayout="horizontal" width="30%">
+                                    <control name="radioButton" id="constraint_none" group="RadioGroupConstraints" />
+                                </panel>
+                            </panel>
 
+                            <panel childLayout="horizontal" width="100%" align="right">
+                                <panel childLayout="horizontal" width="70%" align="right">
+                                    <control name="label" text="1" with="100%"/>
+                                </panel>                        
+                                <panel childLayout="horizontal" width="30%">
+                                    <control name="radioButton" id="constraint_1" group="RadioGroupConstraints" />
+                                </panel>
+                            </panel>
+                            
+                            <panel childLayout="horizontal" width="100%" align="right">
+                                <panel childLayout="horizontal" width="70%" align="right">
+                                    <control name="label" text="5" with="100%"/>
+                                </panel>                        
+                                <panel childLayout="horizontal" width="30%">
+                                    <control name="radioButton" id="constraint_5" group="RadioGroupConstraints" />
+                                </panel>
+                            </panel>                            
+
+                            <panel childLayout="horizontal" width="100%" align="right">
+                                <panel childLayout="horizontal" width="70%" align="right">
+                                    <control name="label" text="10" with="100%"/>
+                                </panel>                        
+                                <panel childLayout="horizontal" width="30%">
+                                    <control name="radioButton" id="constraint_10" group="RadioGroupConstraints" />
+                                </panel>
+                            </panel>                            
+                                                                    
+                        </panel>
+                    </panel>
+
+                    <panel height="10px" padding="10">
+                    </panel>
+                    
                     <!--Selection-->
                     <panel childLayout="vertical" align="center" valign="center" width="90%" height="48px" backgroundColor="#55a5">
-                        <control id="RadioGroup-1" name="radioButtonGroup" />
+                        <control id="RadioGroupSelection" name="radioButtonGroup" />
                         <!--<control name="label" text="Coordinates" />-->
                         <panel width="10" />
                         <panel childLayout="vertical" paddingLeft="7px" paddingRight="7px" paddingTop="4px" paddingBottom="4px" width="100%">
@@ -229,7 +300,7 @@
                                     <control name="label" text="Mouse" with="100%"/>
                                 </panel>                        
                                 <panel childLayout="horizontal" width="30%">
-                                    <control name="radioButton" id="mouse_sel" group="RadioGroup-1" />
+                                    <control name="radioButton" id="mouse_sel" group="RadioGroupSelection" />
                                 </panel>
                             </panel>
 
@@ -238,19 +309,19 @@
                                     <control name="label" text="Rectangle" with="100%"/>
                                 </panel>                        
                                 <panel childLayout="horizontal" width="30%">
-                                    <control name="radioButton" id="rectangle_sel" group="RadioGroup-1" />
+                                    <control name="radioButton" id="rectangle_sel" group="RadioGroupSelection" />
                                 </panel>
                             </panel>
                     
                         </panel>
                     </panel>
-                                
+                                                                                    
                     <panel height="10px" padding="10">
                     </panel>
                             
-
+                    <!--Selection Normal/Additive-->
                     <panel childLayout="vertical" align="center" valign="center" width="90%" height="48px" backgroundColor="#55a5">
-                        <control id="RadioGroup-2" name="radioButtonGroup" />
+                        <control id="RadioGroupSelectionAdditive" name="radioButtonGroup" />
                         <!--                        <control name="label" text="Transforms" />-->
                         <panel width="10" />
                         <panel childLayout="vertical" paddingLeft="7px" paddingRight="7px" paddingTop="4px" paddingBottom="4px" width="100%">
@@ -262,7 +333,7 @@
                                     <control name="label" text="Normal" with="100%"/>
                                 </panel>                        
                                 <panel childLayout="horizontal" width="30%">
-                                    <control name="radioButton" id="normal_sel" group="RadioGroup-2" />
+                                    <control name="radioButton" id="normal_sel" group="RadioGroupSelectionAdditive" />
                                 </panel>
                             </panel>
 
@@ -271,7 +342,7 @@
                                     <control name="label" text="Additive" with="100%"/>
                                 </panel>                        
                                 <panel childLayout="horizontal" width="30%">
-                                    <control name="radioButton" id="additive_sel" group="RadioGroup-2" />
+                                    <control name="radioButton" id="additive_sel" group="RadioGroupSelectionAdditive" />
                                 </panel>
                             </panel>
                     

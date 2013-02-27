@@ -27,14 +27,16 @@ public class EditorTransformScaleTool {
     private EditorTransformManager trManager;
     private Node collisionPlane;
     private Quaternion defaultRot = new Quaternion();
+    private EditorTransformConstraint constraintTool;
 
-    public EditorTransformScaleTool(EditorTransformManager trManager, Application app, EditorBaseManager base) {
+    public EditorTransformScaleTool(EditorTransformManager trManager, Application app, EditorBaseManager base, EditorTransformConstraint constraintTool) {
         this.app = app;
         this.base = base;
         assetMan = this.app.getAssetManager();
         root = (Node) this.app.getViewPort().getScenes().get(0);
         this.trManager = trManager;
         collisionPlane = trManager.getCollisionPlane();
+        this.constraintTool = constraintTool;
     }
 
     protected void setCollisionPlane(CollisionResult colResult) {
@@ -103,19 +105,18 @@ public class EditorTransformScaleTool {
         float disDelta = delta2d.distance(selectedCoords);
         Vector3f scalevec = null;
         float scaleValue = cursorPos.distance(delta2d);
+        scaleValue = constraintTool.constraintValue(scaleValue *0.007f);
 
         if (disCursor > disDelta) {
-            scalevec = baseScale.add(pickedVec.mult(scaleValue * 0.01f));
+            scalevec = baseScale.add(pickedVec.mult(scaleValue));
 //            System.out.println("xx");
         } else {
-            float scaleDownIntencity;
-            if (trManager.getpickedAxis() == EditorTransformManager.PickedAxis.scaleAll) scaleDownIntencity = 0.005f;
-            else scaleDownIntencity = 0.01f;
-            scaleValue = Math.min(scaleValue * scaleDownIntencity, 0.999f); // remove negateve values
+            scaleValue = Math.min(scaleValue, 0.999f); // remove negateve values
             scalevec = baseScale.subtract(pickedVec.mult((scaleValue)));
 //            System.out.println("YY");
         }
 
+        System.out.println(scaleValue);
         trNode.setLocalScale(scalevec);
 
 

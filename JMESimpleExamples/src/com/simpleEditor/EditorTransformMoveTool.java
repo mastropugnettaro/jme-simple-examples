@@ -28,14 +28,16 @@ public class EditorTransformMoveTool {
     private EditorBaseManager base;
     private EditorTransformManager trManager;
     private Node collisionPlane;
+    private EditorTransformConstraint constraintTool;
 
-    public EditorTransformMoveTool(EditorTransformManager trManager, Application app, EditorBaseManager base) {
+    public EditorTransformMoveTool(EditorTransformManager trManager, Application app, EditorBaseManager base, EditorTransformConstraint constraintTool) {
         this.app = app;
         this.base = base;
         assetMan = this.app.getAssetManager();
         root = (Node) this.app.getViewPort().getScenes().get(0);
         this.trManager = trManager;
         collisionPlane = trManager.getCollisionPlane();
+        this.constraintTool = constraintTool;
     }
 
     protected void setCollisionPlane(CollisionResult colResult) {
@@ -51,7 +53,7 @@ public class EditorTransformMoveTool {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Y);
         } else if (type.indexOf("move_z") >= 0) {
             trManager.setPickedAxis(EditorTransformManager.PickedAxis.Z);
-        } 
+        }
 //        else if (type.indexOf("move_view") > 0) {
 //            trManager.setPickedAxis(EditorTransformManager.PickedAxis.View);
 //        }
@@ -173,9 +175,14 @@ public class EditorTransformMoveTool {
 
             // find distance to mave
             float distanceToMove = contactPoint.add(perendicularVec).distance(selectedCenter.getTranslation());
+
+            distanceToMove = constraintTool.constraintValue(distanceToMove);
+            
+            // invert value if it's needed for negative movement
             if (angle > FastMath.HALF_PI) {
                 distanceToMove = -distanceToMove;
             }
+
 
             translateObjects(distanceToMove, pickedAxis, trManager.getTranformParentNode(), selectedCenter);
 //            System.out.println("Vec: " + selectedCenter.getTranslation().toString() + "   angle: " + angle);

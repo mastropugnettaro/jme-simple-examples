@@ -7,10 +7,10 @@ import com.jme3.system.AppSettings;
 
 
 
-public class EmptyScene extends SimpleApplication{
+public class SimpleEditor extends SimpleApplication{
 
     public static void main(String[] args) {
-        EmptyScene app = new EmptyScene();
+        SimpleEditor app = new SimpleEditor();
         AppSettings aps = new AppSettings(true);
         aps.setVSync(true);
 //        aps.setFrameRate(80);
