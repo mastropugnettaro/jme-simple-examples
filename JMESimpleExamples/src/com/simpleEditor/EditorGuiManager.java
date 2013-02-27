@@ -442,8 +442,11 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     public void addEntityToSceneButton() {
         // create entity
-        if (entitiesListBox.getSelection().size() > 0) {
-            long id = base.getSceneManager().addEntityToScene(entitiesListBox.getSelection().get(0).toString());
+        if (entitiesListBox.getSelection().size() > 0 && base.getLayerManager().getActiveLayer() != null) {
+            String selectedEntity = entitiesListBox.getSelection().get(0).toString();
+            long id = base.getSceneManager().createEntityModel(selectedEntity, base.getSceneManager().getEntitiesListsList().get(selectedEntity), null);
+            base.getLayerManager().getActiveLayer().attachChild(base.getSpatialSystem().getSpatialControl(id).getGeneralNode());
+            
 
             // clear selection
             base.getSelectionManager().clearSelectionList();
