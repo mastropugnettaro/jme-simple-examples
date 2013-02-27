@@ -186,19 +186,21 @@ public class EditorSceneManager {
             // create entities
             JSONObject jsEntities = (JSONObject) jslayer.get("Entities");
             for (Object objID : jsEntities.keySet()) {
+                System.out.println(objID + "OBJID");
                 long ID = Long.valueOf((String) objID);
                 JSONObject jsEntity = (JSONObject) jsEntities.get(objID);
 
                 String idName = (String) jsEntity.get("IDName");
                 idName = idName.substring(0, idName.indexOf("_IDX"));
 
-                String idNumber = (String) jsEntity.get("IDName");
-                idNumber = idNumber.substring(idNumber.indexOf("_IDX") + 4, idNumber.length());
+//                String idNumber = (String) jsEntity.get("IDName");
+//                idNumber = idNumber.substring(idNumber.indexOf("_IDX") + 4, idNumber.length());
 
                 System.out.println(idName);
                 // create entity
-                createEntityModel(idName, entitiesList.get(idName), Long.valueOf(idNumber));
-                Node entityNode = (Node) base.getSpatialSystem().getSpatialControl(ID).getGeneralNode();
+                long entID = createEntityModel(idName, entitiesList.get(idName), ID);
+                Node entityNode = (Node) base.getSpatialSystem().getSpatialControl(entID).getGeneralNode();
+                base.getLayerManager().getLayer(Integer.valueOf(strLayer)).attachChild(entityNode);
 
                 //set Transform for the entity
                 JSONObject jsTransform = (JSONObject) jsEntity.get("IDTransform");
@@ -482,10 +484,8 @@ public class EditorSceneManager {
 
     }
 
-    private Long createEntityModel(String name, String path, Long existedID) {
-        Node activeLayer = base.getLayerManager().getActiveLayer();
+    protected Long createEntityModel(String name, String path, Long existedID) {
 
-        if (activeLayer != null) {
             // setup Entity
             Node model = null;
             if (spatialsList.contains(path) == false) {
@@ -517,17 +517,11 @@ public class EditorSceneManager {
             components.setComponent(nameComponent);
             model.setName(nameComponent.getName());
 
-
-
             EntitySpatialsControl spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, base.getEntityManager().getComponentControl(ent));
             spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
             spatialControl.recurseNodeID(model);
 
-            activeLayer.attachChild(model);
-
             return ent;
-        }
-        return null;
     }
 
     protected void removeClones(String name) {
@@ -697,9 +691,9 @@ public class EditorSceneManager {
         return jsObj;
     }
 
-    protected Long addEntityToScene(String name) {
-        return createEntityModel(name, entitiesList.get(name), null);
-    }
+//    protected Long addEntityToScene(String name) {
+//        return createEntityModel(name, entitiesList.get(name), null);
+//    }
 
     // Recursive search of files
     protected void findFiles(String dirEntity, String fileExtension) {
