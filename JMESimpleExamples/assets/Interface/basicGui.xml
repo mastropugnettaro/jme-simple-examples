@@ -350,12 +350,20 @@
                     </panel>        
 
 
-                    <panel height="40px" align="center" childLayout="horizontal">
+                    <panel align="center" childLayout="vertical">
+                        <control id="cloneSelectedButton()" name="button" valign="center" align="center" style="ma_button" label="CloneSelected" visibleToMouse="true">
+                            <interact onClick="cloneSelectedButton()"/>
+                        </control>
+                       
                         <control id="moveToLayerTrue" name="button" style="ma_button" label="MoveToLayer" visibleToMouse="true">
                             <interact onClick="moveToLayerEnable(true)"/>
+                        </control>
+                        
+                        <control id="selectAllButton" name="button" style="ma_button" label="SelectAll" visibleToMouse="true">
+                            <interact onClick="selectAllButton()"/>
                         </control>                        
                     </panel>                        
-                                                                        
+                    
                     <panel height="10px" padding="10">
                         <!-- add your content here -->
                     </panel>              
@@ -364,6 +372,16 @@
                         <control id="button_set_grid" name="button" style="ma_button" label="Show Grid" visibleToMouse="true">
                             <interact onClick="setGrid()"/>
                         </control>              
+                    </panel>
+                                                                                                                                                                                                                                            
+                    <panel height="10px" padding="10">
+                        <!-- add your content here -->
+                    </panel>              
+                    
+                    <panel align="center" childLayout="vertical">
+                        <control id="removeEntityInScene" name="button" valign="center" align="center" style="ma_button" label="RemoveSelected" visibleToMouse="true">
+                            <interact onClick="removeSelectedButton()"/>
+                        </control>                                                                          
                     </panel>      
                                                                                 
                 </panel>
@@ -519,10 +537,23 @@
                                         <interact onClick="updateAssetsButton()"/>
                                     </control>
                                     
-                                    <control id="savePreviewJ3O" name="checkbox" >
-                                        <!--<interact onClick="switchLayer(6)" />-->
-                                    </control>
-
+                                    <panel childLayout="horizontal">
+                                        <control id="savePreviewJ3O" name="checkbox" >
+                                            <interact onClick="savePreviewJ3O()" />
+                                        </control>
+                                        <control name="label" text="Save j3o Scene" />
+                                    </panel>
+                                    
+                                    
+                             <!--Not Implemented as Lights are not implemented-->
+                             
+<!--                                    <panel childLayout="horizontal">
+                                        <control id="switchDefaultLighting" name="checkbox" >
+                                            <interact onClick="switchDefaultLighting()" />
+                                        </control>
+                                        <control name="label" text="Default Ligting" />
+                                    </panel>                                    -->
+                                    
                                 </panel>
                             </panel> 
                             
@@ -552,22 +583,14 @@
                                 <panel childLayout="vertical">
                                     <control name="label" text="Scene Oblects List" />
                                     
-                                    <control id="sceneObjectsListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="10" selection="Multiple">
+                                    <control id="sceneObjectsListBox" name="listBox" vertical="optional" horizontal="optional" displayItems="15" selection="Multiple">
                                     </control>
                                     
                                     <panel childLayout="horizontal">
                                         <control id="selectEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Select Entities" visibleToMouse="true">
                                             <interact onClick="selectEntitiesButton()"/>
                                         </control> 
-                                        <control id="removeEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Remove Selected" visibleToMouse="true">
-                                            <interact onClick="removeSelectedButton()"/>
-                                        </control> 
                                     </panel>                  
-                                    <panel childLayout="horizontal">
-                                        <control id="cloneSelectedButton()" name="button" valign="center" align="center" style="ma_button" label="Clone Selected" visibleToMouse="true">
-                                            <interact onClick="cloneSelectedButton()"/>
-                                        </control>                                         
-                                    </panel>
                                 </panel>                                
                             </panel>
                         </control>
@@ -587,7 +610,7 @@
                                         </control> 
                                         <control id="removeSelectedComponent" name="button" valign="center" align="center" style="ma_button" label="Remove" visibleToMouse="true">
                                             <interact onClick="removeSelectedComponentButton()"/>
-                                        </control>                                         
+                                        </control>
                                     </panel>                                    
 
                                     <panel childLayout="horizontal">

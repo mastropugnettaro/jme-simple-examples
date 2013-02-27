@@ -197,7 +197,7 @@ public class EditorSelectionManager extends AbstractControl {
 
     protected void createSelectionBox(Node nodeSelect) {
         Material mat_box = new Material(assetMan, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_box.setColor("Color", new ColorRGBA(0.6f, 0.4f, 0.1f, 1));
+        mat_box.setColor("Color", new ColorRGBA(0.5f, 0.3f, 0.1f, 1));
         WireBox wbx = new WireBox();
 //        BoundingBox = new BoundingBox();
         Transform tempScale = nodeSelect.getLocalTransform().clone();
@@ -268,7 +268,7 @@ public class EditorSelectionManager extends AbstractControl {
             if (selectionList.size() > 1 && selectionList.contains(lastSelected)) {
                 Node ndPrevious = (Node) base.getSpatialSystem().getSpatialControl(lastSelected).getGeneralNode();
                 Geometry geoBoxPrevious = (Geometry) ndPrevious.getChild("SelectionTempMesh");
-                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.55f, 0.35f, 0.03f, 1));
+                geoBoxPrevious.getMaterial().setColor("Color", new ColorRGBA(0.7f, 0.5f, 0.03f, 1));
             }
 
             // set for new selected

@@ -58,7 +58,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     private AssetManager assetManager;
     private ViewPort guiViewPort;
     private EditorBaseManager base;
-    private Element popupMoveToLayer, popupEditComponent;
+    private Element popupMoveToLayer, popupEditComponent, rightPanel;
     private ListBox entitiesListBox, sceneObjectsListBox, componentsListBox;
     private long lastIdOfComponentList, idComponentToChange;
 
@@ -78,7 +78,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
         createGrid();
 //        createSimpleGui();
-        setTempLighting();
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(application.getAssetManager(),
                 application.getInputManager(),
@@ -156,6 +155,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         componentsListBox = nifty.getScreen("start").findNiftyControl("componentsListBox", ListBox.class);
         sceneObjectsListBox.changeSelectionMode(ListBox.SelectionMode.Multiple, false);
 
+        // rightPanel
+        rightPanel = nifty.getScreen("start").findElementByName("settingsRightPanel");
+
         //Temp
 //        nifty.getScreen("start").findNiftyControl("entityList1", TextField.class).setText("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets/Scripts/Entities/entities.json");
         nifty.getScreen("start").findNiftyControl("scenePath1", TextField.class).setText("/home/mifth/jMonkeyProjects/AD/ad/trunk/ADAssets/assets");
@@ -209,8 +211,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         } else if (event.getSelectedId().equals("constraint_10")) {
             base.getTransformManager().getConstraintTool().setConstraint(10.0f);
         }
-    }    
-    
+    }
+
     /**
      * This is called when the RadioButton selection has changed.
      */
@@ -324,6 +326,14 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 //        screen.getFocusHandler().resetFocusElements();
     }
 
+    protected Element getRightPanel() {
+        return rightPanel;
+    }
+
+    protected Screen getScreen() {
+        return screen;
+    }
+
     public void newSceneButton() {
         clearGui();
         base.getSceneManager().newScene();
@@ -354,17 +364,37 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
 
 
-        // update list of objects
+        // update list of objects and layers visibility
         for (Node ndLayer : base.getLayerManager().getLayers()) {
+            // set layers vibiity
+            CheckBox cbLayer = screen.findNiftyControl(ndLayer.getName(), CheckBox.class);
+            boolean isEnabled = (Boolean) ndLayer.getUserData("isEnabled");
+            boolean isActive = (Boolean) ndLayer.getUserData("isActive");
+            if (isEnabled) {
+                cbLayer.check();
+            }
+            if (isActive) {
+                Element newActive = screen.findElementByName(ndLayer.getName());
+                newActive.startEffect(EffectEventId.onFocus);
+            }
+            screen.getFocusHandler().resetFocusElements();
+
+            // update list of objects
             for (Spatial spEntity : ndLayer.getChildren()) {
                 Object obj = spEntity.getUserData("EntityID");
                 long idObj = (Long) obj;
                 EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(idObj, EntityNameComponent.class);
                 sceneObjectsListBox.addItem(nameComp.getName());
             }
-
         }
 
+        // savePreviewj3o checkbox
+        CheckBox cbPreview = screen.findNiftyControl("savePreviewJ3O", CheckBox.class);
+        if (base.getSceneManager().getSavePreviewJ3o()) {
+            cbPreview.check();
+        } else {
+            cbPreview.uncheck();
+        }
 //        sceneObjectsListBox.
 //        System.out.println(base.getEntityManager().getAllControls().size());
 //        screen.getFocusHandler().resetFocusElements();
@@ -496,16 +526,41 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     }
 
     public void removeSelectedButton() {
-        base.getSelectionManager().clearSelectionList();
-        base.getSelectionManager().calculateSelectionCenter();
-
         for (Object obj : sceneObjectsListBox.getSelection()) {
             String objStr = (String) obj;
             long id = Long.valueOf(objStr.substring(objStr.indexOf("_IDX") + 4, objStr.length()));
-            base.getSceneManager().removeEntityObject(id);
-            sceneObjectsListBox.removeItem(obj);
+            System.out.println(id + "IDDD");
+            if (base.getSelectionManager().getSelectionList().contains(id)) {
+                base.getSceneManager().removeEntityObject(id);
+                sceneObjectsListBox.removeItem(obj);
+            }
+
         }
+
+        base.getSelectionManager().clearSelectionList();
+        base.getSelectionManager().calculateSelectionCenter();
         setSelectedObjectsList();
+    }
+
+    public void selectAllButton() {
+        if (base.getSelectionManager().getSelectionList().size() > 0) {
+            base.getSelectionManager().clearSelectionList();
+        } else {
+            for (Spatial spLayer : base.getLayerManager().getSelectableNode().getChildren()) {
+                Node layerNode = (Node) spLayer;
+                for (Spatial spEntity : layerNode.getChildren()) {
+                    Node entityNode = (Node) spEntity;
+                    long ID = (Long) entityNode.getUserData("EntityID");
+                    base.getSelectionManager().selectEntity(ID, EditorSelectionManager.SelectionMode.Additive);
+                }
+            }
+        }
+
+        base.getSelectionManager().calculateSelectionCenter();
+        setSelectedObjectsList();
+        // set history
+        base.getHistoryManager().prepareNewHistory();
+        base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
     }
 
     public void cloneSelectedButton() {
@@ -625,6 +680,29 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         popupEditComponent.getFocusHandler().resetFocusElements();
     }
 
+    public void savePreviewJ3O() {
+        CheckBox cb = screen.findNiftyControl("savePreviewJ3O", CheckBox.class);
+        boolean savePreview = base.getSceneManager().getSavePreviewJ3o();
+        if (savePreview) {
+            base.getSceneManager().setSavePreviewJ3o(false);
+            cb.uncheck();
+        } else {
+            base.getSceneManager().setSavePreviewJ3o(true);
+            cb.check();
+        }
+    }
+
+    // not implemented as Lights are not implemented
+//    public void switchDefaultLighting() {
+//        CheckBox cb = screen.findNiftyControl("switchDefaultLighting", CheckBox.class);
+//        if(base.getSceneManager().getTempLighting()) {
+//            base.getSceneManager().setTempLighting(false);
+//            cb.uncheck();
+//        } else {
+//            base.getSceneManager().setTempLighting(true);
+//            cb.check();
+//        }
+//    }
     public void switchLayer(String srtinG) {
         CheckBox cb = screen.findNiftyControl("layer" + srtinG, CheckBox.class);
 
@@ -803,20 +881,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
     public Node getGridNode() {
         return gridNode;
-    }
-
-    private void setTempLighting() {
-
-        DirectionalLight dl = new DirectionalLight();
-        dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
-        dl.setColor(new ColorRGBA(1.1f, 1, 0.95f, 1));
-        rootNode.addLight(dl);
-
-        AmbientLight al = new AmbientLight();
-        al.setColor(new ColorRGBA(1, 1, 2, 1));
-        rootNode.addLight(al);
-
-        application.getViewPort().setBackgroundColor(ColorRGBA.DarkGray);
     }
 
     private void createSimpleGui() {

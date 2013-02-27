@@ -42,7 +42,6 @@ public class EditorHistoryManager {
 
     }
 
-
     protected static ArrayList<EditorHistoryObject> getHistoryList() {
         return historyList;
     }
@@ -59,7 +58,7 @@ public class EditorHistoryManager {
             int prevHistoryNumber = historycurrentNumber - 1;
             EditorHistoryObject historyPreviousObj = historyList.get(prevHistoryNumber);
 
-            // selection changes
+            // selection/transform changes
             if (historyPreviousObj.getSelectDeselectEntitiesList() != null) {
                 base.getSelectionManager().clearSelectionList();
                 System.out.println("historycurrentNumber" + prevHistoryNumber);
@@ -69,10 +68,15 @@ public class EditorHistoryManager {
 
                 for (Long id : previousSelectionlist.keySet()) {
                     if (base.getEntityManager().containsID(id)) {
-                        if (doTransform) {
-                            base.getSpatialSystem().getSpatialControl(id).getGeneralNode().setLocalTransform(previousSelectionlist.get(id));
+                        Node layer = base.getSpatialSystem().getSpatialControl(id).getGeneralNode().getParent();
+                        boolean isEnabledLayer = layer.getUserData("isEnabled");
+                        if (isEnabledLayer) {
+                            if (doTransform) {
+                                base.getSpatialSystem().getSpatialControl(id).getGeneralNode().setLocalTransform(previousSelectionlist.get(id));
+                            }
+                            base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
                         }
-                        base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
+
                     }
                 }
                 base.getSelectionManager().calculateSelectionCenter();
@@ -91,17 +95,21 @@ public class EditorHistoryManager {
             historycurrentNumber = historycurrentNumber + 1;
             EditorHistoryObject historyPreviousList = historyList.get(historycurrentNumber);
 
-            // selection changes
+            // selection/transform changes
             if (historyPreviousList.getSelectDeselectEntitiesList() != null) {
                 base.getSelectionManager().clearSelectionList();
                 ConcurrentHashMap<Long, Transform> reversedSelectionlist = historyPreviousList.getSelectDeselectEntitiesList();
                 boolean doTransform = historyList.get(historycurrentNumber).isDoTransform();
                 for (Long id : reversedSelectionlist.keySet()) {
                     if (base.getEntityManager().containsID(id)) {
-                        if (doTransform) {
-                            base.getSpatialSystem().getSpatialControl(id).getGeneralNode().setLocalTransform(reversedSelectionlist.get(id));
+                        Node layer = base.getSpatialSystem().getSpatialControl(id).getGeneralNode().getParent();
+                        boolean isEnabledLayer = layer.getUserData("isEnabled");
+                        if (isEnabledLayer) {
+                            if (doTransform) {
+                                base.getSpatialSystem().getSpatialControl(id).getGeneralNode().setLocalTransform(reversedSelectionlist.get(id));
+                            }
+                            base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
                         }
-                        base.getSelectionManager().selectEntity(id, EditorSelectionManager.SelectionMode.Additive);
                     }
                 }
             }
@@ -155,7 +163,7 @@ public class EditorHistoryManager {
             hObj.clearHistoryObject();
             hObj = null;
         }
-        historyList.clear();        
+        historyList.clear();
         historycurrentNumber = 0;
         setDefaultHistoryObject();
     }

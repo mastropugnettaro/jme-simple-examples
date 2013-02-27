@@ -134,7 +134,7 @@ public class EditorCameraManager {
         
         Vector3f vecToMove = camMoveX.mult((endPosMouse.x - ceneterScr.x) / cam.getWidth());
         vecToMove.addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / cam.getHeight())).normalizeLocal();
-        vecToMove.multLocal(mouseDist * camMoveSpeed * (1.0f + (chaseCam.getDistanceToTarget()*0.005f)));
+        vecToMove.multLocal(mouseDist * camMoveSpeed * (0.5f + (chaseCam.getDistanceToTarget()*0.005f)));
 //        System.out.println("target" + chaseCam.getDistanceToTarget());
 //        System.out.println(mouseDist * camMoveSpeed);
         
