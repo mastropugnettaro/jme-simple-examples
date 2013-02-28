@@ -69,7 +69,7 @@ public class EditorHistoryManager {
                 for (Long id : previousSelectionlist.keySet()) {
                     if (base.getEntityManager().containsID(id)) {
                         Node layer = base.getSpatialSystem().getSpatialControl(id).getGeneralNode().getParent();
-                        boolean isEnabledLayer = layer.getUserData("isEnabled");
+                        boolean isEnabledLayer = (Boolean)layer.getUserData("isEnabled");
                         if (isEnabledLayer) {
                             if (doTransform) {
                                 base.getSpatialSystem().getSpatialControl(id).getGeneralNode().setLocalTransform(previousSelectionlist.get(id));
@@ -103,7 +103,7 @@ public class EditorHistoryManager {
                 for (Long id : reversedSelectionlist.keySet()) {
                     if (base.getEntityManager().containsID(id)) {
                         Node layer = base.getSpatialSystem().getSpatialControl(id).getGeneralNode().getParent();
-                        boolean isEnabledLayer = layer.getUserData("isEnabled");
+                        boolean isEnabledLayer = (Boolean)layer.getUserData("isEnabled");
                         if (isEnabledLayer) {
                             if (doTransform) {
                                 base.getSpatialSystem().getSpatialControl(id).getGeneralNode().setLocalTransform(reversedSelectionlist.get(id));
