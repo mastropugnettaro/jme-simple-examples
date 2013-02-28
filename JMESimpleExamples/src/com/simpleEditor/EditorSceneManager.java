@@ -136,7 +136,7 @@ public class EditorSceneManager {
 
         // version of the editor which the scene was saved
         String SWEVersion = (String) jsSettings.get("EditorVersion");
-        
+
         // SevePreviewj3O
         savePreviewJ3o = (Boolean) jsSettings.get("savePreviewJ3o");
 
@@ -287,7 +287,7 @@ public class EditorSceneManager {
         // save version of the Simple World Editor
         saveSceneSettings.put("EditorVersion", base.getEditorVersoin());
         saveSceneSettings.put("savePreviewJ3o", savePreviewJ3o);
-        
+
         saveJsonFile(pathToSave + ".sws", saveSceneSettings);
 
     }
@@ -422,39 +422,44 @@ public class EditorSceneManager {
         Node sceneSaveView = new Node(sceneName);
 
         for (Node layerToParse : base.getLayerManager().getLayers()) {
-            Node layerToSave = new Node(layerToParse.getName());
-            layerToSave.setCullHint(Spatial.CullHint.Always);
 
-            for (Spatial spEntity : layerToParse.getChildren()) {
+            if (layerToParse.getChildren().size() > 0) {
+                Node layerToSave = new Node(layerToParse.getName());
+                layerToSave.setCullHint(Spatial.CullHint.Always);
+
+                for (Spatial spEntity : layerToParse.getChildren()) {
 
 
-                // load entity
-                Object IDObj = spEntity.getUserData("EntityID");
-                Object pathComponent = base.getEntityManager().getComponent((Long) IDObj, EntityModelPathComponent.class);
-                EntityModelPathComponent modelPath = (EntityModelPathComponent) pathComponent;
-                ModelKey mkLinkToScene = new ModelKey(modelPath.getModelPath());
-                AssetLinkNode linkedEntity = new AssetLinkNode(mkLinkToScene);
+                    // load entity
+                    Object IDObj = spEntity.getUserData("EntityID");
+                    Object pathComponent = base.getEntityManager().getComponent((Long) IDObj, EntityModelPathComponent.class);
+                    EntityModelPathComponent modelPath = (EntityModelPathComponent) pathComponent;
+                    ModelKey mkLinkToScene = new ModelKey(modelPath.getModelPath());
+                    AssetLinkNode linkedEntity = new AssetLinkNode(mkLinkToScene);
 
-                // general node of the entity
-                Node entityNode = new Node();
-                entityNode.attachChild(linkedEntity);
+                    // general node of the entity
+                    Node entityNode = new Node();
+                    entityNode.attachChild(linkedEntity);
 
-                // set name
-                Object modelNameObj = base.getEntityManager().getComponent((Long) IDObj, EntityNameComponent.class);
-                EntityNameComponent modmodelName = (EntityNameComponent) modelNameObj;
-                entityNode.setName(modmodelName.getName());
-                entityNode.setLocalTransform(spEntity.getWorldTransform());
+                    // set name
+                    Object modelNameObj = base.getEntityManager().getComponent((Long) IDObj, EntityNameComponent.class);
+                    EntityNameComponent modmodelName = (EntityNameComponent) modelNameObj;
+                    entityNode.setName(modmodelName.getName());
+                    entityNode.setLocalTransform(spEntity.getWorldTransform());
 
-                // set components
-                ConcurrentHashMap<String, String> dataComponents = base.getDataManager().getEntityData((Long) IDObj);
-                for (String key : dataComponents.keySet()) {
-                    entityNode.setUserData(key, dataComponents.get(key));
+                    // set components
+                    ConcurrentHashMap<String, String> dataComponents = base.getDataManager().getEntityData((Long) IDObj);
+                    for (String key : dataComponents.keySet()) {
+                        entityNode.setUserData(key, dataComponents.get(key));
+                    }
+                    // add entity to a layer
+                    layerToSave.attachChild(entityNode);
                 }
-                // add entity to a layer
-                layerToSave.attachChild(entityNode);
+                 sceneSaveView.attachChild(layerToSave);
             }
 
-            sceneSaveView.attachChild(layerToSave);
+
+           
 
         }
         // save node
@@ -486,42 +491,42 @@ public class EditorSceneManager {
 
     protected Long createEntityModel(String name, String path, Long existedID) {
 
-            // setup Entity
-            Node model = null;
-            if (spatialsList.contains(path) == false) {
-                Node loadedModel = (Node) dsk.loadModel(path);
-                spatialsList.put(path, loadedModel);
-                model = loadedModel.clone(false);
-            } else {
-                model = (Node) spatialsList.get(path).clone(false);
-            }
+        // setup Entity
+        Node model = null;
+        if (spatialsList.contains(path) == false) {
+            Node loadedModel = (Node) dsk.loadModel(path);
+            spatialsList.put(path, loadedModel);
+            model = loadedModel.clone(false);
+        } else {
+            model = (Node) spatialsList.get(path).clone(false);
+        }
 
-            Vector3f camHelperPosition = base.getCamManager().getCamTrackHelper().getWorldTranslation();
-            model.setLocalTranslation(camHelperPosition);
+        Vector3f camHelperPosition = base.getCamManager().getCamTrackHelper().getWorldTranslation();
+        model.setLocalTranslation(camHelperPosition);
 
 
-            long ent;
-            if (existedID == null) {
-                ent = base.getEntityManager().createEntity();
-            } else {
-                ent = existedID;
-            }
+        long ent;
+        if (existedID == null) {
+            ent = base.getEntityManager().createEntity();
+        } else {
+            ent = existedID;
+        }
 
-            base.getDataManager().setEntityData(ent, new ConcurrentHashMap<String, String>());
-            ComponentsControl components = base.getEntityManager().addComponentControl(ent);
+        base.getDataManager().setEntityData(ent, new ConcurrentHashMap<String, String>());
+        ComponentsControl components = base.getEntityManager().addComponentControl(ent);
 
-            EntityModelPathComponent modelPath = new EntityModelPathComponent(path);
-            components.setComponent(modelPath);
+        EntityModelPathComponent modelPath = new EntityModelPathComponent(path);
+        components.setComponent(modelPath);
 
-            EntityNameComponent nameComponent = new EntityNameComponent(name + "_IDX" + ent);
-            components.setComponent(nameComponent);
-            model.setName(nameComponent.getName());
+        EntityNameComponent nameComponent = new EntityNameComponent(name + "_IDX" + ent);
+        components.setComponent(nameComponent);
+        model.setName(nameComponent.getName());
 
-            EntitySpatialsControl spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, base.getEntityManager().getComponentControl(ent));
-            spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
-            spatialControl.recurseNodeID(model);
+        EntitySpatialsControl spatialControl = base.getSpatialSystem().addSpatialControl(model, ent, base.getEntityManager().getComponentControl(ent));
+        spatialControl.setType(EntitySpatialsControl.SpatialType.Node);
+        spatialControl.recurseNodeID(model);
 
-            return ent;
+        return ent;
     }
 
     protected void removeClones(String name) {
@@ -661,11 +666,9 @@ public class EditorSceneManager {
 //            tempLighting = false;
 //        }
 //    }
-
 //    protected boolean getTempLighting() {
 //        return tempLighting;
 //    }
-
     protected JSONObject loadToJsonFile(String path) {
         // Load JSON script
         JSONParser json = new JSONParser();
@@ -694,7 +697,6 @@ public class EditorSceneManager {
 //    protected Long addEntityToScene(String name) {
 //        return createEntityModel(name, entitiesList.get(name), null);
 //    }
-
     // Recursive search of files
     protected void findFiles(String dirEntity, String fileExtension) {
         System.out.println("ooooooooo LOAD entity Dir : " + dirEntity);
