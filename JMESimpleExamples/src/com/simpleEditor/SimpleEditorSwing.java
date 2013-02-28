@@ -202,7 +202,7 @@ public class SimpleEditorSwing {
         }
 
 //        app = new Application();
-        app.setPauseOnLostFocus(false);
+        app.setPauseOnLostFocus(true);
         app.setSettings(settings);
         app.createCanvas();
         app.startCanvas();
