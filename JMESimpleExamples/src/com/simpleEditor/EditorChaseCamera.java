@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.simpleEditor;
 
 import com.jme3.export.InputCapsule;
@@ -40,6 +39,8 @@ import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.*;
 import com.jme3.math.FastMath;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -50,6 +51,7 @@ import java.io.IOException;
 
 /**
  * A camera that follows a spatial and can turn around it by dragging the mouse
+ *
  * @author nehon
  */
 public class EditorChaseCamera implements ActionListener, AnalogListener, Control {
@@ -115,6 +117,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Constructs the chase camera
+     *
      * @param cam the application camera
      * @param target the spatial to follow
      */
@@ -124,9 +127,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Constructs the chase camera
-     * if you use this constructor you have to attach the cam later to a spatial
-     * doing spatial.addControl(chaseCamera);
+     * Constructs the chase camera if you use this constructor you have to
+     * attach the cam later to a spatial doing spatial.addControl(chaseCamera);
+     *
      * @param cam the application camera
      */
     public EditorChaseCamera(Camera cam) {
@@ -135,11 +138,13 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Constructs the chase camera, and registers inputs
-     * if you use this constructor you have to attach the cam later to a spatial
-     * doing spatial.addControl(chaseCamera);
+     * Constructs the chase camera, and registers inputs if you use this
+     * constructor you have to attach the cam later to a spatial doing
+     * spatial.addControl(chaseCamera);
+     *
      * @param cam the application camera
-     * @param inputManager the inputManager of the application to register inputs
+     * @param inputManager the inputManager of the application to register
+     * inputs
      */
     public EditorChaseCamera(Camera cam, InputManager inputManager) {
         this(cam);
@@ -148,9 +153,11 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Constructs the chase camera, and registers inputs
+     *
      * @param cam the application camera
      * @param target the spatial to follow
-     * @param inputManager the inputManager of the application to register inputs
+     * @param inputManager the inputManager of the application to register
+     * inputs
      */
     public EditorChaseCamera(Camera cam, final Spatial target, InputManager inputManager) {
         this(cam, target);
@@ -175,7 +182,6 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
         }
 
     }
-
 
     public void onAnalog(String name, float value, float tpf) {
         if (name.equals(ChaseCamMoveLeft)) {
@@ -203,6 +209,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Registers inputs with the input manager
+     *
      * @param inputManager
      */
     public final void registerWithInput(InputManager inputManager) {
@@ -239,10 +246,10 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Sets custom triggers for toggleing the rotation of the cam
-     * deafult are
-     * new MouseButtonTrigger(MouseInput.BUTTON_LEFT)  left mouse button
-     * new MouseButtonTrigger(MouseInput.BUTTON_RIGHT)  right mouse button
+     * Sets custom triggers for toggleing the rotation of the cam deafult are
+     * new MouseButtonTrigger(MouseInput.BUTTON_LEFT) left mouse button new
+     * MouseButtonTrigger(MouseInput.BUTTON_RIGHT) right mouse button
+     *
      * @param triggers
      */
     public void setToggleRotationTrigger(Trigger... triggers) {
@@ -252,9 +259,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Sets custom triggers for zomming in the cam
-     * default is
-     * new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true)  mouse wheel up
+     * Sets custom triggers for zomming in the cam default is new
+     * MouseAxisTrigger(MouseInput.AXIS_WHEEL, true) mouse wheel up
+     *
      * @param triggers
      */
     public void setZoomInTrigger(Trigger... triggers) {
@@ -264,9 +271,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Sets custom triggers for zomming out the cam
-     * default is
-     * new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false)  mouse wheel down
+     * Sets custom triggers for zomming out the cam default is new
+     * MouseAxisTrigger(MouseInput.AXIS_WHEEL, false) mouse wheel down
+     *
      * @param triggers
      */
     public void setZoomOutTrigger(Trigger... triggers) {
@@ -288,7 +295,32 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
             return;
         }
         rotating = true;
-        targetRotation += value * rotationSpeed;
+//        targetRotation += value * rotationSpeed;
+        
+            //the cam looks at the target
+            if ((targetVRotation > FastMath.DEG_TO_RAD * 90 && targetVRotation <= FastMath.DEG_TO_RAD * 270) || (targetVRotation < -FastMath.DEG_TO_RAD * 90 && targetVRotation >= -FastMath.DEG_TO_RAD * 270)) {
+                targetRotation -= value * rotationSpeed;
+            } else {
+                targetRotation += value * rotationSpeed;
+            }
+            
+        
+//                Matrix3f mat = new Matrix3f();
+//                mat.fromAngleNormalAxis(targetRotation, cam.getLeft().clone());
+//
+//                Vector3f up = cam.getUp();
+//                Vector3f left = cam.getLeft();
+//                Vector3f dir = cam.getDirection();
+//
+//                mat.mult(up, up);
+//                mat.mult(left, left);
+//                mat.mult(dir, dir);
+//
+//                Quaternion q = new Quaternion();
+//                q.fromAxes(left, up, dir);
+//                q.normalizeLocal();
+//
+//                cam.setAxes(q);        
 
 
     }
@@ -300,18 +332,18 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
         }
 
         zooming = true;
-        targetDistance += value * zoomSpeed * (0.5f +(0.05f *getDistanceToTarget())); // my changes are here
+        targetDistance += value * zoomSpeed * (0.5f + (0.05f * getDistanceToTarget())); // my changes are here
         if (targetDistance > maxDistance) {
             targetDistance = maxDistance;
         }
         if (targetDistance < minDistance) {
             targetDistance = minDistance;
         }
-        if (veryCloseRotation) {
-            if ((targetVRotation < minVerticalRotation) && (targetDistance > (minDistance + 1.0f))) {
-                targetVRotation = minVerticalRotation;
-            }
-        }
+//        if (veryCloseRotation) {
+//            if ((targetVRotation < minVerticalRotation) && (targetDistance > (minDistance + 1.0f))) {
+//                targetVRotation = minVerticalRotation;
+//            }
+//        }
     }
 
     //rotate the camera around the target on the vertical plane
@@ -319,23 +351,25 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
         if (!canRotate || !enabled) {
             return;
         }
-        vRotating = true;
-        float lastGoodRot = targetVRotation;
+//        vRotating = true;
+//        float lastGoodRot = targetVRotation;
+//                if (targetVRotation > FastMath.DEG_TO_RAD * 90) {
+//                targetVRotation = -targetVRotation;
+//            }        
         targetVRotation += value * rotationSpeed;
-        if (targetVRotation > maxVerticalRotation) {
-            targetVRotation = lastGoodRot;
-        }
-        if (veryCloseRotation) {
-            if ((targetVRotation < minVerticalRotation) && (targetDistance > (minDistance + 1.0f))) {
-                targetVRotation = minVerticalRotation;
-            } else if (targetVRotation < -FastMath.DEG_TO_RAD * 90) {
-                targetVRotation = lastGoodRot;
-            }
-        } else {
-            if ((targetVRotation < minVerticalRotation)) {
-                targetVRotation = lastGoodRot;
-            }
-        }
+//        if (targetVRotation > maxVerticalRotation) {
+//            targetVRotation = lastGoodRot;
+//        }
+//        if (veryCloseRotation) {
+//            if ((targetVRotation < minVerticalRotation) && (targetDistance > (minDistance + 1.0f))) {
+//                targetVRotation = minVerticalRotation;
+//            } else 
+
+//        } else {
+//            if ((targetVRotation < minVerticalRotation)) {
+//                targetVRotation = lastGoodRot;
+//            }
+//        }
     }
 
     /**
@@ -470,18 +504,41 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
                 distance = targetDistance;
                 computePosition();
                 cam.setLocation(pos.addLocal(lookAtOffset));
+
+
+
+
             }
             //keeping track on the previous position of the target
             prevPos.set(targetLocation);
 
+            // if rotation>360 then it should be 0
+            if (targetVRotation >= FastMath.DEG_TO_RAD * 360 || targetVRotation <= -FastMath.DEG_TO_RAD * 360) {
+                targetVRotation = FastMath.DEG_TO_RAD * 0;
+            }
+            if (targetRotation >= FastMath.DEG_TO_RAD * 360 || targetRotation <= -FastMath.DEG_TO_RAD * 360) {
+                targetRotation = FastMath.DEG_TO_RAD * 0;
+            }            
+
+
             //the cam looks at the target
-            cam.lookAt(targetLocation, initialUpVec);
+            if ((targetVRotation > FastMath.DEG_TO_RAD * 90 && targetVRotation <= FastMath.DEG_TO_RAD * 270) || (targetVRotation < -FastMath.DEG_TO_RAD * 90 && targetVRotation >= -FastMath.DEG_TO_RAD * 270)) {
+                cam.lookAt(targetLocation, (initialUpVec.negate()));
+            } 
+            else if (targetVRotation > FastMath.DEG_TO_RAD * 270 || targetVRotation < -FastMath.DEG_TO_RAD * 270) {
+                cam.lookAt(targetLocation, (initialUpVec));
+            } 
+            else {
+                cam.lookAt(targetLocation, (initialUpVec));
+            }
+
 
         }
     }
 
     /**
      * Return the enabled/disabled state of the camera
+     *
      * @return true if the camera is enabled
      */
     public boolean isEnabled() {
@@ -490,6 +547,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Enable or disable the camera
+     *
      * @param enabled true to enable
      */
     public void setEnabled(boolean enabled) {
@@ -501,6 +559,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Returns the max zoom distance of the camera (default is 40)
+     *
      * @return maxDistance
      */
     public float getMaxDistance() {
@@ -509,6 +568,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Sets the max zoom distance of the camera (default is 40)
+     *
      * @param maxDistance
      */
     public void setMaxDistance(float maxDistance) {
@@ -520,6 +580,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Returns the min zoom distance of the camera (default is 1)
+     *
      * @return minDistance
      */
     public float getMinDistance() {
@@ -538,6 +599,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * clone this camera for a spatial
+     *
      * @param spatial
      * @return
      */
@@ -550,6 +612,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Sets the spacial for the camera control, should only be used internally
+     *
      * @param spatial
      */
     public void setSpatial(Spatial spatial) {
@@ -564,6 +627,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * update the camera control, should only be used internally
+     *
      * @param tpf
      */
     public void update(float tpf) {
@@ -572,6 +636,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * renders the camera control, should only be used internally
+     *
      * @param rm
      * @param vp
      */
@@ -581,6 +646,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Write the camera
+     *
      * @param ex the exporter
      * @throws IOException
      */
@@ -592,6 +658,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Read the camera
+     *
      * @param im
      * @throws IOException
      */
@@ -602,14 +669,17 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * @return The maximal vertical rotation angle in radian of the camera around the target
+     * @return The maximal vertical rotation angle in radian of the camera
+     * around the target
      */
     public float getMaxVerticalRotation() {
         return maxVerticalRotation;
     }
 
     /**
-     * Sets the maximal vertical rotation angle in radian of the camera around the target. Default is Pi/2;
+     * Sets the maximal vertical rotation angle in radian of the camera around
+     * the target. Default is Pi/2;
+     *
      * @param maxVerticalRotation
      */
     public void setMaxVerticalRotation(float maxVerticalRotation) {
@@ -618,14 +688,17 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      *
-     * @return The minimal vertical rotation angle in radian of the camera around the target
+     * @return The minimal vertical rotation angle in radian of the camera
+     * around the target
      */
     public float getMinVerticalRotation() {
         return minVerticalRotation;
     }
 
     /**
-     * Sets the minimal vertical rotation angle in radian of the camera around the target default is 0;
+     * Sets the minimal vertical rotation angle in radian of the camera around
+     * the target default is 0;
+     *
      * @param minHeight
      */
     public void setMinVerticalRotation(float minHeight) {
@@ -641,6 +714,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Enables smooth motion for this chase camera
+     *
      * @param smoothMotion
      */
     public void setSmoothMotion(boolean smoothMotion) {
@@ -649,6 +723,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns the chasing sensitivity
+     *
      * @return
      */
     public float getChasingSensitivity() {
@@ -657,9 +732,10 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      *
-     * Sets the chasing sensitivity, the lower the value the slower the camera will follow the target when it moves
-     * default is 5
-     * Only has an effect if smoothMotion is set to true and trailing is enabled
+     * Sets the chasing sensitivity, the lower the value the slower the camera
+     * will follow the target when it moves default is 5 Only has an effect if
+     * smoothMotion is set to true and trailing is enabled
+     *
      * @param chasingSensitivity
      */
     public void setChasingSensitivity(float chasingSensitivity) {
@@ -668,6 +744,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Returns the rotation sensitivity
+     *
      * @return
      */
     public float getRotationSensitivity() {
@@ -675,10 +752,11 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Sets the rotation sensitivity, the lower the value the slower the camera will rotates around the target when draging with the mouse
-     * default is 5, values over 5 should have no effect.
-     * If you want a significant slow down try values below 1.
-     * Only has an effect if smoothMotion is set to true
+     * Sets the rotation sensitivity, the lower the value the slower the camera
+     * will rotates around the target when draging with the mouse default is 5,
+     * values over 5 should have no effect. If you want a significant slow down
+     * try values below 1. Only has an effect if smoothMotion is set to true
+     *
      * @param rotationSensitivity
      */
     public void setRotationSensitivity(float rotationSensitivity) {
@@ -687,6 +765,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns true if the trailing is enabled
+     *
      * @return
      */
     public boolean isTrailingEnabled() {
@@ -694,8 +773,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Enable the camera trailing : The camera smoothly go in the targets trail when it moves.
-     * Only has an effect if smoothMotion is set to true
+     * Enable the camera trailing : The camera smoothly go in the targets trail
+     * when it moves. Only has an effect if smoothMotion is set to true
+     *
      * @param trailingEnabled
      */
     public void setTrailingEnabled(boolean trailingEnabled) {
@@ -705,6 +785,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     /**
      *
      * returns the trailing rotation inertia
+     *
      * @return
      */
     public float getTrailingRotationInertia() {
@@ -712,9 +793,11 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Sets the trailing rotation inertia : default is 0.1. This prevent the camera to roughtly stop when the target stops moving
-     * before the camera reached the trail position.
-     * Only has an effect if smoothMotion is set to true and trailing is enabled
+     * Sets the trailing rotation inertia : default is 0.1. This prevent the
+     * camera to roughtly stop when the target stops moving before the camera
+     * reached the trail position. Only has an effect if smoothMotion is set to
+     * true and trailing is enabled
+     *
      * @param trailingRotationInertia
      */
     public void setTrailingRotationInertia(float trailingRotationInertia) {
@@ -723,6 +806,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns the trailing sensitivity
+     *
      * @return
      */
     public float getTrailingSensitivity() {
@@ -731,8 +815,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Only has an effect if smoothMotion is set to true and trailing is enabled
-     * Sets the trailing sensitivity, the lower the value, the slower the camera will go in the target trail when it moves.
-     * default is 0.5;
+     * Sets the trailing sensitivity, the lower the value, the slower the camera
+     * will go in the target trail when it moves. default is 0.5;
+     *
      * @param trailingSensitivity
      */
     public void setTrailingSensitivity(float trailingSensitivity) {
@@ -741,6 +826,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns the zoom sensitivity
+     *
      * @return
      */
     public float getZoomSensitivity() {
@@ -748,14 +834,15 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * Sets the zoom sensitivity, the lower the value, the slower the camera will zoom in and out.
-     * default is 5.
+     * Sets the zoom sensitivity, the lower the value, the slower the camera
+     * will zoom in and out. default is 5.
+     *
      * @param zoomSensitivity
      */
     public void setZoomSensitivity(float zoomSensitivity) {
         this.zoomSensitivity = zoomSensitivity;
     }
-    
+
     /**
      * Returns the rotation speed when the mouse is moved.
      *
@@ -777,6 +864,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Sets the default distance at start of applicaiton
+     *
      * @param defaultDistance
      */
     public void setDefaultDistance(float defaultDistance) {
@@ -785,7 +873,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * sets the default horizontal rotation in radian of the camera at start of the application
+     * sets the default horizontal rotation in radian of the camera at start of
+     * the application
+     *
      * @param angleInRad
      */
     public void setDefaultHorizontalRotation(float angleInRad) {
@@ -794,7 +884,9 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * sets the default vertical rotation in radian of the camera at start of the application
+     * sets the default vertical rotation in radian of the camera at start of
+     * the application
+     *
      * @param angleInRad
      */
     public void setDefaultVerticalRotation(float angleInRad) {
@@ -812,11 +904,11 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     }
 
     /**
-     * @param dragToRotate When true, the user must hold the mouse button
-     * and drag over the screen to rotate the camera, and the cursor is
-     * visible until dragged. Otherwise, the cursor is invisible at all times
-     * and holding the mouse button is not needed to rotate the camera.
-     * This feature is disabled by default.
+     * @param dragToRotate When true, the user must hold the mouse button and
+     * drag over the screen to rotate the camera, and the cursor is visible
+     * until dragged. Otherwise, the cursor is invisible at all times and
+     * holding the mouse button is not needed to rotate the camera. This feature
+     * is disabled by default.
      */
     public void setDragToRotate(boolean dragToRotate) {
         this.dragToRotate = dragToRotate;
@@ -827,18 +919,18 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     /**
      * @param rotateOnlyWhenClose When this flag is set to false the chase
      * camera will always rotate around its spatial independently of their
-     * distance to one another. If set to true, the chase camera will only
-     * be allowed to rotated below the "horizon" when the distance is smaller
-     * than minDistance + 1.0f (when fully zoomed-in).
+     * distance to one another. If set to true, the chase camera will only be
+     * allowed to rotated below the "horizon" when the distance is smaller than
+     * minDistance + 1.0f (when fully zoomed-in).
      */
     public void setDownRotateOnCloseViewOnly(boolean rotateOnlyWhenClose) {
         veryCloseRotation = rotateOnlyWhenClose;
     }
 
     /**
-     * @return True if rotation below the vertical plane of the spatial tied
-     * to the camera is allowed only when zoomed in at minDistance + 1.0f.
-     * False if vertical rotation is always allowed.
+     * @return True if rotation below the vertical plane of the spatial tied to
+     * the camera is allowed only when zoomed in at minDistance + 1.0f. False if
+     * vertical rotation is always allowed.
      */
     public boolean getDownRotateOnCloseViewOnly() {
         return veryCloseRotation;
@@ -846,6 +938,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * return the current distance from the camera to the target
+     *
      * @return
      */
     public float getDistanceToTarget() {
@@ -854,6 +947,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns the current horizontal rotation around the target in radians
+     *
      * @return
      */
     public float getHorizontalRotation() {
@@ -862,6 +956,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns the current vertical rotation around the target in radians.
+     *
      * @return
      */
     public float getVerticalRotation() {
@@ -870,6 +965,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * returns the offset from the target's position where the camera looks at
+     *
      * @return
      */
     public Vector3f getLookAtOffset() {
@@ -878,6 +974,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Sets the offset from the target's position where the camera looks at
+     *
      * @param lookAtOffset
      */
     public void setLookAtOffset(Vector3f lookAtOffset) {
@@ -886,6 +983,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Sets the up vector of the camera used for the lookAt on the target
+     *
      * @param up
      */
     public void setUpVector(Vector3f up) {
@@ -894,6 +992,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * Returns the up vector of the camera used for the lookAt on the target
+     *
      * @return
      */
     public Vector3f getUpVector() {
@@ -910,6 +1009,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * invert the vertical axis movement of the mouse
+     *
      * @param invertYaxis
      */
     public void setInvertVerticalAxis(boolean invertYaxis) {
@@ -928,6 +1028,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
     /**
      * invert the Horizontal axis movement of the mouse
+     *
      * @param invertXaxis
      */
     public void setInvertHorizontalAxis(boolean invertXaxis) {
@@ -944,4 +1045,3 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
         inputManager.addListener(this, ChaseCamMoveLeft, ChaseCamMoveRight);
     }
 }
-
