@@ -64,7 +64,7 @@ public class EditorBaseManager {
         viewPort = this.app.getViewPort();
         assetManager = this.app.getAssetManager();
         
-        editorVersoin = "0.1";
+        editorVersoin = "0.11";
 
         flyCam = this.app.getStateManager().getState(FlyCamAppState.class).getCamera();
         flyCam.setEnabled(false);
