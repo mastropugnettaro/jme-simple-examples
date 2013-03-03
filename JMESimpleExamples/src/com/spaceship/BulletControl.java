@@ -64,7 +64,7 @@ public class BulletControl extends AbstractControl implements Savable, Cloneable
 //        geoRay.setMaterial(mat_bullet);
 //        asm.getRootNode().attachChild(geoRay);
         
-        List<PhysicsRayTestResult> rayTest = this.state.getPhysicsSpace().rayTest(this.bornPlace.add(bornPlace.mult(Vector3f.UNIT_Z).normalizeLocal()), this.bornPlace.add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength)));
+        List<PhysicsRayTestResult> rayTest = this.state.getPhysicsSpace().rayTest(this.bornPlace.add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal()), this.bornPlace.add(bullet.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().mult(bulletLength)));
         if (rayTest.size() > 0) {
             for (Object obj : rayTest) {
             PhysicsRayTestResult getObject = (PhysicsRayTestResult) obj;
