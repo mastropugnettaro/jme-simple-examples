@@ -437,23 +437,23 @@ public class EditorSceneManager {
                     ModelKey mkLinkToScene = new ModelKey(modelPath.getModelPath());
                     AssetLinkNode linkedEntity = new AssetLinkNode(mkLinkToScene);
 
-                    // general node of the entity
-                    Node entityNode = new Node();
-                    entityNode.attachChild(linkedEntity);
+//                    // general node of the entity
+//                    Node entityNode = new Node();
+//                    entityNode.attachChild(linkedEntity);
 
                     // set name
                     Object modelNameObj = base.getEntityManager().getComponent((Long) IDObj, EntityNameComponent.class);
                     EntityNameComponent modmodelName = (EntityNameComponent) modelNameObj;
-                    entityNode.setName(modmodelName.getName());
-                    entityNode.setLocalTransform(spEntity.getWorldTransform());
+                    linkedEntity.setName(modmodelName.getName());
+                    linkedEntity.setLocalTransform(spEntity.getWorldTransform());
 
                     // set components
                     ConcurrentHashMap<String, String> dataComponents = base.getDataManager().getEntityData((Long) IDObj);
                     for (String key : dataComponents.keySet()) {
-                        entityNode.setUserData(key, dataComponents.get(key));
+                        linkedEntity.setUserData(key, dataComponents.get(key));
                     }
                     // add entity to a layer
-                    layerToSave.attachChild(entityNode);
+                    layerToSave.attachChild(linkedEntity);
                 }
                  sceneSaveView.attachChild(layerToSave);
             }
