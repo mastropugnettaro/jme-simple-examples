@@ -298,7 +298,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 //        targetRotation += value * rotationSpeed;
         
             //the cam looks at the target
-            if ((targetVRotation > FastMath.DEG_TO_RAD * 90 && targetVRotation <= FastMath.DEG_TO_RAD * 270) || (targetVRotation < -FastMath.DEG_TO_RAD * 90 && targetVRotation >= -FastMath.DEG_TO_RAD * 270)) {
+            if ((targetVRotation >= FastMath.DEG_TO_RAD * 90 && targetVRotation <= FastMath.DEG_TO_RAD * 270) || (targetVRotation <= -FastMath.DEG_TO_RAD * 90 && targetVRotation >= -FastMath.DEG_TO_RAD * 270)) {
                 targetRotation -= value * rotationSpeed;
             } else {
                 targetRotation += value * rotationSpeed;
@@ -522,7 +522,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
 
 
             //the cam looks at the target
-            if ((targetVRotation > FastMath.DEG_TO_RAD * 90 && targetVRotation <= FastMath.DEG_TO_RAD * 270) || (targetVRotation < -FastMath.DEG_TO_RAD * 90 && targetVRotation >= -FastMath.DEG_TO_RAD * 270)) {
+            if ((targetVRotation >= FastMath.DEG_TO_RAD * 90 && targetVRotation <= FastMath.DEG_TO_RAD * 270) || (targetVRotation <= -FastMath.DEG_TO_RAD * 90 && targetVRotation >= -FastMath.DEG_TO_RAD * 270)) {
                 cam.lookAt(targetLocation, (initialUpVec.negate()));
             } 
             else if (targetVRotation > FastMath.DEG_TO_RAD * 270 || targetVRotation < -FastMath.DEG_TO_RAD * 270) {
