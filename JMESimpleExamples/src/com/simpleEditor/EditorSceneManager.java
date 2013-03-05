@@ -99,7 +99,7 @@ public class EditorSceneManager {
 //        entityManager = base.getEntityManager();
     }
 
-    protected void loadScene() {
+    protected boolean loadScene() {
         mFileCm.setDialogType(JFileChooser.OPEN_DIALOG);
         mFileCm.setDialogTitle("Load Scene");
         mFileCm.setApproveButtonToolTipText("Open");
@@ -110,7 +110,7 @@ public class EditorSceneManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File selectedFile = mFileCm.getSelectedFile();
 
-            if (selectedFile.getName().indexOf(".") != 0 && selectedFile.getName().length() > 0) {
+            if (selectedFile.exists() && selectedFile.isFile() && selectedFile.getName().indexOf(".") != 0 && selectedFile.getName().length() > 0) {
                 String filePath = selectedFile.getParent();
                 filePath = correctPath(filePath);
 
@@ -120,14 +120,19 @@ public class EditorSceneManager {
                 }
                 String fullPath = filePath + fileName;
 
+                newScene();
+                
                 // set scene paths to cache
                 sceneNameCache = fileName;
                 scenePathCache = filePath;
-
+                
                 loadSwsFile(fullPath);
                 loadSweFile(fullPath);
+                
+                return true;
             }
         }
+        return false;
     }
 
     protected void loadSwsFile(String filePath) {
@@ -232,7 +237,8 @@ public class EditorSceneManager {
         if (scenePathCache != null && sceneNameCache != null) {
             saveSwsFile(scenePathCache + sceneNameCache);
             saveSweFile(scenePathCache + sceneNameCache);
-            savePreviewScene(scenePathCache, sceneNameCache);
+            
+            if (savePreviewJ3o) savePreviewScene(scenePathCache, sceneNameCache);
         }
 
     }
