@@ -335,69 +335,73 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     }
 
     public void newSceneButton() {
-        clearGui();
         base.getSceneManager().newScene();
+        clearGui();
     }
 
     public void LoadSceneButton() {
-        clearGui();
-        base.getSceneManager().newScene();
-        base.getSceneManager().loadScene();
 
-        // reload assets lists
-        int guiAssetLine = 1;
-        for (String obj : base.getSceneManager().getAssetsList()) {
-            // show assets at the gui
-            if (guiAssetLine <= 7) {
-                String strAssetLine = "scenePath" + guiAssetLine;
-                nifty.getScreen("start").findNiftyControl(strAssetLine, TextField.class).setText((String) obj);
-                guiAssetLine += 1;
+        boolean isLoaded = base.getSceneManager().loadScene();
+
+        if (isLoaded == true) {
+            clearGui();
+
+            // reload assets lists
+            int guiAssetLine = 1;
+            for (String obj : base.getSceneManager().getAssetsList()) {
+                // show assets at the gui
+                if (guiAssetLine <= 7) {
+                    String strAssetLine = "scenePath" + guiAssetLine;
+                    nifty.getScreen("start").findNiftyControl(strAssetLine, TextField.class).setText((String) obj);
+                    guiAssetLine += 1;
+                }
+
             }
 
-        }
-
-        // update list of all entities
-        ConcurrentHashMap<String, String> entList = base.getSceneManager().getEntitiesListsList();
-        entitiesListBox.clear();
-        for (String str : entList.keySet()) {
-            entitiesListBox.addItem(str);
-        }
-
-
-        // update list of objects and layers visibility
-        for (Node ndLayer : base.getLayerManager().getLayers()) {
-            // set layers vibiity
-            CheckBox cbLayer = screen.findNiftyControl(ndLayer.getName(), CheckBox.class);
-            boolean isEnabled = (Boolean) ndLayer.getUserData("isEnabled");
-            boolean isActive = (Boolean) ndLayer.getUserData("isActive");
-            if (isEnabled) {
-                cbLayer.check();
+            // update list of all entities
+            ConcurrentHashMap<String, String> entList = base.getSceneManager().getEntitiesListsList();
+            entitiesListBox.clear();
+            for (String str : entList.keySet()) {
+                entitiesListBox.addItem(str);
             }
-            if (isActive) {
-                Element newActive = screen.findElementByName(ndLayer.getName());
-                newActive.startEffect(EffectEventId.onFocus);
-            }
-            screen.getFocusHandler().resetFocusElements();
 
-            // update list of objects
-            for (Spatial spEntity : ndLayer.getChildren()) {
-                Object obj = spEntity.getUserData("EntityID");
-                long idObj = (Long) obj;
-                EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(idObj, EntityNameComponent.class);
-                sceneObjectsListBox.addItem(nameComp.getName());
-            }
-        }
 
-        // savePreviewj3o checkbox
-        CheckBox cbPreview = screen.findNiftyControl("savePreviewJ3O", CheckBox.class);
-        if (base.getSceneManager().getSavePreviewJ3o()) {
-            cbPreview.check();
-        } else {
-            cbPreview.uncheck();
-        }
+            // update list of objects and layers visibility
+            for (Node ndLayer : base.getLayerManager().getLayers()) {
+                // set layers vibiity
+                CheckBox cbLayer = screen.findNiftyControl(ndLayer.getName(), CheckBox.class);
+                boolean isEnabled = (Boolean) ndLayer.getUserData("isEnabled");
+                boolean isActive = (Boolean) ndLayer.getUserData("isActive");
+                if (isEnabled) {
+                    cbLayer.check();
+                }
+                if (isActive) {
+                    Element newActive = screen.findElementByName(ndLayer.getName());
+                    newActive.startEffect(EffectEventId.onFocus);
+                }
+                screen.getFocusHandler().resetFocusElements();
+
+                // update list of objects
+                for (Spatial spEntity : ndLayer.getChildren()) {
+                    Object obj = spEntity.getUserData("EntityID");
+                    long idObj = (Long) obj;
+                    EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(idObj, EntityNameComponent.class);
+                    sceneObjectsListBox.addItem(nameComp.getName());
+                }
+            }
+
+            // savePreviewj3o checkbox
+            CheckBox cbPreview = screen.findNiftyControl("savePreviewJ3O", CheckBox.class);
+            if (base.getSceneManager().getSavePreviewJ3o()) {
+                cbPreview.check();
+            } else {
+                cbPreview.uncheck();
+            }
 //        sceneObjectsListBox.
 //        System.out.println(base.getEntityManager().getAllControls().size());
-//        screen.getFocusHandler().resetFocusElements();
+//        screen.getFocusHandler().resetFocusElements();           
+        }
+
     }
 
     public void saveSceneButton() {
@@ -446,7 +450,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             String selectedEntity = entitiesListBox.getSelection().get(0).toString();
             long id = base.getSceneManager().createEntityModel(selectedEntity, base.getSceneManager().getEntitiesListsList().get(selectedEntity), null);
             base.getLayerManager().getActiveLayer().attachChild(base.getSpatialSystem().getSpatialControl(id).getGeneralNode());
-            
+
 
             // clear selection
             base.getSelectionManager().clearSelectionList();
