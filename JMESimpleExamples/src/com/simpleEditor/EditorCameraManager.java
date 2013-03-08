@@ -202,9 +202,9 @@ public class EditorCameraManager {
 //         Camera cam2 = cam.clone(); 
 
             cam.setParallelProjection(true);
-            float aspect = (float) cam.getWidth() / cam.getHeight();
-            float frustumSize = 10f;
-            cam.setFrustum(cam.getFrustumNear(), cam.getFrustumFar(), -aspect * frustumSize, aspect * frustumSize, frustumSize, -frustumSize);
+            float aspect = (float) cam.getWidth() / (float) cam.getHeight();
+            float frustumSize = chaseCam.getDistanceToTarget();
+            cam.setFrustum(-cam.getFrustumFar(), cam.getFrustumFar(), -aspect * frustumSize, aspect * frustumSize, frustumSize, -frustumSize);
 
         } else if (bool == false) {
 

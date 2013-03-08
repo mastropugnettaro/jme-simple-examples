@@ -442,6 +442,8 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         for (String str : entList.keySet()) {
             entitiesListBox.addItem(str);
         }
+        
+        entitiesListBox.sortAllItems();
     }
 
     public void addEntityToSceneButton() {
