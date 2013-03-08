@@ -15,6 +15,7 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -65,42 +66,20 @@ public class EditorCameraManager {
 
         // Enable a chase cam
         chaseCam = new EditorChaseCamera(cam, camTrackHelper, imputMan);
-
-        //Uncomment this to invert the camera's vertical rotation Axis 
         chaseCam.setInvertVerticalAxis(true);
-
-        //Uncomment this to invert the camera's horizontal rotation Axis
-//    chaseCam.setInvertHorizontalAxis(true);
-
-        //Comment this to disable smooth camera motion
-//    chaseCam.setSmoothMotion(true);
-//    chaseCam.setChasingSensitivity(100);
-//    chaseCam.setTrailingSensitivity(500);
-//    chaseCam.setDragToRotate(false);
-
-        //Uncomment this to disable trailing of the camera 
-        //WARNING, trailing only works with smooth motion enabled. It is true by default.
         chaseCam.setTrailingEnabled(false);
 
-        //Uncomment this to look 3 world units above the target
-//    chaseCam.setLookAtOffset(Vector3f.UNIT_Y.mult(3));
-        chaseCam.setMinVerticalRotation(-FastMath.PI * 0.499f);
-        chaseCam.setMaxVerticalRotation(FastMath.PI * 0.499f);
-        //Uncomment this to enable rotation when the middle mouse button is pressed (like Blender)
-        //WARNING : setting this trigger disable the rotation on right and left mouse button click
-//    chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
+//        chaseCam.setMinVerticalRotation(-FastMath.PI * 0.499f);
+//        chaseCam.setMaxVerticalRotation(FastMath.PI * 0.499f);
 
-        //Uncomment this to set mutiple triggers to enable rotation of the cam
-        //Here spade bar and middle mouse button
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
-//        chaseCam.setZoomInTrigger(triggers)
+        chaseCam.setRotationSpeed(2f);
         
         chaseCam.setMinDistance(0.05f);
         chaseCam.setMaxDistance(5000);
         chaseCam.setDefaultDistance(300);
         chaseCam.setZoomSensitivity(100f);
-//        chaseCam.setDefaultDistance(800);
-//        chaseCam.se
+
     }
 
     protected float getCamMoveSpeed() {
