@@ -377,7 +377,10 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
      */
     protected void updateCamera(float tpf) {
         if (enabled) {
-            targetLocation.set(target.getWorldTranslation()).addLocal(lookAtOffset);
+            
+            // here i fixed with clone()
+            targetLocation.set(target.getWorldTranslation().clone()).addLocal(lookAtOffset);
+            
             if (smoothMotion) {
 
                 //computation of target direction
