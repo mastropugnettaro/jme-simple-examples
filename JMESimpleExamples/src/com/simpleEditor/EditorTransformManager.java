@@ -107,7 +107,7 @@ public class EditorTransformManager extends AbstractControl {
     }
 
     private void createCollisionPlane() {
-        float size = 5000;
+        float size = 20000;
         Geometry g = new Geometry("plane", new Quad(size, size));
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.Off);
