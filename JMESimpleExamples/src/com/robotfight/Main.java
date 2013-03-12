@@ -32,6 +32,12 @@ import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 
+/**
+ * A simple demo game for a realtime 3rd person enviroment. The player controls
+ * a robot and has to fight a computer controlled robot with laser beams.
+ *
+ * @author Ryu Battosai Kajiya
+ */
 public class Main extends SimpleApplication implements AnalogListener, ActionListener {
 
 // general variables
@@ -45,12 +51,12 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     private final float laserdamage = 5f;
     private boolean gameFinished = false;
     private float gameFinishCountDown = 5f;
-// player
+    // player
     private Node player;
     private final float playerMoveSpeed = 15;
     private float playerLaserLifetime = 0;
     private Geometry playerLaserBeam;
-// enemy
+    // enemy
     private Node enemy;
     private final float enemyMoveSpeed = 8;
     private float enemyLaserLifetime = 0;
@@ -62,7 +68,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     private final float enemyMaxLaserCooldown = 0.5f;
     private ArrayList<EnemyPlan> plans = new ArrayList<EnemyPlan>();
     private ArrayList<EnemyPlan> updatePlans = new ArrayList<EnemyPlan>();
-// some variables for enemy "AI"
+    // some variables for enemy "AI"
     private boolean front = true;
     private boolean move = true;
     private boolean left = true;
@@ -71,7 +77,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     private Plane sidewards = new Plane();
     Vector3f[] viewAxe = new Vector3f[3];
     private Node helperNode = new Node("ViewHelper");
-// debugging stuff
+    // debugging stuff
     private Geometry helper;
     private final boolean addDebugObjects = false;
     private final boolean allDebugMessages = false;
@@ -95,17 +101,17 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
 
         initializeEnemy();
 
-// Disable the default flyby cam
+        // Disable the default flyby cam
         flyCam.setEnabled(false);
-//create the camera Node
+        //create the camera Node
         CameraNode camNode = new CameraNode("Camera Node", cam);
-//This mode means that camera copies the movements of the target:
+        //This mode means that camera copies the movements of the target:
         camNode.setControlDir(ControlDirection.SpatialToCamera);
-//Attach the camNode to the target:
+        //Attach the camNode to the target:
         player.attachChild(camNode);
-//Move camNode, e.g. behind and above the target:
+        //Move camNode, e.g. behind and above the target:
         camNode.setLocalTranslation(new Vector3f(0, 6, -18));
-//Rotate the camNode to look at the target:
+        //Rotate the camNode to look at the target:
         camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
         camNode.setLocalTranslation(new Vector3f(0, 12, -22));
 
@@ -133,11 +139,11 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     }
 
     private void initializeEnemy() {
-// create a robot for the enemy
+        // create a robot for the enemy
         enemy = createRobot("enemy");
         enemy.setUserData("health", 100f);
 
-// add simple healthbar
+        // add simple healthbar
         BillboardControl billboard = new BillboardControl();
         Geometry healthbar = new Geometry("healthbar", new Quad(4f, 0.2f));
         Material mathb = mat.clone();
@@ -148,22 +154,22 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
         healthbar.move(0, 7, 2);
         healthbar.addControl(billboard);
 
-// put enemy in a corner
+        // put enemy in a corner
         enemy.move(floorsize * 2 - 5, 0, floorsize * 2 - 5);
 
-// let enemy look at center
+        // let enemy look at center
         enemy.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
 
-// add enemy to scene
+        // add enemy to scene
         rootNode.attachChild(enemy);
     }
 
     private void initializePlayer() {
-// create a robot for the player
+        // create a robot for the player
         player = createRobot("player");
         player.setUserData("health", 100f);
 
-// add simple healthbar
+        // add simple healthbar
         BillboardControl billboard = new BillboardControl();
         Geometry healthbar = new Geometry("healthbar", new Quad(4f, 0.2f));
         Material mathb = mat.clone();
@@ -174,18 +180,18 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
         healthbar.move(4, 1, -4);
         healthbar.addControl(billboard);
 
-// put player in center
+        // put player in center
         player.move(-2, 0, 0);
         player.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
 
-// add player to scene
+        // add player to scene
         rootNode.attachChild(player);
     }
 
     private Node createRobot(String name) {
         Node res = new Node(name);
 
-// create the feet
+        // create the feet
         Box leftFoot = new Box(0.5f, 0.2f, 1.5f);
         Box rightFoot = new Box(0.5f, 0.2f, 1.5f);
         Geometry geomlf = new Geometry("leftFoot", leftFoot);
@@ -200,7 +206,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
         res.attachChild(geomlf);
         res.attachChild(geomrf);
 
-// create the body
+        // create the body
         Cylinder body = new Cylinder(8, 16, 1, 3);
         Geometry bodygeom = new Geometry("body", body);
         Material matb = mat.clone();
@@ -210,7 +216,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
         bodygeom.rotate(FastMath.DEG_TO_RAD * 90, 0, 0);
         res.attachChild(bodygeom);
 
-// create the head
+        // create the head
         Sphere head = new Sphere(16, 32, 1.5f);
         Geometry headgeom = new Geometry("head", head);
         Material math = mat.clone();
@@ -219,7 +225,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
         headgeom.center().move(new Vector3f(0, 4.42f, 0));
         res.attachChild(headgeom);
 
-// create a "nose" to see where robot is heading
+        // create a "nose" to see where robot is heading
         Box nose = new Box(0.2f, 0.2f, 0.2f);
         Geometry nosegeom = new Geometry("head", nose);
         Material matn = mat.clone();
@@ -233,20 +239,20 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     }
 
     private void initializeBloom() {
-// add a glow effect
+        // add a glow effect
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         bf = new BloomFilter(BloomFilter.GlowMode.Objects);
         bf.setExposurePower(18f);
         bf.setBloomIntensity(1.0f);
         bf.setBlurScale(maxBlur);
-//bf.setExposureCutOff(1f);
+        //bf.setExposureCutOff(1f);
         bf.setDownSamplingFactor(2.2f);
         fpp.addFilter(bf);
         viewPort.addProcessor(fpp);
     }
 
     private void initializeFloor() {
-// create a floor
+        // create a floor
         float gridsize = floorsize / 10;
         Box bx = new Box(gridsize / 2, 0.02f, 0.02f);
         Material matx = mat.clone();
@@ -371,15 +377,15 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                 matlaser.setColor("Color", ColorRGBA.Orange);
                 matlaser.setColor("GlowColor", ColorRGBA.Red);
                 playerLaserBeam.setMaterial(matlaser);
-// attach laserbeam to player so it moves with player
+                // attach laserbeam to player so it moves with player
                 player.attachChild(playerLaserBeam);
-// center laserbeam on players origin
+                // center laserbeam on players origin
                 playerLaserBeam.center();
-// make the laserbeam point towards clicked spot
+                // make the laserbeam point towards clicked spot
                 playerLaserBeam.lookAt(groundpoint, Vector3f.UNIT_Z);
-// move laserbeam up so it does not shoot on ground level, but from player model
+                // move laserbeam up so it does not shoot on ground level, but from player model
                 playerLaserBeam.move(new Vector3f(0, 3, 0));
-// move laserbeam forward because cylinder is created with center at player origin
+                // move laserbeam forward because cylinder is created with center at player origin
                 playerLaserBeam.move(playerLaserBeam.getLocalRotation().mult(new Vector3f(0, 0, laserlength / 2)));
                 playerLaserLifetime = lasermaxlifetime;
 
@@ -389,11 +395,11 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
 
     @Override
     public void simpleUpdate(float tpf) {
-// get player and enemy health
+        // get player and enemy health
         float enemyHealth = (Float) enemy.getUserData("health");
         float playerHealth = (Float) player.getUserData("health");
 
-// check if game is over
+        // check if game is over
         if (gameFinished) {
             if (gameFinishCountDown <= 0) {
                 this.stop();
@@ -414,11 +420,11 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
 
     @Override
     public void simpleRender(RenderManager rm) {
-//TODO: add render code
+        //TODO: add render code
     }
 
     private void checkGameState(float enemyHealth, float playerHealth) {
-// check if we won or lost the game
+        // check if we won or lost the game
         if (enemyHealth <= 0) {
             BitmapText hudText = new BitmapText(guiFont, false);
             hudText.setSize(guiFont.getCharSet().getRenderedSize()); // font size
@@ -439,7 +445,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     }
 
     private void updateLasers(float tpf) {
-// check if player is firing
+        // check if player is firing
         if (playerLaserLifetime <= 0 && playerLaserBeam != null) {
             playerLaserLifetime = 0;
             playerLaserBeam.removeFromParent();
@@ -452,7 +458,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
             playerLaserLifetime -= tpf;
         }
 
-// check if enemy is firing
+        // check if enemy is firing
         if (enemyLaserLifetime <= 0 && enemyLaserBeam != null) {
             enemyLaserLifetime = 0;
             enemyLaserBeam.removeFromParent();
@@ -465,20 +471,20 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     }
 
     private void updateHealthBars(float enemyHealth, float playerHealth) {
-// update health bars
+        // update health bars
         ((Quad) ((Geometry) enemy.getChild("healthbar")).getMesh()).updateGeometry(enemyHealth / 100 * 4, 0.2f);
         ((Quad) ((Geometry) player.getChild("healthbar")).getMesh()).updateGeometry(playerHealth / 100 * 4, 0.2f);
     }
 
     private void updateEnemy(float tpf) {
-// some basic "AI" for the enemy
+        // some basic "AI" for the enemy
 
-// check if player is in attack range
+        // check if player is in attack range
         if (enemy.getLocalTranslation().distance(player.getLocalTranslation()) < attackRange) {
-// show hostile enemy
+            // show hostile enemy
             ((Geometry) enemy.getChild("head")).getMaterial().setColor("GlowColor", ColorRGBA.Red);
 
-// get angle from enemy view to player
+            // get angle from enemy view to player
             Quaternion currentRot = enemy.getLocalRotation();
             currentRot.toAxes(viewAxe);
             forward.setOriginNormal(enemy.getLocalTranslation(), viewAxe[2]);
@@ -522,13 +528,13 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                 turn = true;
             }
 
-// if just entered attack range clear plans and start attack plans
+            // if just entered attack range clear plans and start attack plans
             if (!attacking) {
                 plans.clear();
             }
 
             if (!isEnemyMoving() && move) {
-// make enemy move toward player
+                // make enemy move toward player
                 EnemyPlan newPlan = new EnemyPlan(maxActionTime, EnemyPlanType.MOVE, front);
                 if (addDebugObjects) {
                     System.out.println("Plan: " + newPlan.type + ", Duration: " + newPlan.duration + ", Direction: " + newPlan.direction + " added.");
@@ -537,7 +543,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
             }
 
             if (!isEnemyTurning() && turn) {
-// check angle from enemy facing to player position
+                // check angle from enemy facing to player position
                 helperNode.setLocalTranslation(enemy.getLocalTranslation());
                 helperNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
                 Quaternion delta = enemy.getLocalRotation().inverse().multLocal(helperNode.getLocalRotation());
@@ -546,7 +552,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                     System.out.println("Deltaquaternion angle towards player: " + delta.toAngles(null)[1] * FastMath.RAD_TO_DEG);
                 }
 
-// make enemy turn toward player
+                // make enemy turn toward player
                 EnemyPlan newPlan = new EnemyPlan(FastMath.abs(delta.toAngles(null)[1] / (tpf * turnSpeed)), EnemyPlanType.TURN, left);
                 if (addDebugObjects) {
                     System.out.println("Plan: " + newPlan.type + ", Duration: " + newPlan.duration + ", Direction: " + newPlan.direction + " added.");
@@ -554,7 +560,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                 plans.add(newPlan);
             }
 
-// if player is in front of enemy shoot!
+            // if player is in front of enemy shoot!
             if (front && enemyLaserCooldown <= 0 && enemyLaserBeam == null) {
                 float laserlength = attackRange;
 
@@ -577,15 +583,15 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                 matlaser.setColor("Color", ColorRGBA.Green);
                 matlaser.setColor("GlowColor", ColorRGBA.Cyan);
                 enemyLaserBeam.setMaterial(matlaser);
-// attach laserbeam to player so it moves with player
+                // attach laserbeam to player so it moves with player
                 enemy.attachChild(enemyLaserBeam);
-// center laserbeam on players origin
+                // center laserbeam on players origin
                 enemyLaserBeam.center();
-// make the laserbeam point towards clicked spot
+                // make the laserbeam point towards clicked spot
                 enemyLaserBeam.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Z);
-// move laserbeam up so it does not shoot on ground level, but from player model
+                // move laserbeam up so it does not shoot on ground level, but from player model
                 enemyLaserBeam.move(new Vector3f(0, 3, 0));
-// move laserbeam forward because cylinder is created with center at player origin
+                // move laserbeam forward because cylinder is created with center at player origin
                 enemyLaserBeam.move(enemyLaserBeam.getLocalRotation().mult(new Vector3f(0, 0, laserlength / 2)));
                 enemyLaserLifetime = lasermaxlifetime;
                 enemyLaserCooldown = enemyMaxLaserCooldown;
@@ -593,10 +599,10 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
 
             updateEnemyPlans(tpf);
 
-// trigger attack mode
+            // trigger attack mode
             attacking = true;
         } else {
-// show peacefull enemy
+            // show peacefull enemy
             ((Geometry) enemy.getChild("head")).getMaterial().setColor("GlowColor", ColorRGBA.Green);
 
             Quaternion currentRot = enemy.getLocalRotation();
@@ -638,9 +644,9 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                 left = false;
             }
 
-// check if enemy is allready doing something (enemy can do 2 actions at a time)
+            // check if enemy is allready doing something (enemy can do 2 actions at a time)
             if (plans.size() < 2) {
-// if enemy is close to border he is eager to move
+                // if enemy is close to border he is eager to move
                 if (!isEnemyMoving() && (enemy.getLocalTranslation().x > floorsize * 1.5f || enemy.getLocalTranslation().z > floorsize * 1.5f
                         || enemy.getLocalTranslation().x < -floorsize * 1.5f || enemy.getLocalTranslation().z < -floorsize * 1.5f)) {
                     EnemyPlan newPlan = new EnemyPlan(maxActionTime, EnemyPlanType.MOVE, front);
@@ -649,14 +655,14 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                     }
                     plans.add(newPlan);
                 } else {
-// else pick a plan at random
+                    // else pick a plan at random
                     switch (FastMath.rand.nextInt(EnemyPlanType.values().length)) {
                         case (0): {
-// check if enemy is allready moving
+                            // check if enemy is allready moving
                             if (isEnemyMoving()) {
                                 break;
                             }
-// decide to move a bit
+                            // decide to move a bit
                             EnemyPlan newPlan = new EnemyPlan(FastMath.rand.nextFloat() * maxActionTime, EnemyPlanType.MOVE, FastMath.rand.nextBoolean());
                             if (addDebugObjects) {
                                 System.out.println("Plan: " + newPlan.type + ", Duration: " + newPlan.duration + ", Direction: " + newPlan.direction + " added.");
@@ -665,11 +671,11 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                             break;
                         }
                         case (1): {
-// check if enemy is allready turning
+                            // check if enemy is allready turning
                             if (isEnemyTurning()) {
                                 break;
                             }
-// decide to turn a bit
+                            // decide to turn a bit
                             EnemyPlan newPlan = new EnemyPlan(FastMath.rand.nextFloat() * maxActionTime, EnemyPlanType.TURN, FastMath.rand.nextBoolean());
                             if (addDebugObjects) {
                                 System.out.println("Plan: " + newPlan.type + ", Duration: " + newPlan.duration + ", Direction: " + newPlan.direction + " added.");
@@ -678,7 +684,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                             break;
                         }
                         case (2): {
-// decide to wait a bit
+                            // decide to wait a bit
                             EnemyPlan newPlan = new EnemyPlan(FastMath.rand.nextFloat() * maxIdleTime, EnemyPlanType.IDLE, FastMath.rand.nextBoolean());
                             if (addDebugObjects) {
                                 System.out.println("Plan: " + newPlan.type + ", Duration: " + newPlan.duration + ", Direction: " + newPlan.direction + " added.");
@@ -715,7 +721,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
     }
 
     private void updateEnemyPlans(float tpf) {
-// process plans
+        // process plans
         updatePlans.clear();
         updatePlans.addAll(plans);
         for (EnemyPlan plan : updatePlans) {
@@ -735,7 +741,7 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                     if (enemy.getLocalTranslation().x > floorsize * 2 || enemy.getLocalTranslation().z > floorsize * 2
                             || enemy.getLocalTranslation().x < -floorsize * 2 || enemy.getLocalTranslation().z < -floorsize * 2) {
                         enemy.setLocalTranslation(oldPos);
-// if enemy hit border make him move backwards
+                        // if enemy hit border make him move backwards
                         plans.remove(plan);
                         plans.add(new EnemyPlan(plan.getDuration(), plan.getType(), !plan.getDirection()));
                     }
@@ -744,10 +750,10 @@ public class Main extends SimpleApplication implements AnalogListener, ActionLis
                 case TURN: {
                     plan.update(tpf);
                     if (plan.direction) {
-// turn left
+                        // turn left
                         enemy.rotate(0, (FastMath.DEG_TO_RAD * tpf) * turnSpeed, 0);
                     } else {
-// turn right
+                        // turn right
                         enemy.rotate(0, -(FastMath.DEG_TO_RAD * tpf) * turnSpeed, 0);
                     }
                     break;
