@@ -58,7 +58,7 @@ public class EntityTest extends SimpleApplication {
         Transform tr = new Transform();
         Vector3f loc = new Vector3f((float) Math.random() * 10.0f,(float) Math.random() * 10.0f,(float)Math.random() * 10.0f);
         tr.setTranslation(loc);
-//        selectedSp.setLocalTransform(tr);
+        selectedSp.setLocalTransform(tr);
         
         EntityTransformComponent transform = new EntityTransformComponent(tr);
         components.setComponent(transform);
