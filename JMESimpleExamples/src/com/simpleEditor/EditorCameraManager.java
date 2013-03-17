@@ -78,7 +78,7 @@ public class EditorCameraManager {
         chaseCam.setMinDistance(0.05f);
         chaseCam.setMaxDistance(5000);
         chaseCam.setDefaultDistance(300);
-        chaseCam.setZoomSensitivity(100f);
+//        chaseCam.setZoomSensitivity(5f);
 
     }
 

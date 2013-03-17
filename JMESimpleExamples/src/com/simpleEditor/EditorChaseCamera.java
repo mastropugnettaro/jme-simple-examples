@@ -62,11 +62,10 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
     protected float minDistance = 1.0f;
     protected float maxDistance = 40.0f;
     protected float distance = 20;
-    protected float zoomSpeed = 2f;
     protected float rotationSpeed = 1.0f;
     protected float rotation = 0;
     protected float trailingRotationInertia = 0.05f;
-    protected float zoomSensitivity = 5f;
+    protected float zoomSensitivity = 2f;
     protected float rotationSensitivity = 5f;
     protected float chasingSensitivity = 5f;
     protected float trailingSensitivity = 0.5f;
@@ -332,7 +331,7 @@ public class EditorChaseCamera implements ActionListener, AnalogListener, Contro
         }
 
         zooming = true;
-        targetDistance += value * zoomSpeed * (0.5f + (0.05f * getDistanceToTarget())); // my changes are here
+        targetDistance += value * zoomSensitivity * (0.5f + (0.05f * getDistanceToTarget())); // my changes are here
         if (targetDistance > maxDistance) {
             targetDistance = maxDistance;
         }
