@@ -45,7 +45,7 @@ public class Circle3dTest extends SimpleApplication {
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
-        ch.setText("Transformations are loaded from blender_test_scene.blend"); // crosshairs
+        ch.setText("Circle Mesh Example"); // crosshairs
         ch.setColor(new ColorRGBA(1f,0.8f,0.1f,1f));
         ch.setLocalTranslation(settings.getWidth()*0.3f,settings.getHeight()*0.1f,0);
         guiNode.attachChild(ch);
