@@ -72,6 +72,7 @@ public class Circle3d
 
         float rate = FastMath.TWO_PI / (float) samples;
         float angle = 0;
+        int idc = 0;
         for (int i = 0; i < samples; i++) {
             float x = FastMath.cos(angle) + center.x;
             float z = FastMath.sin(angle) + center.z;
@@ -79,11 +80,11 @@ public class Circle3d
             positions.put(x * radius).put(center.y).put(z * radius);
             normals.put(new float[]{0, 1, 0});
             
-            indices[i] = (short) i;
+            indices[idc++] = (short) i;
             if (i < samples - 1) {
-                indices[i] = (short) (i + 1);
+                indices[idc++] = (short) (i + 1);
             } else {
-                indices[i] = 0;
+                indices[idc++] = 0;
             }
 
             angle += rate;
