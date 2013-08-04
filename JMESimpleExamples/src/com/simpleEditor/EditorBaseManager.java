@@ -55,7 +55,7 @@ public class EditorBaseManager {
     private EditorHistoryManager historyManager;
 
     // Version of the Editor
-    private static String editorVersoin;
+    private static String editorVersion;
 
     public EditorBaseManager(Application app) {
 
@@ -64,7 +64,7 @@ public class EditorBaseManager {
         viewPort = this.app.getViewPort();
         assetManager = this.app.getAssetManager();
         
-        editorVersoin = "0.11";
+        editorVersion = EditorVerion.editorVersion;
 
         flyCam = this.app.getStateManager().getState(FlyCamAppState.class).getCamera();
         flyCam.setEnabled(false);
@@ -110,8 +110,8 @@ public class EditorBaseManager {
         hidedNode = new Node("hidedNode");
     }
 
-    protected static String getEditorVersoin() {
-        return editorVersoin;
+    protected static String getEditorVersion() {
+        return editorVersion;
     }    
     
     protected EditorCameraManager getCamManager() {

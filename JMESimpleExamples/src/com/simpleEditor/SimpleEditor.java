@@ -14,7 +14,7 @@ public class SimpleEditor extends SimpleApplication{
         AppSettings aps = new AppSettings(true);
         aps.setVSync(true);
 //        aps.setFrameRate(80);
-        aps.setResolution(1600, 800);
+//        aps.setResolution(1600, 800);
         app.setSettings(aps);
         app.setShowSettings(false);
         app.start();

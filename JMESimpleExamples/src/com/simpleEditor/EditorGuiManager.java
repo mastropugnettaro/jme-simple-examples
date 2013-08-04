@@ -280,6 +280,25 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
         base.getHistoryManager().getHistoryList().get(base.getHistoryManager().getHistoryCurrentNumber()).setDoTransform(true);
     }
+    
+    
+    public void snapObjectsToGrid() {
+        for (Long id : base.getSelectionManager().getSelectionList()) {
+            Node entity = (Node) base.getSpatialSystem().getSpatialControl(id).getGeneralNode();
+            
+            float constrX  = base.getTransformManager().getConstraintTool().constraintValue(entity.getLocalTranslation().getX());
+            float constrY  = base.getTransformManager().getConstraintTool().constraintValue(entity.getLocalTranslation().getY());
+            float constrZ  = base.getTransformManager().getConstraintTool().constraintValue(entity.getLocalTranslation().getZ());
+            
+            entity.setLocalTranslation(constrX, constrY, constrZ);
+            base.getSelectionManager().calculateSelectionCenter();
+            
+        // set history
+        base.getHistoryManager().prepareNewHistory();
+        base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
+        base.getHistoryManager().getHistoryList().get(base.getHistoryManager().getHistoryCurrentNumber()).setDoTransform(true);
+        }
+    }
 
     public void setGrid() {
         int indexGrid = rootNode.getChildIndex(gridNode);
@@ -442,7 +461,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         for (String str : entList.keySet()) {
             entitiesListBox.addItem(str);
         }
-        
+
         entitiesListBox.sortAllItems();
     }
 
@@ -463,7 +482,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             EntityNameComponent nameComp = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
             sceneObjectsListBox.addItem(nameComp.getName());
             sceneObjectsListBox.sortAllItems();
-            setSelectedObjectsList();
 
             // set history
             base.getHistoryManager().prepareNewHistory();
@@ -492,7 +510,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             base.getSceneManager().removeClones(entitiesListBox.getSelection().get(0).toString());
         }
         base.getGuiManager().getSceneObjectsListBox().sortAllItems();
-        base.getGuiManager().setSelectedObjectsList();
         screen.getFocusHandler().resetFocusElements();
 
 //        // set history
@@ -534,6 +551,16 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
     }
 
+    public void showSelectedEntitiesButton() {
+        setSelectedObjectsList();
+    }
+
+    public void clearSelectedEntitiesButton() {
+        for (Object indexDeselect : sceneObjectsListBox.getSelection()) {
+            sceneObjectsListBox.deselectItem(indexDeselect);
+        }
+    }
+
     public void removeSelectedButton() {
         for (Object obj : sceneObjectsListBox.getSelection()) {
             String objStr = (String) obj;
@@ -548,7 +575,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
 
         base.getSelectionManager().clearSelectionList();
         base.getSelectionManager().calculateSelectionCenter();
-        setSelectedObjectsList();
     }
 
     public void selectAllButton() {
@@ -566,7 +592,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         }
 
         base.getSelectionManager().calculateSelectionCenter();
-        setSelectedObjectsList();
+
         // set history
         base.getHistoryManager().prepareNewHistory();
         base.getHistoryManager().setNewSelectionHistory(base.getSelectionManager().getSelectionList());
@@ -579,7 +605,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 EntityNameComponent newRealName = (EntityNameComponent) base.getEntityManager().getComponent(id, EntityNameComponent.class);
                 base.getGuiManager().getSceneObjectsListBox().addItem(newRealName.getName());
             }
-//            setSelectedObjectsList();
 
 //            // set history
 //            base.getHistoryManager().prepareNewHistory();
@@ -790,7 +815,6 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             layerToSwitch.setUserData("isEnabled", true);
         }
 
-        setSelectedObjectsList();
         screen.getFocusHandler().resetFocusElements();
 //        System.out.println("sel" + selectableNode.getChildren().size());
     }
