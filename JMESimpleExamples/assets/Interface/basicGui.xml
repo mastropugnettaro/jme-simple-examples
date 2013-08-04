@@ -209,7 +209,7 @@
         
                     <panel height="10px" padding="10">
                         <!-- add your content here -->
-                    </panel>        
+                    </panel>
 
                     <!--Clear Transforms-->
                     <panel height="30px" align="center" childLayout="vertical">
@@ -228,8 +228,18 @@
                         <control id="button_clear_scale" name="button" style="ma_button" label="Clear Scale" visibleToMouse="true">
                             <interact onClick="clearTransform(Scale)"/>
                         </control>              
-                    </panel>           
-        
+                    </panel>
+
+                    <panel height="10px" padding="10">
+                        <!-- add your content here -->
+                    </panel>
+                    
+                    <panel height="30px" align="center" childLayout="vertical">
+                        <control id="button_snap_grid" name="button" style="ma_button" label="Snap Grid" visibleToMouse="true">
+                            <interact onClick="snapObjectsToGrid()"/>
+                        </control>              
+                    </panel>        
+
                     <panel height="10px" padding="10">
                         <!-- add your content here -->
                     </panel>        
@@ -587,10 +597,21 @@
                                     </control>
                                     
                                     <panel childLayout="horizontal">
-                                        <control id="selectEntityInScene" name="button" valign="center" align="center" style="ma_button" label="Select Entities" visibleToMouse="true">
+                                        <control id="selectEntityInScene" name="button" valign="center" align="center" style="ma_button" label="SelectFromList" visibleToMouse="true">
                                             <interact onClick="selectEntitiesButton()"/>
                                         </control> 
-                                    </panel>                  
+                                        <control id="showSelectedEntitiesButton" name="button" valign="center" align="center" style="ma_button" label="ShowSelected" visibleToMouse="true">
+                                            <interact onClick="showSelectedEntitiesButton()"/>
+                                        </control> 
+                                    </panel>
+                                    
+                                     <panel childLayout="horizontal">   
+                                        <control id="clearSelectedEntitiesButton" name="button" valign="center" align="center" style="ma_button" label="Clear List" visibleToMouse="true">
+                                            <interact onClick="clearSelectedEntitiesButton()"/>
+                                        </control> 
+                                    </panel>
+
+                  
                                 </panel>                                
                             </panel>
                         </control>

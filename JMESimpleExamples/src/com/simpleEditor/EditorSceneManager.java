@@ -291,7 +291,7 @@ public class EditorSceneManager {
         saveSceneSettings.put("AssetsPaths", assetsToSave);
 
         // save version of the Simple World Editor
-        saveSceneSettings.put("EditorVersion", base.getEditorVersoin());
+        saveSceneSettings.put("EditorVersion", base.getEditorVersion());
         saveSceneSettings.put("savePreviewJ3o", savePreviewJ3o);
 
         saveJsonFile(pathToSave + ".sws", saveSceneSettings);

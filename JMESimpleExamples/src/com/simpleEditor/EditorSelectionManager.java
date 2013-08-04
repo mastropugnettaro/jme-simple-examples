@@ -75,7 +75,7 @@ public class EditorSelectionManager extends AbstractControl {
 
         if (selectionToolType == SelectionToolType.MouseClick) {
             selectionTools.selectMouseClick();
-            base.getGuiManager().setSelectedObjectsList();
+//            base.getGuiManager().setSelectedObjectsList();
             result = true;
         } else if (selectionToolType == SelectionToolType.Rectangle) {
 //            selectionTools.drawRectangle();
@@ -191,7 +191,7 @@ public class EditorSelectionManager extends AbstractControl {
         }
         // select item in the objectslist        
         if (selectionMode == SelectionMode.Normal) {
-            base.getGuiManager().setSelectedObjectsList();
+//            base.getGuiManager().setSelectedObjectsList();
         }
     }
 
