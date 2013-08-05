@@ -28,10 +28,13 @@ public class EditorTransformConstraint {
 
         float valueToConstrait = value;
 
-        if (constraint == 5.0f || constraint == 10.0f || constraint == 1.0f) {
-            float distanceTest = valueToConstrait + (constraint * 0.5f);
+        // Make Constraint
+        if (constraint > 0.0f) {
+            float distanceTest = valueToConstrait + (constraint);
             String strDistance = String.valueOf(valueToConstrait);
-            if (constraint == 1.0f) {
+            if (constraint == 0.5f) {
+                strDistance = strDistance.substring(0, strDistance.indexOf(".") + 1);
+            } else if (constraint == 1.0f) {
                 strDistance = strDistance.substring(0, strDistance.indexOf("."));
             } else if (constraint == 10.0f || constraint == 5.0f) {
                 strDistance = strDistance.substring(0, strDistance.indexOf(".") - 1);
