@@ -203,7 +203,9 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
     public void RadioGroupConstraintsChanged(final String id, final RadioButtonGroupStateChangedEvent event) {
 
         if (event.getSelectedId().equals("constraint_none")) {
-            base.getTransformManager().getConstraintTool().setConstraint(0);
+            base.getTransformManager().getConstraintTool().setConstraint(0.0f);
+        } else if (event.getSelectedId().equals("constraint_0.5")) {
+            base.getTransformManager().getConstraintTool().setConstraint(0.5f);
         } else if (event.getSelectedId().equals("constraint_1")) {
             base.getTransformManager().getConstraintTool().setConstraint(1.0f);
         } else if (event.getSelectedId().equals("constraint_5")) {
@@ -624,6 +626,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             popupEditComponent.findNiftyControl("entityData", TextField.class).setText("");
 
             popupEditComponent.getFocusHandler().resetFocusElements();
+            base.getEditorMappings().removeListener();
 
         }
 
@@ -658,6 +661,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
                 popupEditComponent.findNiftyControl("entityData", TextField.class).setText(data.get(dataComponentName));
 
                 popupEditComponent.getFocusHandler().resetFocusElements();
+                base.getEditorMappings().removeListener();
             }
         }
     }
@@ -712,6 +716,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         nifty.closePopup(popupEditComponent.getId());
         popupEditComponent.disable();
         popupEditComponent.getFocusHandler().resetFocusElements();
+        base.getEditorMappings().addListener();
     }
 
     public void savePreviewJ3O() {
@@ -826,10 +831,12 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
             popupMoveToLayer.enable();
             nifty.showPopup(nifty.getCurrentScreen(), popupMoveToLayer.getId(), null);
             popupMoveToLayer.getFocusHandler().resetFocusElements();
+            base.getEditorMappings().removeListener();
         } else {
             nifty.closePopup(popupMoveToLayer.getId());
             popupMoveToLayer.disable();
             popupMoveToLayer.getFocusHandler().resetFocusElements();
+            base.getEditorMappings().addListener();
         }
 
     }
@@ -858,6 +865,7 @@ public class EditorGuiManager extends AbstractAppState implements ScreenControll
         nifty.closePopup(popupMoveToLayer.getId());
         popupMoveToLayer.disable();
         screen.getFocusHandler().resetFocusElements();
+        base.getEditorMappings().addListener();
 
     }
 

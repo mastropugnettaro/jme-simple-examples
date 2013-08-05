@@ -247,7 +247,7 @@
 
 
                     <!--Constraints-->
-                    <panel childLayout="vertical" align="center" valign="center" width="90%" height="90px" backgroundColor="#55a5">
+                    <panel childLayout="vertical" align="center" valign="center" width="90%" height="120px" backgroundColor="#55a5">
                         <control id="RadioGroupConstraints" name="radioButtonGroup" />
                         <panel width="10" />
                         <panel childLayout="vertical" paddingLeft="7px" paddingRight="7px" paddingTop="4px" paddingBottom="4px" width="100%">
@@ -260,6 +260,15 @@
                                 </panel>                        
                                 <panel childLayout="horizontal" width="30%">
                                     <control name="radioButton" id="constraint_none" group="RadioGroupConstraints" />
+                                </panel>
+                            </panel>
+
+                            <panel childLayout="horizontal" width="100%" align="right">
+                                <panel childLayout="horizontal" width="70%" align="right">
+                                    <control name="label" text="0.5" with="100%"/>
+                                </panel>                        
+                                <panel childLayout="horizontal" width="30%">
+                                    <control name="radioButton" id="constraint_0.5" group="RadioGroupConstraints" />
                                 </panel>
                             </panel>
 
@@ -360,6 +369,10 @@
                     </panel>        
 
 
+                    <panel height="10px" padding="10">
+                    </panel>
+
+                                        
                     <panel align="center" childLayout="vertical">
                         <control id="cloneSelectedButton()" name="button" valign="center" align="center" style="ma_button" label="CloneSelected" visibleToMouse="true">
                             <interact onClick="cloneSelectedButton()"/>

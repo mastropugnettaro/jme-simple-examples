@@ -27,6 +27,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
     private EditorCameraManager camMan;
     private boolean transformResult;
     private boolean selectResult;
+    private String[] mappings;
 
     public EditorMappings(Application app, EditorBaseManager baseParts) {
 
@@ -46,7 +47,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
     private void setupKeys() {
         //Set up keys and listener to read it
 
-        String[] mappings = new String[]{
+        mappings = new String[]{
             "MoveCameraHelper",
             "MoveCameraHelperToSelection",
             "MoveOrSelect",
@@ -56,9 +57,6 @@ public class EditorMappings implements AnalogListener, ActionListener {
             "ShowHideRightPanel",
             "SelectDeselectAll"
         };
-
-
-        app.getInputManager().addListener(this, mappings);
 
         app.getInputManager().addMapping("MoveCameraHelper", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         app.getInputManager().addMapping("MoveCameraHelperToSelection", new KeyTrigger(KeyInput.KEY_C));
@@ -70,6 +68,14 @@ public class EditorMappings implements AnalogListener, ActionListener {
 
     }
 
+    protected void addListener() {
+        app.getInputManager().addListener(this, mappings);
+    }
+
+    protected void removeListener() {
+        app.getInputManager().removeListener(this);
+    }
+    
     public void onAnalog(String name, float value, float tpf) {
 
         // Move Camera
@@ -114,13 +120,13 @@ public class EditorMappings implements AnalogListener, ActionListener {
             }
         } else if (name.equals("MoveCameraHelperToSelection") && isPressed && !name.equals("MoveOrSelect")) {
             if (!transformResult && !selectResult) {
-             Transform selectionCenter = base.getSelectionManager().getSelectionCenter();
-             if (selectionCenter != null) {
-                 base.getCamManager().getCamTrackHelper().setLocalTranslation(selectionCenter.getTranslation().clone());
-             }
-             selectionCenter = null;
+                Transform selectionCenter = base.getSelectionManager().getSelectionCenter();
+                if (selectionCenter != null) {
+                    base.getCamManager().getCamTrackHelper().setLocalTranslation(selectionCenter.getTranslation().clone());
+                }
+                selectionCenter = null;
             }
-            
+
         } else if ((name.equals("MoveCameraHelperToSelection") && isPressed && !name.equals("MoveOrSelect"))) {
             if (!transformResult && !selectResult) {
                 if (base.getSelectionManager().getSelectionList().size() > 0) {
@@ -141,8 +147,8 @@ public class EditorMappings implements AnalogListener, ActionListener {
                 base.getHistoryManager().historyRedo();
             }
 
-        } 
-         if (name.equals("ShowHideRightPanel") && isPressed) {
+        }
+        if (name.equals("ShowHideRightPanel") && isPressed) {
 //            base.getGuiManager().getScreen().getFocusHandler().resetFocusElements();
             Element rightPanel = base.getGuiManager().getRightPanel();
             if (rightPanel.isVisible()) {

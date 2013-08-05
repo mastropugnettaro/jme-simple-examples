@@ -52,7 +52,7 @@ public class EditorCameraManager {
 
         camMoveSpeed = 0.006f;
 //        this.cam.setFrustumFar(1000);
-        this.cam.setFrustumPerspective(30f, (float)this.cam.getWidth()/(float)this.cam.getHeight(), 0.3f, 10000f);
+        this.cam.setFrustumPerspective(30f, (float) this.cam.getWidth() / (float) this.cam.getHeight(), 0.3f, 10000f);
         this.cam.updateViewProjection();
         this.cam.update();
 //        this.cam.setFrustumNear(0.1f);
@@ -74,14 +74,45 @@ public class EditorCameraManager {
 
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
         chaseCam.setRotationSpeed(2f);
-        
+
         chaseCam.setMinDistance(0.05f);
         chaseCam.setMaxDistance(5000);
         chaseCam.setDefaultDistance(300);
-//        chaseCam.setZoomSensitivity(5f);
+        setTopView();
+
 
     }
 
+    protected void setTopView() {
+        chaseCam.setDefaultVerticalRotation(FastMath.PI / 1.9999999f);
+        chaseCam.setDefaultHorizontalRotation(FastMath.PI / 2);
+    }
+
+    protected void setBottomView() {
+        chaseCam.setDefaultVerticalRotation(-FastMath.PI / 1.9999999f);
+        chaseCam.setDefaultHorizontalRotation(FastMath.PI / 2);
+    }
+    
+    protected void setFrontView() {
+        chaseCam.setDefaultVerticalRotation(0);
+        chaseCam.setDefaultHorizontalRotation(FastMath.PI / 2);
+    }
+
+    protected void setBackView() {
+        chaseCam.setDefaultVerticalRotation(0);
+        chaseCam.setDefaultHorizontalRotation(-FastMath.PI / 2);
+    }
+    
+    protected void setLeftView() {
+        chaseCam.setDefaultVerticalRotation(0);
+        chaseCam.setDefaultHorizontalRotation(0);
+    }
+    
+    protected void setRightView() {
+        chaseCam.setDefaultVerticalRotation(0);
+        chaseCam.setDefaultHorizontalRotation(FastMath.PI);
+    }
+    
     protected float getCamMoveSpeed() {
         return camMoveSpeed;
     }
@@ -89,10 +120,10 @@ public class EditorCameraManager {
     protected void setCamMoveSpeed(float camMoveSpeed) {
         this.camMoveSpeed = camMoveSpeed;
     }
-    
+
     protected Node getCamTrackHelper() {
         return camTrackHelper;
-    }    
+    }
 
     protected void moveCamera() {
 
@@ -110,19 +141,18 @@ public class EditorCameraManager {
 
         Vector3f camMoveY = cam.getUp();
         camMoveY.normalizeLocal();
-        
+
         Vector3f vecToMove = camMoveX.mult((endPosMouse.x - ceneterScr.x) / cam.getWidth());
         vecToMove.addLocal(camMoveY.mult((endPosMouse.y - ceneterScr.y) / cam.getHeight())).normalizeLocal();
-        vecToMove.multLocal(mouseDist * camMoveSpeed * (0.5f + (chaseCam.getDistanceToTarget()*0.005f)));
+        vecToMove.multLocal(mouseDist * camMoveSpeed * (0.1f + (chaseCam.getDistanceToTarget() * 0.005f)));
 //        System.out.println("target" + chaseCam.getDistanceToTarget());
 //        System.out.println(mouseDist * camMoveSpeed);
-        
+
         camTrackHelper.move(vecToMove);
     }
-    
-     protected void moveCameraToSelection() {
-         
-     }
+
+    protected void moveCameraToSelection() {
+    }
 
     protected void setCamTracker() {
 
@@ -171,8 +201,8 @@ public class EditorCameraManager {
 //        gzAxis.setCullHint(CullHint.Never);
         camTrackHelper.attachChild(gzAxis);
 
-    }    
-    
+    }
+
     protected void setOrtho(boolean bool) {
 
         if (bool == true) {
