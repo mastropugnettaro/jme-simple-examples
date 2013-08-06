@@ -66,6 +66,7 @@ public class EditorMappings implements AnalogListener, ActionListener {
         app.getInputManager().addMapping("HistoryRedo", new KeyTrigger(KeyInput.KEY_X));
         app.getInputManager().addMapping("ShowHideRightPanel", new KeyTrigger(KeyInput.KEY_TAB));
 
+        addListener();
     }
 
     protected void addListener() {
