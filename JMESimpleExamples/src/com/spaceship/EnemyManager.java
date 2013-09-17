@@ -65,7 +65,7 @@ public class EnemyManager extends  AbstractControl implements Savable, Cloneable
         // path
         NPCControl path = new NPCControl(enemyNode, enemy, asm, npcControl, bulletAppState);
         enemy.addControl(path); 
-        npcControl.setGravity(new Vector3f(0, 0, 0));
+//        npcControl.setGravity(new Vector3f(0, 0, 0));
         
         return enemy;
         

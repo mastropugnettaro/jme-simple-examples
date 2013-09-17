@@ -33,93 +33,117 @@ import java.io.IOException;
  * @author mifth
  */
 public class PlayerControl extends AbstractControl implements Savable, Cloneable {
-    
-    private float angle;    
+
+    private float angle;
     private Node ship;
     private ShipPhysicsControl shipControl;
     private BulletAppState bulletAppState;
     private AssetManager assetManager;
     private SimpleApplication asm;
-    private ShipWeaponControl weaponControl;  
+    private ShipWeaponControl weaponControl;
     private boolean doMove = false;
     private boolean doRotate = true;
     private float rotateSpeed;
     private Camera cam;
-    
-    public PlayerControl(Camera cam, Node ship, BulletAppState bulletAppState, 
+
+    public PlayerControl(Camera cam, Node ship, BulletAppState bulletAppState,
             AssetManager assetManager, SimpleApplication asm) {
-        
+
         this.cam = cam;
         this.ship = ship;
         this.bulletAppState = bulletAppState;
         this.assetManager = assetManager;
         this.asm = asm;
-        
+
         setShip();
-        
+
         shipControl.setMoveSpeed(60f);
-        rotateSpeed = 50f;
-        
+        rotateSpeed = 100f;
+
         weaponControl = new ShipWeaponControl(asm, ship);
         ship.addControl(weaponControl);
-        
+
     }
 
-    
     private void setShip() {
-        
+
         Box b = new Box(Vector3f.ZERO, 0.5f, 0.5f, 1);
         Geometry geomShip = new Geometry("Box", b);
         geomShip.setUserData("Type", "Player");
 
         ship.attachChild(geomShip);
         ship.setUserData("Type", "Player");
-        
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        ship.setMaterial(mat);  
-        
-        CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f,1.0f,1.0f));
-        colShape.setMargin(0.05f);
-        shipControl = new ShipPhysicsControl(colShape, 1, bulletAppState); 
 
-        shipControl.setDamping(0.75f, 0.9999f);
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        ship.setMaterial(mat);
+
+        CollisionShape colShape = new BoxCollisionShape(new Vector3f(1.0f, 1.0f, 1.0f));
+        colShape.setMargin(0.05f);
+        shipControl = new ShipPhysicsControl(colShape, 1, bulletAppState);
+
+        shipControl.setDamping(0.75f, 0.999f);
         shipControl.setFriction(0.2f);
+        shipControl.setAngularFactor(0.1f);
+
         ship.addControl(shipControl);
         bulletAppState.getPhysicsSpace().add(shipControl);
         shipControl.setEnabled(true);
-        shipControl.setGravity(new Vector3f(0, 0, 0));        
-    }    
-    
+
+//        shipControl.setGravity(new Vector3f(0, 0, 0));        
+    }
+
     void makeMove(boolean boo) {
-        if (boo) doMove = true;
-        else doMove = false;
+        if (boo) {
+            doMove = true;
+        } else {
+            doMove = false;
+        }
     }
-  
+
     void makeRotate(boolean boo) {
-        if (boo) doRotate = true;
-        else doRotate = false;
+        if (boo) {
+            doRotate = true;
+        } else {
+            doRotate = false;
+        }
     }
-    
+
     @Override
     protected void controlUpdate(float tpf) {
         if (doMove) {
             shipControl.setFlyDirection(cam.getDirection().normalizeLocal());
         }
-        
+
         if (doRotate) {
-            angle = cam.getRotation().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(shipControl.getPhysicsRotation().mult(Vector3f.UNIT_Z).normalizeLocal());            
-            shipControl.setViewDirection(cam.getRotation());
-            if (angle > 0.5f) shipControl.setRotateSpeed(rotateSpeed);
-            else if (angle <= 0.5f) shipControl.setRotateSpeed(rotateSpeed * angle);
+
+//            System.out.println(shipControl.getAngularVelocity());
+            angle = cam.getRotation().mult(Vector3f.UNIT_Z).normalizeLocal().angleBetween(shipControl.getPhysicsRotation().mult(Vector3f.UNIT_Z).normalizeLocal());
+//            System.out.println(angle + " ANGLE");
+
+            shipControl.setViewDirection(cam.getRotation().clone());
+
+
+            if (angle >= 0.0001f) {
+                shipControl.setRotateSpeed(rotateSpeed * angle);
+                shipControl.setRotateSpeed(rotateSpeed * angle);
+            } else {
+                shipControl.setViewDirection(null);
+                if (!shipControl.getAngularVelocity().equals(Vector3f.ZERO)) {
+                    shipControl.setAngularVelocity(new Vector3f(0, 0, 0));
+                }
+            }
+
+//            shipControl.setAngle(angle);
+
         }
     }
-    
+
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         //Only needed for rendering-related operations,
         //not called when spatial is culled.
     }
-    
+
     public Control cloneForSpatial(Spatial spatial) {
 //        PlayerControl control = new PlayerControl();
 //        //TODO: copy parameters to new Control
@@ -127,7 +151,7 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
 //        return control;
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public void read(JmeImporter im) throws IOException {
         super.read(im);
@@ -135,7 +159,7 @@ public class PlayerControl extends AbstractControl implements Savable, Cloneable
         //TODO: load properties of this Control, e.g.
         //this.value = in.readFloat("name", defaultValue);
     }
-    
+
     @Override
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);
