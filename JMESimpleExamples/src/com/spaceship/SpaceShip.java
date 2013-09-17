@@ -1,7 +1,5 @@
 package com.spaceship;
 
-
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -24,37 +22,34 @@ import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import jme3tools.optimize.GeometryBatchFactory;
 
-
 public class SpaceShip extends SimpleApplication {
 
     public static void main(String[] args) {
         SpaceShip app = new SpaceShip();
         AppSettings aps = new AppSettings(true);
         aps.setVSync(true);
-        aps.setFrameRate(60);
-        aps.setResolution(800, 600);
+//        aps.setFrameRate(60);
+//        aps.setResolution(800, 600);
         app.setSettings(aps);
         app.start();
     }
-
-    private Geometry geom;     
-    private Node instNodes;  
+    private Geometry geom;
+    private Node instNodes;
     private BulletAppState bulletAppState;
     private Node ship;
     private ChaseCamera chaseCam;
 
-    
     @Override
     public void simpleInitApp() {
-        
+
 //        settings.setVSync(true);
 //        settings.setFrameRate(60);
-        
+
         flyCam.setEnabled(false);
 //        flyCam.setMoveSpeed(30);
         viewPort.setBackgroundColor(ColorRGBA.Gray);
-        instNodes = new Node(); 
-        
+        instNodes = new Node();
+
         setPhysics();
         UI();
         setAsteroids();
@@ -63,63 +58,55 @@ public class SpaceShip extends SimpleApplication {
 
         setLight();
         setCam();
-        PlayerMappings mappings = new PlayerMappings(this, ship, (PlayerControl)ship.getControl(PlayerControl.class), chaseCam);
+        PlayerMappings mappings = new PlayerMappings(this, ship, (PlayerControl) ship.getControl(PlayerControl.class), chaseCam);
     }
 
-    
     void setPhysics() {
         bulletAppState = new BulletAppState();
-        bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
-        stateManager.attach(bulletAppState);            
-        bulletAppState.getPhysicsSpace().setAccuracy(1f/45f);
-//        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));        
+        stateManager.attach(bulletAppState);
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));
         bulletAppState.getPhysicsSpace().enableDebug(assetManager);        
     }
-    
+
     void UI() {
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
         ch.setText("W, E, Space, LeftMouse, MiddleMouse, RightMouse"); // crosshairs
-        ch.setColor(new ColorRGBA(1f,0.8f,0.1f,1f));
-        ch.setLocalTranslation(settings.getWidth()*0.3f,settings.getHeight()*0.1f,0);
-        guiNode.attachChild(ch);        
+        ch.setColor(new ColorRGBA(1f, 0.8f, 0.1f, 1f));
+        ch.setLocalTranslation(settings.getWidth() * 0.3f, settings.getHeight() * 0.1f, 0);
+        guiNode.attachChild(ch);
     }
-    
+
     void setCam() {
         chaseCam = new ChaseCamera(cam, ship, inputManager);
         chaseCam.setDragToRotate(true);
         chaseCam.setTrailingEnabled(false);
-        
+
         chaseCam.setInvertVerticalAxis(true);
-        
-        chaseCam.setMinVerticalRotation(-FastMath.PI*0.45f);
-        chaseCam.setMaxVerticalRotation(FastMath.PI*0.45f);
-        
+
+        chaseCam.setMinVerticalRotation(-FastMath.PI * 0.45f);
+        chaseCam.setMaxVerticalRotation(FastMath.PI * 0.45f);
+
         chaseCam.setMinDistance(10f);
         chaseCam.setMaxDistance(20f);
 
-//        chaseCam.setSmoothMotion(true);
-//        chaseCam.setChasingSensitivity(50f);
-//        chaseCam.setRotationSensitivity(30f);
-//        chaseCam.setZoomSensitivity(30f);
-////        chaseCam.setTrailingEnabled(true);
-////        chaseCam.setChasingEnabled(false);
+        chaseCam.setRotationSpeed(0.3f);
+
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
         chaseCam.setEnabled(true);
     }
-    
+
     void setLight() {
         DirectionalLight dl = new DirectionalLight();
         dl.setDirection(new Vector3f(-0.8f, -0.6f, -0.08f).normalizeLocal());
-        dl.setColor(new ColorRGBA(0.9f,0.9f,0.7f,1));
-        rootNode.addLight(dl);    
-        
+        dl.setColor(new ColorRGBA(0.9f, 0.9f, 0.7f, 1));
+        rootNode.addLight(dl);
+
         AmbientLight al = new AmbientLight();
-        al.setColor(new ColorRGBA(1.5f,1.7f,2.7f,1));
-        rootNode.addLight(al);           
+        al.setColor(new ColorRGBA(1.5f, 1.7f, 2.7f, 1));
+        rootNode.addLight(al);
     }
-    
 
     void setPlayer() {
         ship = new Node("Player");
@@ -127,18 +114,18 @@ public class SpaceShip extends SimpleApplication {
         ship.addControl(new AimingControl(this, ship));
         rootNode.attachChild(ship);
     }
-    
+
     void setEnemies() {
-        Node enemyNode = new  Node("enemies");
+        Node enemyNode = new Node("enemies");
         EnemyManager enMan = new EnemyManager(enemyNode, bulletAppState, assetManager);
-        for (int i = 0; i < 50; i++) {         
+        for (int i = 0; i < 50; i++) {
             Node enemy = enMan.createEnemy();
             ship.getControl(AimingControl.class).addToSelection(enemy); // add to aiming
         }
-        rootNode.attachChild(enemyNode);        
+        rootNode.attachChild(enemyNode);
     }
-     
-    void  setAsteroids() {
+
+    void setAsteroids() {
 
         Box b = new Box(Vector3f.ZERO, 1, 1, 1);
         geom = new Geometry("Box", b);
@@ -147,20 +134,20 @@ public class SpaceShip extends SimpleApplication {
         geom.setMaterial(mat);
 
         int numClones = 500;
-        
-        for (int i=0; i<numClones; i++) {
-        
+
+        for (int i = 0; i < numClones; i++) {
+
             Geometry gm = geom.clone(false);
-            gm.setName("instance"+i);
-            gm.setLocalTranslation((float) Math.random() * 70.0f,(float) Math.random() * 70.0f - 15.0f,(float)Math.random() * 50.0f + 50.0f );
-            gm.rotate(0, (float) Math.random() * (float)Math.PI, 0);
+            gm.setName("instance" + i);
+            gm.setLocalTranslation((float) Math.random() * 70.0f, (float) Math.random() * 70.0f - 15.0f, (float) Math.random() * 50.0f + 50.0f);
+            gm.rotate(0, (float) Math.random() * (float) Math.PI, 0);
 
             instNodes.attachChild(gm);
-            
+
         }
-        
+
         instNodes = (Node) GeometryBatchFactory.optimize(instNodes);  // fps optimization
-        rootNode.attachChild(instNodes);   
+        rootNode.attachChild(instNodes);
         instNodes.setUserData("Type", "Asteroid");
 
         // setting physics
@@ -172,24 +159,18 @@ public class SpaceShip extends SimpleApplication {
             RigidBodyControl rigControl = new RigidBodyControl(colShape, 0);
 
             geo.addControl(rigControl);
-            
-            bulletAppState.getPhysicsSpace().add(rigControl);     
-       }
-    }
-    
- 
-      
-@Override
-public void simpleUpdate(float tpf)
-{
-    System.nanoTime();
-    chaseCam.setLookAtOffset(cam.getUp().normalizeLocal().multLocal(4f));
 
- }
+            bulletAppState.getPhysicsSpace().add(rigControl);
+        }
+    }
+
+    @Override
+    public void simpleUpdate(float tpf) {
+        System.nanoTime();
+        chaseCam.setLookAtOffset(cam.getUp().normalizeLocal().multLocal(4f));
+
+    }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-             
     }
-
-
 }
