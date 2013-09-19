@@ -92,8 +92,8 @@ public class SpaceShip extends SimpleApplication {
         chaseCam.setMaxDistance(20f);
 
         chaseCam.setRotationSpeed(0.3f);
-        chaseCam.setDownRotateOnCloseViewOnly(false);   
-        chaseCam.setHideCursorOnRotate(false);
+//        chaseCam.setDownRotateOnCloseViewOnly(false);   
+//        chaseCam.setHideCursorOnRotate(false);
 
         chaseCam.setToggleRotationTrigger(new MouseButtonTrigger(MouseInput.BUTTON_MIDDLE));
         chaseCam.setEnabled(true);
