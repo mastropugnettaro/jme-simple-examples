@@ -21,7 +21,7 @@ import com.jme3.renderer.Camera;
  */
 public class ShipPhysicsControl extends RigidBodyControl {
 
-    private float rotateSpeed, moveSpeed, angle;
+    private float rotateSpeed, moveSpeed;
 
     private Quaternion viewDir;
     private Vector3f moveDir;
@@ -85,10 +85,10 @@ public class ShipPhysicsControl extends RigidBodyControl {
             Vector3f dirCam2 = viewDir.mult(Vector3f.UNIT_X);
             Vector3f cross2 = dirSpatial2.cross(dirCam2);
 
-//            applyTorque(getAngularVelocity().negate());
-//            applyTorque(cross.add(cross1).add(cross2).normalizeLocal().mult(rotateSpeed));
+            applyTorque(getAngularVelocity().negate().multLocal(10f));
+            applyTorque(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().multLocal(rotateSpeed));
             
-            setAngularVelocity(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().multLocal(rotateSpeed*0.1f));
+//            setAngularVelocity(cross.addLocal(cross1).addLocal(cross2).normalizeLocal().multLocal(rotateSpeed*0.1f));
 
             viewDir = null;
         }

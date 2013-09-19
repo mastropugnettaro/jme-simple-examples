@@ -110,7 +110,7 @@ public class NPCControl extends AbstractControl implements Savable, Cloneable {
             } else randomMoveVec = false;
             
         }
-    };    
+    };
     
     @Override
     protected void controlUpdate(float tpf) {
