@@ -34,7 +34,7 @@ public class SpatialMotionsSmooth2 extends SimpleApplication {
     Vector3f vec2;     
     Vector3f vec3;  
     float angla;
-    float moveMe;
+    float moveMe = 0f;
     Quaternion vectry;
     Vector3f front;
     Vector3f vecB;
