@@ -1,4 +1,4 @@
-package ChaseCameraAppState;
+package SimpleChaseCamera;
 
 
 import com.jme3.app.SimpleApplication;
@@ -49,11 +49,11 @@ public class SimpleChaseCameraTest extends SimpleApplication {
         flyCam.setEnabled(false);
         viewPort.setBackgroundColor(ColorRGBA.Gray);   
         
-        SimpleChaseCameraAppState chState = new SimpleChaseCameraAppState();
-        stateManager.attach(chState);
+        SimpleCameraState simpleCamState = new SimpleCameraState(this);
+        stateManager.attach(simpleCamState);
+        simpleCamState.getChState().setRotateSpeed(3.0f);
         
-        ChaseCamera chk;
-//        chk.setDragToRotate(true);
+        ChaseCamera chk; // just for my tests
         
     }
 

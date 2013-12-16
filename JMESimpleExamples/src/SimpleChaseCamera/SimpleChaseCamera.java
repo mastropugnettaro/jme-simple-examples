@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ChaseCameraAppState;
+package SimpleChaseCamera;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -21,7 +21,7 @@ import com.jme3.scene.Node;
  *
  * @author mifth
  */
-public class SimpleChaseCameraAppState extends AbstractAppState implements ActionListener, AnalogListener {
+public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
     private Node chaseGeneralNode, chaseCamNode, chaseRotateHelper;
     private Application app;
@@ -35,20 +35,15 @@ public class SimpleChaseCameraAppState extends AbstractAppState implements Actio
     public final static String ChaseCamToggleRotate = "ChaseCamToggleRotate";
     private boolean doRotate;
     private float horizontRotate, verticalRotate;
-//    private Quaternion storedRotation;
+    private float rotateSpeed = 1.0f;
 
-    @Override
-    public void initialize(AppStateManager stateManager, Application app) {
-        super.initialize(stateManager, app);
+    public SimpleChaseCamera(Application app, InputManager inputManager) {
         this.app = app;
-        this.inputManager = app.getInputManager();
+        this.inputManager = inputManager;
 
         doRotate = false;
         horizontRotate = 0.0f;
         verticalRotate = 0.0f;
-
-        registerWithInput(inputManager);
-//        inputManager.addMapping(ChaseCamToggleRotate, new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
 
         chaseGeneralNode = new Node("chaseNode");
         chaseCamNode = new Node("chaseCamNode");
@@ -60,8 +55,7 @@ public class SimpleChaseCameraAppState extends AbstractAppState implements Actio
         chaseCamNode.setLocalTranslation(0, 0, 5f);
         chaseCamNode.setLocalRotation(new Quaternion(0.0f, 1.0f, 0.0f, 0.0f));
 
-//        chaseGeneralNode.rotate(0f, 0.5f, 0f); // test
-
+        registerWithInput(inputManager);
     }
 
     /**
@@ -129,10 +123,10 @@ public class SimpleChaseCameraAppState extends AbstractAppState implements Actio
 
         if (doRotate) {
             if (name.equals(ChaseCamMoveLeft)) {
-                horizontRotate = -value;
+                horizontRotate = value;
 //                rotateHorizontally(-value);
             } else if (name.equals(ChaseCamMoveRight)) {
-                horizontRotate = value;
+                horizontRotate = -value;
 //                rotateHorizontally(value);
             } else if (name.equals(ChaseCamUp)) {
                 verticalRotate = value;
@@ -145,18 +139,17 @@ public class SimpleChaseCameraAppState extends AbstractAppState implements Actio
 
     }
 
-    @Override
-    public void update(float tpf) {
+    public void update() {
 
         if (doRotate) {
             Quaternion chaseRot = chaseGeneralNode.getLocalRotation().clone();
             chaseGeneralNode.setLocalRotation(new Quaternion());
             chaseRotateHelper.setLocalRotation(chaseRot);
 
-            Quaternion yRot = new Quaternion().fromAngleAxis(horizontRotate * 1f, Vector3f.UNIT_Y);
+            Quaternion yRot = new Quaternion().fromAngleAxis(horizontRotate * rotateSpeed, Vector3f.UNIT_Y);
             chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(yRot));
-            
-            Quaternion xRot = new Quaternion().fromAngleAxis(verticalRotate * 1f, chaseRot.mult(Vector3f.UNIT_X));
+
+            Quaternion xRot = new Quaternion().fromAngleAxis(verticalRotate * rotateSpeed, chaseRot.mult(Vector3f.UNIT_X));
             chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRot));
 
             chaseGeneralNode.setLocalRotation(chaseRotateHelper.getWorldRotation());
@@ -169,9 +162,12 @@ public class SimpleChaseCameraAppState extends AbstractAppState implements Actio
         app.getCamera().setRotation(chaseCamNode.getWorldRotation());
     }
 
-    @Override
-    public void cleanup() {
-        super.cleanup();
-
+    public float getRotateSpeed() {
+        return rotateSpeed;
     }
+
+    public void setRotateSpeed(float rotateSpeed) {
+        this.rotateSpeed = rotateSpeed;
+    }
+    
 }
