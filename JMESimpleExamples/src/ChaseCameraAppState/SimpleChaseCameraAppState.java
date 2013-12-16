@@ -7,13 +7,6 @@ package ChaseCameraAppState;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import static com.jme3.input.ChaseCamera.ChaseCamDown;
-import static com.jme3.input.ChaseCamera.ChaseCamMoveLeft;
-import static com.jme3.input.ChaseCamera.ChaseCamMoveRight;
-import static com.jme3.input.ChaseCamera.ChaseCamToggleRotate;
-import static com.jme3.input.ChaseCamera.ChaseCamUp;
-import static com.jme3.input.ChaseCamera.ChaseCamZoomIn;
-import static com.jme3.input.ChaseCamera.ChaseCamZoomOut;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -21,7 +14,6 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
@@ -160,14 +152,17 @@ public class SimpleChaseCameraAppState extends AbstractAppState implements Actio
             Quaternion chaseRot = chaseGeneralNode.getLocalRotation().clone();
             chaseGeneralNode.setLocalRotation(new Quaternion());
             chaseRotateHelper.setLocalRotation(chaseRot);
-            
-            Quaternion xRot = new Quaternion().fromAngleAxis(verticalRotate * 1f, chaseRot.mult(Vector3f.UNIT_X));
-            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRot));
 
             Quaternion yRot = new Quaternion().fromAngleAxis(horizontRotate * 1f, Vector3f.UNIT_Y);
             chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(yRot));
             
-            chaseGeneralNode.setLocalRotation(chaseRotateHelper.getWorldRotation().clone());
+            Quaternion xRot = new Quaternion().fromAngleAxis(verticalRotate * 1f, chaseRot.mult(Vector3f.UNIT_X));
+            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRot));
+
+            chaseGeneralNode.setLocalRotation(chaseRotateHelper.getWorldRotation());
+
+            horizontRotate = 0;
+            verticalRotate = 0;
         }
 
         app.getCamera().setLocation(chaseCamNode.getWorldTranslation());
