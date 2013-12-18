@@ -7,12 +7,15 @@ package SimpleChaseCamera;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import static com.jme3.input.ChaseCamera.ChaseCamZoomIn;
+import static com.jme3.input.ChaseCamera.ChaseCamZoomOut;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
@@ -33,17 +36,26 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     public final static String ChaseCamMoveLeft = "ChaseCamMoveLeft";
     public final static String ChaseCamMoveRight = "ChaseCamMoveRight";
     public final static String ChaseCamToggleRotate = "ChaseCamToggleRotate";
-    private boolean doRotate;
-    private float horizontRotate, verticalRotate;
-    private float rotateSpeed = 1.0f;
+    private boolean doRotate, doZoom, zoomIn;
+    private float horizontRotate, verticalRotate, verticalRotLimit;
+    private float rotateSpeed, zoomStep, zoomMaxStep, zoomMinStep;
 
     public SimpleChaseCamera(Application app, InputManager inputManager) {
         this.app = app;
         this.inputManager = inputManager;
 
         doRotate = false;
+        doZoom = false;
+        zoomIn = false;
+
         horizontRotate = 0.0f;
         verticalRotate = 0.0f;
+        verticalRotLimit = FastMath.QUARTER_PI;
+        rotateSpeed = 1.0f;
+
+        zoomStep = 1.7f;
+        zoomMinStep = 2;
+        zoomMaxStep = 50;
 
         chaseGeneralNode = new Node("chaseNode");
         chaseCamNode = new Node("chaseCamNode");
@@ -117,6 +129,14 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
             horizontRotate = 0;
             verticalRotate = 0;
         }
+
+        if (name.equals(ChaseCamZoomIn) && isPressed) {
+            doZoom = true;
+            zoomIn = true;
+        } else if (name.equals(ChaseCamZoomOut) && isPressed) {
+            doZoom = true;
+            zoomIn = false;
+        }
     }
 
     public void onAnalog(String name, float value, float tpf) {
@@ -142,6 +162,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     public void update() {
 
         if (doRotate) {
+
             Quaternion chaseRot = chaseGeneralNode.getLocalRotation().clone();
             chaseGeneralNode.setLocalRotation(new Quaternion());
             chaseRotateHelper.setLocalRotation(chaseRot);
@@ -154,8 +175,38 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
             chaseGeneralNode.setLocalRotation(chaseRotateHelper.getWorldRotation());
 
+            float angleVerticalNow = chaseCamNode.getWorldTranslation().subtract(chaseGeneralNode.getLocalTranslation()).normalizeLocal().
+                    angleBetween(chaseCamNode.getWorldTranslation().clone().setY(chaseGeneralNode.getLocalTranslation().getY()).subtractLocal(chaseGeneralNode.getLocalTranslation()).normalizeLocal());
+
+            if (angleVerticalNow > verticalRotLimit) {
+                float rotateToVertical = verticalRotLimit - (angleVerticalNow);
+//                if ()
+                Quaternion xRotAgain = chaseGeneralNode.getLocalRotation().clone().fromAngleAxis(rotateToVertical, Vector3f.UNIT_X);
+                chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain));
+                System.out.println(angleVerticalNow);
+            }
+
+            
             horizontRotate = 0;
             verticalRotate = 0;
+        }
+
+        if (doZoom) {
+            Vector3f zoomVec = Vector3f.UNIT_Z.clone().multLocal(zoomStep);
+
+            if (zoomIn) {
+                chaseCamNode.setLocalTranslation(chaseCamNode.getLocalTranslation().add(zoomVec.negateLocal()));
+            } else {
+                chaseCamNode.setLocalTranslation(chaseCamNode.getLocalTranslation().add(zoomVec));
+            }
+
+            if (chaseCamNode.getLocalTranslation().z > zoomMaxStep) {
+                chaseCamNode.setLocalTranslation(new Vector3f(0, 0, zoomMaxStep));
+            } else if (chaseCamNode.getLocalTranslation().z < zoomMinStep) {
+                chaseCamNode.setLocalTranslation(new Vector3f(0, 0, zoomMinStep));
+            }
+
+            doZoom = false;
         }
 
         app.getCamera().setLocation(chaseCamNode.getWorldTranslation());
@@ -169,5 +220,4 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     public void setRotateSpeed(float rotateSpeed) {
         this.rotateSpeed = rotateSpeed;
     }
-    
 }

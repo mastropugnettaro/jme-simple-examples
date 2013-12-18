@@ -44,6 +44,10 @@ public class SimpleChaseCameraTest extends SimpleApplication {
         dl.setColor(new ColorRGBA(1,1,1,1));
         rootNode.addLight(dl);        
       
+        Geometry geom2 = geom.clone();
+        geom2.setLocalScale(new Vector3f(10f, 0.1f, 10f));
+        geom2.move(0, -0.5f, 0);
+        rootNode.attachChild(geom2);
         
 //        flyCam.setMoveSpeed(30);
         flyCam.setEnabled(false);
