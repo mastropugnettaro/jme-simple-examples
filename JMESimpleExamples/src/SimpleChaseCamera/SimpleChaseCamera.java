@@ -5,10 +5,6 @@
 package SimpleChaseCamera;
 
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
-import static com.jme3.input.ChaseCamera.ChaseCamZoomIn;
-import static com.jme3.input.ChaseCamera.ChaseCamZoomOut;
 import com.jme3.input.InputManager;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -36,9 +32,9 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     public final static String ChaseCamMoveLeft = "ChaseCamMoveLeft";
     public final static String ChaseCamMoveRight = "ChaseCamMoveRight";
     public final static String ChaseCamToggleRotate = "ChaseCamToggleRotate";
-    private boolean doRotate, doZoom, zoomIn;
-    private float horizontRotate, verticalRotate, verticalRotLimit;
-    private float rotateSpeed, zoomStep, zoomMaxStep, zoomMinStep;
+    private boolean doRotate, doVerticalConstraint, doZoom, zoomIn;
+    private float horizontRotate, verticalRotate, verticalUpLimit, verticalDownLimit;
+    private float rotateSpeed, zoomStep, zoomMax, zoomMin;
 
     public SimpleChaseCamera(Application app, InputManager inputManager) {
         this.app = app;
@@ -50,12 +46,14 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
         horizontRotate = 0.0f;
         verticalRotate = 0.0f;
-        verticalRotLimit = FastMath.QUARTER_PI;
+        verticalUpLimit = FastMath.QUARTER_PI;
+        verticalDownLimit = 0.01f;
+        doVerticalConstraint = true;
         rotateSpeed = 1.0f;
 
         zoomStep = 1.7f;
-        zoomMinStep = 2;
-        zoomMaxStep = 50;
+        zoomMin = 2;
+        zoomMax = 50;
 
         chaseGeneralNode = new Node("chaseNode");
         chaseCamNode = new Node("chaseCamNode");
@@ -163,30 +161,39 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
         if (doRotate) {
 
+            // HORIZONTAL
             Quaternion chaseRot = chaseGeneralNode.getLocalRotation().clone();
             chaseGeneralNode.setLocalRotation(new Quaternion());
             chaseRotateHelper.setLocalRotation(chaseRot);
 
             Quaternion yRot = new Quaternion().fromAngleAxis(horizontRotate * rotateSpeed, Vector3f.UNIT_Y);
             chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(yRot));
-
-            Quaternion xRot = new Quaternion().fromAngleAxis(verticalRotate * rotateSpeed, chaseRot.mult(Vector3f.UNIT_X));
-            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRot));
-
             chaseGeneralNode.setLocalRotation(chaseRotateHelper.getWorldRotation());
 
-            float angleVerticalNow = chaseCamNode.getWorldTranslation().subtract(chaseGeneralNode.getLocalTranslation()).normalizeLocal().
-                    angleBetween(chaseCamNode.getWorldTranslation().clone().setY(chaseGeneralNode.getLocalTranslation().getY()).subtractLocal(chaseGeneralNode.getLocalTranslation()).normalizeLocal());
 
-            if (angleVerticalNow > verticalRotLimit) {
-                float rotateToVertical = verticalRotLimit - (angleVerticalNow);
-//                if ()
-                Quaternion xRotAgain = chaseGeneralNode.getLocalRotation().clone().fromAngleAxis(rotateToVertical, Vector3f.UNIT_X);
-                chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain));
-                System.out.println(angleVerticalNow);
+            // VERTICAL
+            Quaternion xRot = new Quaternion().fromAngleAxis(verticalRotate * rotateSpeed, Vector3f.UNIT_X);
+            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRot));
+
+
+            // VERTICAL LIMITATION
+            if (doVerticalConstraint) {
+                float angleVerticalNow = chaseCamNode.getWorldTranslation().subtract(chaseGeneralNode.getLocalTranslation()).normalizeLocal().
+                        angleBetween(Vector3f.UNIT_Y);
+
+                if (angleVerticalNow < verticalUpLimit || angleVerticalNow > verticalDownLimit + FastMath.HALF_PI) {
+                    float rotateToVertical = verticalUpLimit - angleVerticalNow; // rotateUp
+
+                    if (angleVerticalNow > verticalDownLimit + FastMath.HALF_PI) {
+                        rotateToVertical = (verticalDownLimit - angleVerticalNow) + FastMath.HALF_PI;
+                    } // if rotateDown
+
+                    Quaternion xRotAgain = chaseGeneralNode.getLocalRotation().clone().fromAngleAxis(rotateToVertical, Vector3f.UNIT_X);
+                    chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain));
+                }
             }
 
-            
+
             horizontRotate = 0;
             verticalRotate = 0;
         }
@@ -200,10 +207,10 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
                 chaseCamNode.setLocalTranslation(chaseCamNode.getLocalTranslation().add(zoomVec));
             }
 
-            if (chaseCamNode.getLocalTranslation().z > zoomMaxStep) {
-                chaseCamNode.setLocalTranslation(new Vector3f(0, 0, zoomMaxStep));
-            } else if (chaseCamNode.getLocalTranslation().z < zoomMinStep) {
-                chaseCamNode.setLocalTranslation(new Vector3f(0, 0, zoomMinStep));
+            if (chaseCamNode.getLocalTranslation().z > zoomMax) {
+                chaseCamNode.setLocalTranslation(new Vector3f(0, 0, zoomMax));
+            } else if (chaseCamNode.getLocalTranslation().z < zoomMin) {
+                chaseCamNode.setLocalTranslation(new Vector3f(0, 0, zoomMin));
             }
 
             doZoom = false;
@@ -213,6 +220,10 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         app.getCamera().setRotation(chaseCamNode.getWorldRotation());
     }
 
+    public Node getChaseGeneralNode() {
+        return chaseGeneralNode;
+    }
+
     public float getRotateSpeed() {
         return rotateSpeed;
     }
@@ -220,4 +231,53 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     public void setRotateSpeed(float rotateSpeed) {
         this.rotateSpeed = rotateSpeed;
     }
+
+    public float getVerticalUpLimit() {
+        return verticalUpLimit;
+    }
+
+    public void setVerticalUpLimit(float verticalUpLimit) {
+        this.verticalUpLimit = verticalUpLimit;
+    }
+
+    public float getVerticalDownLimit() {
+        return verticalDownLimit;
+    }
+
+    public void setVerticalDownLimit(float verticalDownLimit) {
+        this.verticalDownLimit = verticalDownLimit;
+    }
+
+    public float getZoomMax() {
+        return zoomMax;
+    }
+
+    public void setZoomMax(float zoomMax) {
+        this.zoomMax = zoomMax;
+    }
+
+    public float getZoomMin() {
+        return zoomMin;
+    }
+
+    public void setZoomMin(float zoomMin) {
+        this.zoomMin = zoomMin;
+    }
+
+    public float getZoomStep() {
+        return zoomStep;
+    }
+
+    public void setZoomStep(float zoomStep) {
+        this.zoomStep = zoomStep;
+    }
+
+    public boolean isDoVerticalConstraint() {
+        return doVerticalConstraint;
+    }
+
+    public void setDoVerticalConstraint(boolean doVerticalConstraint) {
+        this.doVerticalConstraint = doVerticalConstraint;
+    }
+    
 }
