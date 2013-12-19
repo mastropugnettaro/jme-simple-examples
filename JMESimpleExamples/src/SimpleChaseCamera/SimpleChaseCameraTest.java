@@ -57,7 +57,7 @@ public class SimpleChaseCameraTest extends SimpleApplication {
         stateManager.attach(simpleCamState);
         simpleCamState.getChState().setRotateSpeed(3.0f);
         
-        ChaseCamera chk; // just for my tests
+//        ChaseCamera chk; // just for my tests
         
     }
 
