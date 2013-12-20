@@ -11,6 +11,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.input.controls.Trigger;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -25,14 +26,14 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     private Node chaseGeneralNode, chaseCamNode, chaseRotateHelper;
     private Application app;
     private InputManager inputManager;
-    public final static String ChaseCamDown = "ChaseCamDown";
-    public final static String ChaseCamUp = "ChaseCamUp";
-    public final static String ChaseCamZoomIn = "ChaseCamZoomIn";
-    public final static String ChaseCamZoomOut = "ChaseCamZoomOut";
-    public final static String ChaseCamMoveLeft = "ChaseCamMoveLeft";
-    public final static String ChaseCamMoveRight = "ChaseCamMoveRight";
-    public final static String ChaseCamToggleRotate = "ChaseCamToggleRotate";
-    private boolean doRotate, doVerticalConstraint, doZoom, zoomIn;
+    private String ChaseCamDown = "ChaseCamDown";
+    private String ChaseCamUp = "ChaseCamUp";
+    private String ChaseCamZoomIn = "ChaseCamZoomIn";
+    private String ChaseCamZoomOut = "ChaseCamZoomOut";
+    private String ChaseCamMoveLeft = "ChaseCamMoveLeft";
+    private String ChaseCamMoveRight = "ChaseCamMoveRight";
+    private String ChaseCamToggleRotate = "ChaseCamToggleRotate";
+    private boolean doRotate, doVerticalConstraint, doZoom, zoomIn, zoomRelativeToDistance;
     private float horizontRotate, verticalRotate, verticalUpLimit, verticalDownLimit;
     private float rotateSpeed, zoomStep, zoomMax, zoomMin;
 
@@ -51,9 +52,10 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         doVerticalConstraint = true;
         rotateSpeed = 1.0f;
 
-        zoomStep = 1.7f;
-        zoomMin = 2;
-        zoomMax = 50;
+        zoomStep = 1.0f;
+        zoomMin = 2f;
+        zoomMax = 100f;
+        zoomRelativeToDistance = true;
 
         chaseGeneralNode = new Node("chaseNode");
         chaseCamNode = new Node("chaseCamNode");
@@ -200,6 +202,9 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
         if (doZoom) {
             Vector3f zoomVec = Vector3f.UNIT_Z.clone().multLocal(zoomStep);
+            if (zoomRelativeToDistance) {
+                zoomVec.multLocal(0.5f + (0.05f * chaseCamNode.getLocalTranslation().getZ()));
+            }
 
             if (zoomIn) {
                 chaseCamNode.setLocalTranslation(chaseCamNode.getLocalTranslation().add(zoomVec.negateLocal()));
@@ -220,8 +225,28 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         app.getCamera().setRotation(chaseCamNode.getWorldRotation());
     }
 
-    public Node getChaseGeneralNode() {
-        return chaseGeneralNode;
+    public boolean isDoRotate() {
+        return doRotate;
+    }
+
+    public void setDoRotate(boolean doRotate) {
+        this.doRotate = doRotate;
+    }
+
+    public boolean isDoZoom() {
+        return doZoom;
+    }
+
+    public void setDoZoom(boolean doZoom) {
+        this.doZoom = doZoom;
+    }
+    
+    public Vector3f getCameraNodeLocation() {
+        return chaseGeneralNode.getLocalTranslation();
+    }
+    
+    public void setCameraNodeLocation(Vector3f location){
+        chaseGeneralNode.setLocalTranslation(location);
     }
 
     public float getRotateSpeed() {
@@ -278,6 +303,51 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
     public void setDoVerticalConstraint(boolean doVerticalConstraint) {
         this.doVerticalConstraint = doVerticalConstraint;
+    }
+
+    public boolean isZoomRelativeToDistance() {
+        return zoomRelativeToDistance;
+    }
+
+    public void setZoomRelativeToDistance(boolean zoomRelativeToDistance) {
+        this.zoomRelativeToDistance = zoomRelativeToDistance;
+    }
+    
+    /**
+     * Sets custom triggers for toggleing the rotation of the cam
+     * deafult are
+     * new MouseButtonTrigger(MouseInput.BUTTON_LEFT)  left mouse button
+     * new MouseButtonTrigger(MouseInput.BUTTON_RIGHT)  right mouse button
+     * @param triggers
+     */
+    public void setToggleRotationTrigger(Trigger... triggers) {
+        inputManager.deleteMapping(ChaseCamToggleRotate);
+        inputManager.addMapping(ChaseCamToggleRotate, triggers);
+        inputManager.addListener(this, ChaseCamToggleRotate);
+    }
+
+    /**
+     * Sets custom triggers for zomming in the cam
+     * default is
+     * new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true)  mouse wheel up
+     * @param triggers
+     */
+    public void setZoomInTrigger(Trigger... triggers) {
+        inputManager.deleteMapping(ChaseCamZoomIn);
+        inputManager.addMapping(ChaseCamZoomIn, triggers);
+        inputManager.addListener(this, ChaseCamZoomIn);
+    }
+
+    /**
+     * Sets custom triggers for zomming out the cam
+     * default is
+     * new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false)  mouse wheel down
+     * @param triggers
+     */
+    public void setZoomOutTrigger(Trigger... triggers) {
+        inputManager.deleteMapping(ChaseCamZoomOut);
+        inputManager.addMapping(ChaseCamZoomOut, triggers);
+        inputManager.addListener(this, ChaseCamZoomOut);
     }
     
 }
