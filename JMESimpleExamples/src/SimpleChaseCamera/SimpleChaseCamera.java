@@ -33,7 +33,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     private String ChaseCamMoveLeft = "ChaseCamMoveLeft";
     private String ChaseCamMoveRight = "ChaseCamMoveRight";
     private String ChaseCamToggleRotate = "ChaseCamToggleRotate";
-    private boolean doRotate, doVerticalConstraint, doZoom, zoomIn, zoomRelativeToDistance;
+    private boolean canRotate, doRotate, doVerticalConstraint, canZoom, doZoom, zoomIn, zoomRelativeToDistance;
     private float horizontRotate, verticalRotate, verticalUpLimit, verticalDownLimit;
     private float rotateSpeed, zoomStep, zoomMax, zoomMin;
 
@@ -41,10 +41,8 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         this.app = app;
         this.inputManager = inputManager;
 
+        canRotate = true;
         doRotate = false;
-        doZoom = false;
-        zoomIn = false;
-
         horizontRotate = 0.0f;
         verticalRotate = 0.0f;
         verticalUpLimit = FastMath.QUARTER_PI;
@@ -52,6 +50,9 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         doVerticalConstraint = true;
         rotateSpeed = 1.0f;
 
+        canZoom = true;
+        doZoom = false;
+        zoomIn = false;
         zoomStep = 1.0f;
         zoomMin = 2f;
         zoomMax = 100f;
@@ -118,42 +119,38 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     }
 
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (name.equals(ChaseCamToggleRotate) && isPressed) {
-            doRotate = true;
-//            if (storedRotation == null) {
-//                storedRotation = chaseCamNode.getLocalRotation().clone();
-//            }
-        } else if (name.equals(ChaseCamToggleRotate) && !isPressed) {
-            doRotate = false;
-//            storedRotation = null;
-            horizontRotate = 0;
-            verticalRotate = 0;
+        if (canRotate) {
+            if (name.equals(ChaseCamToggleRotate) && isPressed) {
+                doRotate = true;
+            } else if (name.equals(ChaseCamToggleRotate) && !isPressed) {
+                doRotate = false;
+                horizontRotate = 0;
+                verticalRotate = 0;
+            }
         }
 
-        if (name.equals(ChaseCamZoomIn) && isPressed) {
-            doZoom = true;
-            zoomIn = true;
-        } else if (name.equals(ChaseCamZoomOut) && isPressed) {
-            doZoom = true;
-            zoomIn = false;
+        if (canZoom) {
+            if (name.equals(ChaseCamZoomIn) && isPressed) {
+                doZoom = true;
+                zoomIn = true;
+            } else if (name.equals(ChaseCamZoomOut) && isPressed) {
+                doZoom = true;
+                zoomIn = false;
+            }
         }
     }
 
     public void onAnalog(String name, float value, float tpf) {
 
-        if (doRotate) {
+        if (canRotate && doRotate) {
             if (name.equals(ChaseCamMoveLeft)) {
                 horizontRotate = value;
-//                rotateHorizontally(-value);
             } else if (name.equals(ChaseCamMoveRight)) {
                 horizontRotate = -value;
-//                rotateHorizontally(value);
             } else if (name.equals(ChaseCamUp)) {
                 verticalRotate = value;
-//                rotateVertically(value);
             } else if (name.equals(ChaseCamDown)) {
                 verticalRotate = -value;
-//                rotateVertically(-value);
             }
         }
 
@@ -161,7 +158,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
     public void update() {
 
-        if (doRotate) {
+        if (canRotate && doRotate) {
 
             // HORIZONTAL
             Quaternion chaseRot = chaseGeneralNode.getLocalRotation().clone();
@@ -184,23 +181,24 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
                         angleBetween(Vector3f.UNIT_Y);
 
                 if (angleVerticalNow < verticalUpLimit || angleVerticalNow > verticalDownLimit + FastMath.HALF_PI) {
-                    float rotateToVertical = verticalUpLimit - angleVerticalNow; // rotateUp
+                    float rotateToVertical = 0f;
 
                     if (angleVerticalNow > verticalDownLimit + FastMath.HALF_PI) {
-                        rotateToVertical = (verticalDownLimit - angleVerticalNow) + FastMath.HALF_PI;
-                    } // if rotateDown
+                        rotateToVertical = (verticalDownLimit - angleVerticalNow) + FastMath.HALF_PI; // if rotateDown
+                    } else {
+                        rotateToVertical = verticalUpLimit - angleVerticalNow; // rotateUp
+                    }
 
                     Quaternion xRotAgain = chaseGeneralNode.getLocalRotation().clone().fromAngleAxis(rotateToVertical, Vector3f.UNIT_X);
                     chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain));
                 }
             }
 
-
-            horizontRotate = 0;
-            verticalRotate = 0;
+            horizontRotate = 0f;
+            verticalRotate = 0f;
         }
 
-        if (doZoom) {
+        if (canZoom && doZoom) {
             Vector3f zoomVec = Vector3f.UNIT_Z.clone().multLocal(zoomStep);
             if (zoomRelativeToDistance) {
                 zoomVec.multLocal(0.5f + (0.05f * chaseCamNode.getLocalTranslation().getZ()));
@@ -225,27 +223,42 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         app.getCamera().setRotation(chaseCamNode.getWorldRotation());
     }
 
-    public boolean isDoRotate() {
-        return doRotate;
+    public void destroy() {
+        inputManager.removeListener(this);
+        app = null;
+        inputManager = null;
     }
 
-    public void setDoRotate(boolean doRotate) {
-        this.doRotate = doRotate;
+    public boolean isCanRotate() {
+        return canRotate;
     }
 
-    public boolean isDoZoom() {
-        return doZoom;
+    public void setCanRotate(boolean canRotate) {
+        if (!canRotate) {
+            doRotate = false;
+            horizontRotate = 0f;
+            verticalRotate = 0f;
+        }
+
+        this.canRotate = canRotate;
     }
 
-    public void setDoZoom(boolean doZoom) {
-        this.doZoom = doZoom;
+    public boolean isCanZoom() {
+        return canZoom;
     }
-    
+
+    public void setCanZoom(boolean canZoom) {
+        if (!canZoom) {
+            doZoom = false;
+        }
+        this.canZoom = canZoom;
+    }
+
     public Vector3f getCameraNodeLocation() {
         return chaseGeneralNode.getLocalTranslation();
     }
-    
-    public void setCameraNodeLocation(Vector3f location){
+
+    public void setCameraNodeLocation(Vector3f location) {
         chaseGeneralNode.setLocalTranslation(location);
     }
 
@@ -312,12 +325,12 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     public void setZoomRelativeToDistance(boolean zoomRelativeToDistance) {
         this.zoomRelativeToDistance = zoomRelativeToDistance;
     }
-    
+
     /**
-     * Sets custom triggers for toggleing the rotation of the cam
-     * deafult are
-     * new MouseButtonTrigger(MouseInput.BUTTON_LEFT)  left mouse button
-     * new MouseButtonTrigger(MouseInput.BUTTON_RIGHT)  right mouse button
+     * Sets custom triggers for toggleing the rotation of the cam deafult are
+     * new MouseButtonTrigger(MouseInput.BUTTON_LEFT) left mouse button new
+     * MouseButtonTrigger(MouseInput.BUTTON_RIGHT) right mouse button
+     *
      * @param triggers
      */
     public void setToggleRotationTrigger(Trigger... triggers) {
@@ -327,9 +340,9 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     }
 
     /**
-     * Sets custom triggers for zomming in the cam
-     * default is
-     * new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true)  mouse wheel up
+     * Sets custom triggers for zomming in the cam default is new
+     * MouseAxisTrigger(MouseInput.AXIS_WHEEL, true) mouse wheel up
+     *
      * @param triggers
      */
     public void setZoomInTrigger(Trigger... triggers) {
@@ -339,9 +352,9 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     }
 
     /**
-     * Sets custom triggers for zomming out the cam
-     * default is
-     * new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false)  mouse wheel down
+     * Sets custom triggers for zomming out the cam default is new
+     * MouseAxisTrigger(MouseInput.AXIS_WHEEL, false) mouse wheel down
+     *
      * @param triggers
      */
     public void setZoomOutTrigger(Trigger... triggers) {
@@ -349,5 +362,4 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         inputManager.addMapping(ChaseCamZoomOut, triggers);
         inputManager.addListener(this, ChaseCamZoomOut);
     }
-    
 }
