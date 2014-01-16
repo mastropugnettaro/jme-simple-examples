@@ -202,7 +202,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
                         angleVerticalNow_y = -angleVerticalNow_y;
                     }
 
-                    System.out.println(angleVerticalNow_y);
+//                    System.out.println(angleVerticalNow_y);
 
                     if (angleVerticalNow_y > verticalUpLimit || angleVerticalNow_y < verticalDownLimit) {
                         float rotateToVertical = 0f;
