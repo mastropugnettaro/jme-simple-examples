@@ -54,7 +54,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
             newRotation = null;
         }
 
-        app.getStateManager().getState(SimpleCameraState.class).getChState().update();
+//        app.getStateManager().getState(SimpleCameraState.class).getChState().update();
     }
 
     @Override

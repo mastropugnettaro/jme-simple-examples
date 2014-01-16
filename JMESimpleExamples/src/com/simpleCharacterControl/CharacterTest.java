@@ -9,6 +9,7 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapText;
+import com.jme3.input.ChaseCamera;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.*;
@@ -36,8 +37,8 @@ public class CharacterTest extends SimpleApplication {
         
         Node scene = (Node) assetManager.loadModel("Models/test/testScene.j3o");
 
-        SimpleCameraState camera = new SimpleCameraState(this);
-        stateManager.attach(camera);
+//        SimpleCameraState camera = new SimpleCameraState(this);
+//        stateManager.attach(camera);
 //            camera.getChState().setVerticalDownLimit(0.1f);
 
 
@@ -68,7 +69,8 @@ public class CharacterTest extends SimpleApplication {
                 SimpleCharacterControl charControl = new SimpleCharacterControl(this, physContr, enShape.getHeight());
                 nd.addControl(charControl);
 
-                camera.getChState().setSpatialToFollow(sp);
+//                camera.getChState().setSpatialToFollow(sp);
+                ChaseCamera chCam = new ChaseCamera(cam, sp, inputManager);
 
                 CharacterController charController = new CharacterController(this, charControl);
                 stateManager.attach(charController);
@@ -107,7 +109,7 @@ public class CharacterTest extends SimpleApplication {
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize());
-        ch.setText("Write Your Annotation"); // crosshairs
+        ch.setText("WASD, LeftClick - This is SimpleCharacterControl"); // crosshairs
         ch.setColor(new ColorRGBA(1f, 0.8f, 0.1f, 1f));
         ch.setLocalTranslation(settings.getWidth() * 0.3f, settings.getHeight() * 0.1f, 0);
         guiNode.attachChild(ch);
