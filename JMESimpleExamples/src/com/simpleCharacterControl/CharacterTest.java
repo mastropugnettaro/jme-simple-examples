@@ -67,11 +67,12 @@ public class CharacterTest extends SimpleApplication {
 
                 System.out.println(enShape.getHeight());
                 SimpleCharacterControl charControl = new SimpleCharacterControl(this, physContr, enShape.getHeight());
-                nd.addControl(charControl);
+                
 
 //                camera.getChState().setSpatialToFollow(sp);
                 ChaseCamera chCam = new ChaseCamera(cam, sp, inputManager);
-
+                nd.addControl(charControl);
+                
                 CharacterController charController = new CharacterController(this, charControl);
                 stateManager.attach(charController);
 
