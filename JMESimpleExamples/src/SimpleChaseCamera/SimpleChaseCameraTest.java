@@ -55,10 +55,14 @@ public class SimpleChaseCameraTest extends SimpleApplication {
         
         SimpleCameraState simpleCamState = new SimpleCameraState(this);
         stateManager.attach(simpleCamState);
-        simpleCamState.getChState().setRotateSpeed(3.0f);
+        SimpleChaseCamera chaseCam = simpleCamState.getChaseCamera();
+        chaseCam.setRotateSpeed(3.0f);
+        chaseCam.setTransformOffset(new Vector3f(0, 0.5f, 0));
+        chaseCam.setSpatialToFollow(geom);
+        chaseCam.updatePosition();
+        chaseCam.constraintCamera();
         
         ChaseCamera chk; // just for my tests
-        
     }
 
     

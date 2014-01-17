@@ -40,6 +40,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     private String[] inputs;
     private boolean enabled;
     private Spatial spatialToFollow;
+    private Vector3f transformOffset = null;
 
     public SimpleChaseCamera(Application app, InputManager inputManager) {
         this.app = app;
@@ -51,8 +52,8 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         doRotate = false;
         horizontRotate = 0.0f;
         verticalRotate = 0.0f;
-        verticalUpLimit = FastMath.HALF_PI;
-        verticalDownLimit = -FastMath.HALF_PI;
+        verticalUpLimit = FastMath.DEG_TO_RAD * 30;
+        verticalDownLimit = FastMath.DEG_TO_RAD * 70;
         doVerticalConstraint = true;
         rotateSpeed = 1.0f;
 
@@ -75,6 +76,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         chaseCamNode.setLocalRotation(new Quaternion(0.0f, 1.0f, 0.0f, 0.0f));
 
         registerWithInput(inputManager);
+
     }
 
     /**
@@ -165,13 +167,46 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
         }
     }
 
+    public void constraintCamera() {
+        // Over 180
+        float angleVerticalNow_y = chaseGeneralNode.getLocalRotation().mult(Vector3f.UNIT_Y).normalize().
+                angleBetween(Vector3f.UNIT_Y);
+
+        if (angleVerticalNow_y > FastMath.HALF_PI) {
+            Quaternion xRotAgain = new Quaternion().fromAngleAxis(angleVerticalNow_y - FastMath.HALF_PI, Vector3f.UNIT_X);
+            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain));
+        }
+
+        // LIMITS
+        float angleVerticalNow_z_inverted = chaseGeneralNode.getLocalRotation().mult(Vector3f.UNIT_Z).normalizeLocal().
+                angleBetween(Vector3f.UNIT_Y);
+//                    System.out.println(angleVerticalNow_z_inverted);
+        if (angleVerticalNow_z_inverted < verticalUpLimit) {
+            Quaternion xRotAgain2 = new Quaternion().fromAngleAxis((verticalUpLimit - angleVerticalNow_z_inverted), Vector3f.UNIT_X);
+            xRotAgain2.negate();
+            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain2));
+        } else if (angleVerticalNow_z_inverted > verticalDownLimit) {
+            Quaternion xRotAgain3 = new Quaternion().fromAngleAxis((verticalDownLimit - angleVerticalNow_z_inverted), Vector3f.UNIT_X);
+            chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain3));
+        }
+    }
+
+    public void updatePosition() {
+        if (spatialToFollow != null) {
+            if (transformOffset != null) {
+                chaseGeneralNode.setLocalTranslation(spatialToFollow.getLocalTranslation().add(transformOffset));
+            } else {
+                chaseGeneralNode.setLocalTranslation(spatialToFollow.getLocalTranslation());
+            }
+
+        }
+    }
+
     public void update() {
 
         if (enabled) {
             // MOVE TO SPATIAL
-            if (spatialToFollow != null) {
-                chaseGeneralNode.setLocalTranslation(spatialToFollow.getLocalTranslation());
-            }
+            updatePosition();
 
             if (canRotate && doRotate) {
 
@@ -192,30 +227,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
                 // VERTICAL LIMITATION
                 if (doVerticalConstraint) {
-                    float angleVerticalNow_z = chaseGeneralNode.getLocalRotation().mult(Vector3f.UNIT_Z).normalize().
-                            angleBetween(Vector3f.UNIT_Y);
-
-                    float angleVerticalNow_y = chaseGeneralNode.getLocalRotation().mult(Vector3f.UNIT_Y).normalize().
-                            angleBetween(Vector3f.UNIT_Y);
-
-                    if (angleVerticalNow_z > FastMath.HALF_PI && angleVerticalNow_y > FastMath.HALF_PI) {
-                        angleVerticalNow_y = -angleVerticalNow_y;
-                    }
-
-//                    System.out.println(angleVerticalNow_y);
-
-                    if (angleVerticalNow_y > verticalUpLimit || angleVerticalNow_y < verticalDownLimit) {
-                        float rotateToVertical = 0f;
-
-                        if (angleVerticalNow_y > verticalUpLimit) {
-                            rotateToVertical = angleVerticalNow_y - verticalUpLimit; // rotateUp
-                        } else {
-                            rotateToVertical = angleVerticalNow_y + verticalUpLimit; // rotateUp
-                        }
-
-                        Quaternion xRotAgain = chaseGeneralNode.getLocalRotation().clone().fromAngleAxis(rotateToVertical, Vector3f.UNIT_X);
-                        chaseGeneralNode.setLocalRotation(chaseGeneralNode.getLocalRotation().mult(xRotAgain));
-                    }
+                    constraintCamera();
                 }
 
                 horizontRotate = 0f;
@@ -250,6 +262,7 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
     }
 
     public void destroy() {
+        transformOffset = null;
         inputManager.removeListener(this);
         app = null;
         inputManager = null;
@@ -391,6 +404,14 @@ public class SimpleChaseCamera implements ActionListener, AnalogListener {
 
     public void setSpatialToFollow(Spatial spatialToFollow) {
         this.spatialToFollow = spatialToFollow;
+    }
+
+    public Vector3f getTransformOffset() {
+        return transformOffset;
+    }
+
+    public void setTransformOffset(Vector3f transformOffset) {
+        this.transformOffset = transformOffset;
     }
 
     /**
