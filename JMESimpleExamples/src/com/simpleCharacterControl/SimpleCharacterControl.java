@@ -74,7 +74,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 //            float yCoord = physSp.getLinearVelocity().getY();
 //            walkDirection.addLocal(spatial.getLocalTranslation().subtract(app.getCamera().getLocation().clone().setY(spatial.getLocalTranslation().getY())).normalizeLocal().mult(20));
 
-            if ((angleNormals < slopeLimitAngle || !physSp.isActive()) && physicsClosestTets != null) {
+                        if ((angleNormals < slopeLimitAngle  && physicsClosestTets != null) || !physSp.isActive()) {
                 physSp.setLinearVelocity(walkDirection.mult(moveSpeed).setY(physSp.getLinearVelocity().getY()));
 //                System.out.println(physicsClosestTets.getHitNormalLocal());
             } else {
