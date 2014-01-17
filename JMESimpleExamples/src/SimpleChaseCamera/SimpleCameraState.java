@@ -40,7 +40,7 @@ public class SimpleCameraState extends AbstractAppState {
         super.cleanup();
     }
 
-    public SimpleChaseCamera getChState() {
+    public SimpleChaseCamera getChaseCamera() {
         return chState;
     }
     
