@@ -23,11 +23,11 @@ import java.util.List;
 public class SimpleCharacterControl extends AbstractControl implements PhysicsTickListener {
 
     private Application app;
-    private boolean doMove, doJump = false;
+    private boolean doMove, doJump, hasJumped = false;
     private Vector3f walkDirection = new Vector3f(0, 0, 0);
     private Quaternion newRotation;
     private int stopTimer = 0;
-    private boolean isMoving = false;
+    private boolean hasMoved = false;
     private float angleNormals = 0;
     private PhysicsRayTestResult physicsClosestTets;
     private RigidBodyControl physSp;
@@ -80,16 +80,17 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
             } else {
                 physSp.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
             }
-            isMoving = true;
+            hasMoved = true;
 
         } else {
-            if (isMoving || (!doMove && angleNormals < slopeLimitAngle)) {
-                if (physSp.isActive() && stopTimer < 60 && physicsClosestTets != null) {
+            if ((hasMoved || hasJumped) && physicsClosestTets != null) {
+                if (stopTimer < 60 ) {
                     physSp.setLinearVelocity(physSp.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
                     stopTimer += 1;
                 } else {
                     stopTimer = 0;
-                    isMoving = false;
+                    hasMoved = false;
+                    hasJumped = false;
                 }
             }
         }
