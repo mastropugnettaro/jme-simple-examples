@@ -85,7 +85,6 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
             if ((physicsClosestTets != null && angleNormals < slopeLimitAngle) || !physSp.isActive()) {
                 physSp.setLinearVelocity(physSp.getLinearVelocity().addLocal(Vector3f.UNIT_Y.mult(jumpSpeed)));
 //                physSp.applyImpulse(Vector3f.UNIT_Y.mult(jumpSpeed), Vector3f.ZERO);
-                System.out.println(angleNormals);
                 hasJumped = true;
             }
         }
