@@ -5,7 +5,9 @@ import com.basics.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapText;
@@ -79,11 +81,24 @@ public class CharacterTest extends SimpleApplication {
             } // setup other objects
             else {
                 Geometry geo = (Geometry) nd.getChild(0);
-                MeshCollisionShape mshShape = new MeshCollisionShape(geo.getMesh());
-                RigidBodyControl physContr = new RigidBodyControl(mshShape, 0);
-                physContr.setPhysicsLocation(nd.getWorldTranslation());
-                physContr.setPhysicsRotation(nd.getLocalRotation());
-                physContr.setFriction(0.6f);
+                CollisionShape mshShape = new MeshCollisionShape(geo.getMesh());
+                    float mass = 0;
+                    
+                    if (nd.getName().indexOf("Box") == 0) {
+                        mshShape = new BoxCollisionShape(new Vector3f(0.5f, 0.5f, 0.5f));
+                        mass = 50;
+                    }
+                    RigidBodyControl physContr = new RigidBodyControl(mshShape, mass);
+                    physContr.setPhysicsLocation(nd.getWorldTranslation());
+                    physContr.setPhysicsRotation(nd.getLocalRotation());
+                    physContr.setFriction(0.5f);
+                    
+                    if (nd.getName().indexOf("Box") == 0) {
+                        physContr.setFriction(0.9f);
+                        physContr.setSleepingThresholds(0.5f, 0.5f);
+                        physContr.setDamping(0.3f, 0.3f);
+                        physContr.setAngularFactor(0.5f); // this is for better collisions
+                    }
 
                 nd.addControl(physContr);
                 stateManager.getState(BulletAppState.class).getPhysicsSpace().add(physContr);
