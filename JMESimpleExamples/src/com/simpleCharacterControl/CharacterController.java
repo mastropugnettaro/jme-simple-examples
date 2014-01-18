@@ -111,7 +111,10 @@ public class CharacterController extends AbstractAppState implements ActionListe
                 charControl.setMove(false);
             }
             
-            if (jump) charControl.setJump();
+            if (jump) {
+                charControl.setJump();
+                jump = false;
+            }
             
             Vector3f camdir = app.getCamera().getDirection().clone();
             Quaternion newRot = new Quaternion();
