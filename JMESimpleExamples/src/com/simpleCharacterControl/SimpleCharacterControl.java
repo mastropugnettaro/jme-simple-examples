@@ -108,7 +108,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     public void physicsTick(PhysicsSpace space, float tpf) {
         physicsClosestTets = null;
         angleNormals = 0f;
-        float closestFraction = 10f;
+        float closestFraction = collisionShapeHeight * 10f;
 
         if (physSp.isActive()) {
             List<PhysicsRayTestResult> results = space.rayTest(physSp.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-0.9f * collisionShapeHeight)),
@@ -118,6 +118,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
                 if (physicsRayTestResult.getHitFraction() < closestFraction && !physicsRayTestResult.getCollisionObject().getUserObject().equals(spatial)
                         && physicsRayTestResult.getCollisionObject() instanceof GhostControl == false) {
                     physicsClosestTets = physicsRayTestResult;
+                    closestFraction = physicsRayTestResult.getHitFraction();
                 }
             }
         }
