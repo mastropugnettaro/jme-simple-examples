@@ -83,7 +83,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
             isMoving = true;
 
         } else {
-            if (isMoving) {
+            if (isMoving || (!doMove && angleNormals < slopeLimitAngle)) {
                 if (physSp.isActive() && stopTimer < 60 && physicsClosestTets != null) {
                     physSp.setLinearVelocity(physSp.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
                     stopTimer += 1;
