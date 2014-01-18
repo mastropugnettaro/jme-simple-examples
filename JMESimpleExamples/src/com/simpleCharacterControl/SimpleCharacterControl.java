@@ -36,14 +36,14 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     public SimpleCharacterControl(Application app, RigidBodyControl physSp, float collisionShapeHeight) {
         this.app = app;
         this.physSp = physSp;
-        
+
         jumpSpeed = 40f;
         moveSpeed = 0.5f;
         moveSlopeSpeed = 0.3f;
         slopeLimitAngle = FastMath.DEG_TO_RAD * 35f;
         stopDamping = 0.8f;
         this.collisionShapeHeight = collisionShapeHeight;
-        
+
         app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().addTickListener(this);
     }
 
@@ -64,45 +64,46 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
     public void prePhysicsTick(PhysicsSpace space, float tpf) {
 
+        if (physicsClosestTets != null) {
+            angleNormals = physicsClosestTets.getHitNormalLocal().normalizeLocal().angleBetween(Vector3f.UNIT_Y);
+        }
+
         if (doMove) {
-//            walkDirection = new Vector3f();
 
-            if (physicsClosestTets != null) {
-                angleNormals = physicsClosestTets.getHitNormalLocal().normalizeLocal().angleBetween(Vector3f.UNIT_Y);
-            }
-
-//            float yCoord = physSp.getLinearVelocity().getY();
-//            walkDirection.addLocal(spatial.getLocalTranslation().subtract(app.getCamera().getLocation().clone().setY(spatial.getLocalTranslation().getY())).normalizeLocal().mult(20));
-
-                        if ((angleNormals < slopeLimitAngle  && physicsClosestTets != null) || !physSp.isActive()) {
+            if ((angleNormals < slopeLimitAngle && physicsClosestTets != null) || !physSp.isActive()) {
                 physSp.setLinearVelocity(walkDirection.mult(moveSpeed).setY(physSp.getLinearVelocity().getY()));
 //                System.out.println(physicsClosestTets.getHitNormalLocal());
             } else {
                 physSp.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
             }
             hasMoved = true;
+            stopTimer = 0;
 
-        } else {
-            if ((hasMoved || hasJumped) && physicsClosestTets != null) {
-                if (stopTimer < 60 ) {
-                    physSp.setLinearVelocity(physSp.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
-                    stopTimer += 1;
-                } else {
-                    stopTimer = 0;
-                    hasMoved = false;
-                    hasJumped = false;
-                }
-            }
         }
 
         if (doJump) {
             if ((physicsClosestTets != null && angleNormals < slopeLimitAngle) || !physSp.isActive()) {
                 physSp.setLinearVelocity(physSp.getLinearVelocity().addLocal(Vector3f.UNIT_Y.mult(jumpSpeed)));
+//                physSp.applyImpulse(Vector3f.UNIT_Y.mult(jumpSpeed), Vector3f.ZERO);
+                System.out.println(angleNormals);
+                hasJumped = true;
             }
-            doJump = false;
         }
 
-//        physSp.setPhysicsRotation(new Quaternion().lookAt(app.getCamera().getDirection().angleBetween(walkDirection), Vector3f.UNIT_Y));
+        if ((hasMoved || hasJumped) && physicsClosestTets != null && angleNormals < slopeLimitAngle && !doMove) {
+            if (stopTimer < 60) {
+                physSp.setLinearVelocity(physSp.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
+                stopTimer += 1;
+            } else {
+                stopTimer = 0;
+                hasMoved = false;
+                hasJumped = false;
+            }
+        }
+
+        if (doJump) {
+            doJump = false; // set it after damping
+        }
     }
 
     public void physicsTick(PhysicsSpace space, float tpf) {
@@ -111,7 +112,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         float closestFraction = 10f;
 
         if (physSp.isActive()) {
-            List<PhysicsRayTestResult> results = space.rayTest(physSp.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-0.9f * collisionShapeHeight)), 
+            List<PhysicsRayTestResult> results = space.rayTest(physSp.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-0.9f * collisionShapeHeight)),
                     physSp.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-1.3f * collisionShapeHeight)));
             for (PhysicsRayTestResult physicsRayTestResult : results) {
 
@@ -122,7 +123,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
             }
         }
     }
-    
+
     // DESTROY METHOD
     public void destroy() {
         app = null;
@@ -134,7 +135,6 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         spatial.removeControl(this);
         physSp = null;
     }
-    
 
     public Vector3f getWalkDirection() {
         return walkDirection;
@@ -203,6 +203,4 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     public void setStopDamping(float stopDamping) {
         this.stopDamping = stopDamping;
     }
-    
-    
 }
