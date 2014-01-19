@@ -94,7 +94,7 @@ public class CharacterTest extends SimpleApplication {
                     physContr.setFriction(0.5f);
                     
                     if (nd.getName().indexOf("Box") == 0) {
-                        physContr.setFriction(0.9f);
+                        physContr.setFriction(0.3f);
                         physContr.setSleepingThresholds(0.5f, 0.5f);
                         physContr.setDamping(0.3f, 0.3f);
                         physContr.setAngularFactor(0.5f); // this is for better collisions

@@ -38,8 +38,8 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         this.physSp = physSp;
 
         jumpSpeed = 40f;
-        moveSpeed = 0.5f;
-        moveSlopeSpeed = 0.3f;
+        moveSpeed = 5f;
+        moveSlopeSpeed = 5f;
         slopeLimitAngle = FastMath.DEG_TO_RAD * 35f;
         stopDamping = 0.8f;
         this.collisionShapeHeight = collisionShapeHeight;
