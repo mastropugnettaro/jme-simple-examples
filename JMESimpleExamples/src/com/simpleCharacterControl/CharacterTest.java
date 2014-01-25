@@ -88,6 +88,9 @@ public class CharacterTest extends SimpleApplication {
                         mshShape = new BoxCollisionShape(new Vector3f(0.5f, 0.5f, 0.5f));
                         mass = 50;
                     }
+                    
+                    mshShape.setScale(nd.getLocalScale());
+                    
                     RigidBodyControl physContr = new RigidBodyControl(mshShape, mass);
                     physContr.setPhysicsLocation(nd.getWorldTranslation());
                     physContr.setPhysicsRotation(nd.getLocalRotation());
