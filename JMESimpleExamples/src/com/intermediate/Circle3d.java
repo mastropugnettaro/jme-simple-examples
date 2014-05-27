@@ -74,12 +74,12 @@ public class Circle3d
         float angle = 0;
         int idc = 0;
         for (int i = 0; i < samples; i++) {
-            float x = FastMath.cos(angle) + center.x;
-            float z = FastMath.sin(angle) + center.z;
+            float x = FastMath.cos(angle) * radius + center.x;
+            float z = FastMath.sin(angle) * radius + center.z;
 
-            positions.put(x * radius).put(center.y).put(z * radius);
+            positions.put(x).put(center.y).put(z);
             normals.put(new float[]{0, 1, 0});
-            
+
             indices[idc++] = (short) i;
             if (i < samples - 1) {
                 indices[idc++] = (short) (i + 1);
