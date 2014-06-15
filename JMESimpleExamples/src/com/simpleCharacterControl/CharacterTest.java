@@ -55,21 +55,24 @@ public class CharacterTest extends SimpleApplication {
                 nd.setLocalTranslation(nd.getLocalTranslation().addLocal(new Vector3f(0, 20, 0)));
                 Geometry geo = (Geometry) nd.getChild(0);
                 CapsuleCollisionShape enShape = new CapsuleCollisionShape(0.5f, 1, 1);
-                RigidBodyControl physContr = new RigidBodyControl(enShape, 1);
+                RigidBodyControl physContr = new RigidBodyControl(enShape, 40f);
                 physContr.setPhysicsLocation(nd.getWorldTranslation());
                 physContr.setPhysicsRotation(nd.getLocalRotation());
-                physContr.setDamping(0.5f, 1);
-                physContr.setSleepingThresholds(1, 3);
-                physContr.setFriction(0.6f);
-                physContr.setAngularFactor(0); // this is for better collisions
+                physContr.setDamping(0.5f, 0.5f);
+                physContr.setSleepingThresholds(0.8f, 0.8f);
+                physContr.setFriction(1f);
+                physContr.setAngularFactor(0f); // this is for better collisions
 
 
                 nd.addControl(physContr);
                 stateManager.getState(BulletAppState.class).getPhysicsSpace().add(physContr);
-                physContr.setGravity(Vector3f.UNIT_Y.negate().mult(30));
+                physContr.setGravity(Vector3f.UNIT_Y.negate().mult(20));
 
                 System.out.println(enShape.getHeight());
                 SimpleCharacterControl charControl = new SimpleCharacterControl(this, physContr, enShape.getHeight());
+//                charControl.setJumpSpeed(8.0f);
+                charControl.setMoveSpeed(4.5f);
+                charControl.setMoveSlopeSpeed(0.3f);
 
 
 //                camera.getChState().setSpatialToFollow(sp);
@@ -87,7 +90,7 @@ public class CharacterTest extends SimpleApplication {
 
                 if (nd.getName().indexOf("Box") == 0) {
                     mshShape = new BoxCollisionShape(new Vector3f(0.5f, 0.5f, 0.5f));
-                    mass = 50;
+                    mass = 70;
                 }
 
                 mshShape.setScale(nd.getLocalScale());
@@ -95,13 +98,13 @@ public class CharacterTest extends SimpleApplication {
                 RigidBodyControl physContr = new RigidBodyControl(mshShape, mass);
                 physContr.setPhysicsLocation(nd.getWorldTranslation());
                 physContr.setPhysicsRotation(nd.getLocalRotation());
-                physContr.setFriction(0.5f);
+                physContr.setFriction(0.1f);
 
                 if (nd.getName().indexOf("Box") == 0) {
                     physContr.setFriction(0.3f);
-                    physContr.setSleepingThresholds(0.5f, 0.5f);
-                    physContr.setDamping(0.3f, 0.3f);
-                    physContr.setAngularFactor(0.5f); // this is for better collisions
+                    physContr.setSleepingThresholds(0.8f, 0.8f);
+                    physContr.setDamping(1.3f, 1.3f);
+                    physContr.setAngularFactor(0.3f); // this is for better collisions
                 }
 
                 nd.addControl(physContr);

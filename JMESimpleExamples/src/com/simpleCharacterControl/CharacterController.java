@@ -119,7 +119,7 @@ public class CharacterController extends AbstractAppState implements ActionListe
             Vector3f camdir = app.getCamera().getDirection().clone();
             Quaternion newRot = new Quaternion();
             newRot.lookAt(camdir.setY(0), Vector3f.UNIT_Y);
-            charControl.setNewRotation(newRot);
+            charControl.setRotationInUpdate(newRot);
             
     }
     
