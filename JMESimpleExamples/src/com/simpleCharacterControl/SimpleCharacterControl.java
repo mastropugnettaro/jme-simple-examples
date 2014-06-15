@@ -24,37 +24,37 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
     private Application app;
     private boolean doMove, doJump, hasJumped = false;
-    private Vector3f walkDirection = new Vector3f(0, 0, 0);
+    private Vector3f walkDirection = Vector3f.ZERO;
+    private Vector3f additiveJumpSpeed = Vector3f.ZERO;
     private Quaternion newRotation;
     private int stopTimer = 0;
     private boolean hasMoved = false;
     private float angleNormals = 0;
     private PhysicsRayTestResult physicsClosestTets;
-    private RigidBodyControl physSp;
-    private float jumpSpeed, moveSpeed, moveSlopeSpeed, slopeLimitAngle, stopDamping, collisionShapeHeight;
+    private RigidBodyControl rigidBody;
+    private float jumpSpeedY, moveSpeed, moveSpeedMultiplier, moveSlopeSpeed, slopeLimitAngle, stopDamping, centerToBottomHeight;
 
-    public SimpleCharacterControl(Application app, RigidBodyControl physSp, float collisionShapeHeight) {
+    public SimpleCharacterControl(Application app, RigidBodyControl rigidBody, float centerToBottomHeight) {
         this.app = app;
-        this.physSp = physSp;
+        this.rigidBody = rigidBody;
 
-        jumpSpeed = 40f;
-        moveSpeed = 5f;
-        moveSlopeSpeed = 5f;
-        slopeLimitAngle = FastMath.DEG_TO_RAD * 35f;
+        jumpSpeedY = 40f;
+        moveSpeed = 0.5f;
+        moveSpeedMultiplier = 1;
+        moveSlopeSpeed = 0.3f;
+        slopeLimitAngle = FastMath.DEG_TO_RAD * 45f;
         stopDamping = 0.8f;
-        this.collisionShapeHeight = collisionShapeHeight;
+        this.centerToBottomHeight = centerToBottomHeight;
 
-        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().addTickListener(this);
+        this.rigidBody.getPhysicsSpace().addTickListener(this);
     }
 
     @Override
     protected void controlUpdate(float tpf) {
         if (newRotation != null) {
             spatial.setLocalRotation(newRotation);
-            newRotation = null;
+//            newRotation = null;
         }
-
-//        app.getStateManager().getState(SimpleCameraState.class).getChState().update();
     }
 
     @Override
@@ -66,32 +66,49 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
         if (physicsClosestTets != null) {
             angleNormals = physicsClosestTets.getHitNormalLocal().normalizeLocal().angleBetween(Vector3f.UNIT_Y);
+
+        }
+
+        if (angleNormals < slopeLimitAngle && physicsClosestTets != null) {
+            rigidBody.setFriction(7f);
+        } else {
+            rigidBody.setFriction(0.3f);
         }
 
         if (doMove) {
 
-            if ((angleNormals < slopeLimitAngle && physicsClosestTets != null) || !physSp.isActive()) {
-                physSp.setLinearVelocity(walkDirection.mult(moveSpeed).setY(physSp.getLinearVelocity().getY()));
+            if ((angleNormals < slopeLimitAngle && physicsClosestTets != null) || !rigidBody.isActive()) {
+                rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier).setY(rigidBody.getLinearVelocity().getY()));
 //                System.out.println(physicsClosestTets.getHitNormalLocal());
+            } else if (angleNormals > slopeLimitAngle && angleNormals < FastMath.DEG_TO_RAD * 80f && physicsClosestTets != null) {
+                rigidBody.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
+                //   rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier * 0.5f).setY(rigidBody.getLinearVelocity().getY()));
             } else {
-                physSp.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
+//                physSp.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
+                rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier * 0.5f).setY(rigidBody.getLinearVelocity().getY()));
             }
             hasMoved = true;
             stopTimer = 0;
 
         }
 
-        if (doJump) {
-            if ((physicsClosestTets != null && angleNormals < slopeLimitAngle) || !physSp.isActive()) {
-                physSp.setLinearVelocity(physSp.getLinearVelocity().addLocal(Vector3f.UNIT_Y.mult(jumpSpeed)));
+        if (doJump && !hasJumped) {
+            if ((physicsClosestTets != null && angleNormals < slopeLimitAngle)) {
+                rigidBody.clearForces();
+                rigidBody.setLinearVelocity(Vector3f.ZERO.add(Vector3f.UNIT_Y.clone().multLocal(jumpSpeedY).addLocal(additiveJumpSpeed)));
 //                physSp.applyImpulse(Vector3f.UNIT_Y.mult(jumpSpeed), Vector3f.ZERO);
                 hasJumped = true;
             }
         }
 
-        if ((hasMoved || hasJumped) && physicsClosestTets != null && angleNormals < slopeLimitAngle && !doMove) {
-            if (stopTimer < 60) {
-                physSp.setLinearVelocity(physSp.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
+        if ((hasMoved || hasJumped) && physicsClosestTets != null && angleNormals < slopeLimitAngle) {
+            
+            if (hasJumped && hasMoved) {
+                hasJumped = false;
+            }
+            
+            if (stopTimer < 30) {
+                rigidBody.setLinearVelocity(rigidBody.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
                 stopTimer += 1;
             } else {
                 stopTimer = 0;
@@ -108,11 +125,11 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     public void physicsTick(PhysicsSpace space, float tpf) {
         physicsClosestTets = null;
         angleNormals = 0f;
-        float closestFraction = collisionShapeHeight * 10f;
+        float closestFraction = centerToBottomHeight * 10f;
 
-        if (physSp.isActive()) {
-            List<PhysicsRayTestResult> results = space.rayTest(physSp.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-0.9f * collisionShapeHeight)),
-                    physSp.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-1.3f * collisionShapeHeight)));
+        if (rigidBody.isActive()) {
+            List<PhysicsRayTestResult> results = space.rayTest(rigidBody.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-0.8f * centerToBottomHeight)),
+                    rigidBody.getPhysicsLocation().add(Vector3f.UNIT_Y.mult(-1.3f * centerToBottomHeight)));
             for (PhysicsRayTestResult physicsRayTestResult : results) {
 
                 if (physicsRayTestResult.getHitFraction() < closestFraction && !physicsRayTestResult.getCollisionObject().getUserObject().equals(spatial)
@@ -126,14 +143,14 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
     // DESTROY METHOD
     public void destroy() {
-        app = null;
         physicsClosestTets = null;
         walkDirection = null;
-        physSp.getPhysicsSpace().removeTickListener(this);
-        spatial.removeControl(physSp);
-        physSp.getPhysicsSpace().remove(physSp);
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().removeTickListener(this);
+        spatial.removeControl(rigidBody);
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(rigidBody);
         spatial.removeControl(this);
-        physSp = null;
+        rigidBody = null;
+        app = null;
     }
 
     public Vector3f getWalkDirection() {
@@ -144,7 +161,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         this.walkDirection = walkDirection;
     }
 
-    public void setNewRotation(Quaternion newRotation) {
+    public void setRotationInUpdate(Quaternion newRotation) {
         this.newRotation = newRotation;
     }
 
@@ -161,15 +178,15 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     }
 
     public RigidBodyControl getRigidBody() {
-        return physSp;
+        return rigidBody;
     }
 
     public float getJumpSpeed() {
-        return jumpSpeed;
+        return jumpSpeedY;
     }
 
     public void setJumpSpeed(float jumpSpeed) {
-        this.jumpSpeed = jumpSpeed;
+        this.jumpSpeedY = jumpSpeed;
     }
 
     public float getMoveSpeed() {
@@ -202,5 +219,21 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
     public void setStopDamping(float stopDamping) {
         this.stopDamping = stopDamping;
+    }
+
+    public Vector3f getAdditiveJumpSpeed() {
+        return additiveJumpSpeed;
+    }
+
+    public void setAdditiveJumpSpeed(Vector3f additiveJumpSpeed) {
+        this.additiveJumpSpeed = additiveJumpSpeed;
+    }
+
+    public float getMoveSpeedMultiplier() {
+        return moveSpeedMultiplier;
+    }
+
+    public void setMoveSpeedMultiplier(float moveSpeedMultiplier) {
+        this.moveSpeedMultiplier = moveSpeedMultiplier;
     }
 }
