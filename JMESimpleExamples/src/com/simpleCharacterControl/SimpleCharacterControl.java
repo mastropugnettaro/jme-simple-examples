@@ -28,6 +28,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     private Vector3f additiveJumpSpeed = Vector3f.ZERO;
     private Quaternion newRotation;
     private int stopTimer = 0;
+    private int jumpTimer = 0;
     private boolean hasMoved = false;
     private float angleNormals = 0;
     private PhysicsRayTestResult physicsClosestTets;
@@ -69,7 +70,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
         }
 
-        if (angleNormals < slopeLimitAngle && physicsClosestTets != null) {
+        if (angleNormals < slopeLimitAngle && physicsClosestTets != null && (!doMove && !doJump && !hasJumped)) {
             rigidBody.setFriction(7f);
         } else {
             rigidBody.setFriction(0.3f);
@@ -92,30 +93,54 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
 
         }
 
+        if (jumpTimer > 0) {
+            if (jumpTimer > 120) {
+                jumpTimer = 0;
+            } else {
+                jumpTimer++;
+            }
+        }
+
         if (doJump && !hasJumped) {
-            if ((physicsClosestTets != null && angleNormals < slopeLimitAngle)) {
+            if ((angleNormals < slopeLimitAngle)) {
                 rigidBody.clearForces();
                 rigidBody.setLinearVelocity(Vector3f.ZERO.add(Vector3f.UNIT_Y.clone().multLocal(jumpSpeedY).addLocal(additiveJumpSpeed)));
 //                physSp.applyImpulse(Vector3f.UNIT_Y.mult(jumpSpeed), Vector3f.ZERO);
                 hasJumped = true;
+                jumpTimer = 1;
             }
         }
 
-        if ((hasMoved || hasJumped) && physicsClosestTets != null && angleNormals < slopeLimitAngle) {
-            
+
+        // Stop the char
+        if ((hasMoved || hasJumped) && physicsClosestTets != null && angleNormals < slopeLimitAngle && !doMove) {
+
             if (hasJumped && hasMoved) {
                 hasJumped = false;
+                jumpTimer = 0;
             }
-            
-            if (stopTimer < 30) {
+
+            if (stopTimer < 30 && jumpTimer == 0) {
+//                rigidBody.setLinearDamping(1f);
+//                rigidBody.setFriction(10f);
                 rigidBody.setLinearVelocity(rigidBody.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
                 stopTimer += 1;
             } else {
-                stopTimer = 0;
-                hasMoved = false;
-                hasJumped = false;
+                if (jumpTimer == 0) {
+//                    rigidBody.setLinearDamping(0.5f);
+//                    rigidBody.setFriction(0.3f);
+                    stopTimer = 0;
+                    hasMoved = false;
+                    hasJumped = false;
+                    jumpTimer = 0;
+                }
+
             }
-        }
+        } 
+//        else {
+//            rigidBody.setLinearDamping(0.5f);
+//            rigidBody.setFriction(0.3f);
+//        }
 
         if (doJump) {
             doJump = false; // set it after damping
