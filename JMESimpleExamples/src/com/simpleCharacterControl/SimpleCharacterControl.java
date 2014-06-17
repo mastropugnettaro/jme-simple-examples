@@ -89,22 +89,24 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
                 rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier * 0.5f).setY(rigidBody.getLinearVelocity().getY()));
             }
             hasMoved = true;
+            hasJumped = false;
             stopTimer = 0;
+            jumpTimer = 0;
 
         }
 
         if (jumpTimer > 0) {
-            if (jumpTimer > 120) {
+            if (jumpTimer > 10) {
                 jumpTimer = 0;
             } else {
                 jumpTimer++;
             }
         }
 
-        if (doJump && !hasJumped) {
+        if (doJump && !hasJumped && (physicsClosestTets != null || !rigidBody.isActive())) {
             if ((angleNormals < slopeLimitAngle)) {
-                rigidBody.clearForces();
-                rigidBody.setLinearVelocity(Vector3f.ZERO.add(Vector3f.UNIT_Y.clone().multLocal(jumpSpeedY).addLocal(additiveJumpSpeed)));
+//                rigidBody.clearForces();
+                rigidBody.setLinearVelocity(rigidBody.getLinearVelocity().add(Vector3f.UNIT_Y.clone().multLocal(jumpSpeedY).addLocal(additiveJumpSpeed)));
 //                physSp.applyImpulse(Vector3f.UNIT_Y.mult(jumpSpeed), Vector3f.ZERO);
                 hasJumped = true;
                 jumpTimer = 1;
