@@ -27,13 +27,13 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     private Vector3f walkDirection = Vector3f.ZERO;
     private Vector3f additiveJumpSpeed = Vector3f.ZERO;
     private Quaternion newRotation;
-    private int stopTimer = 0;
-    private int jumpTimer = 0;
+    private int stopTimer, jumpTimer, maxStopTimer, maxJumpTimer;
     private boolean hasMoved = false;
     private float angleNormals = 0;
     private PhysicsRayTestResult physicsClosestTets;
     private RigidBodyControl rigidBody;
     private float jumpSpeedY, moveSpeed, moveSpeedMultiplier, moveSlopeSpeed, slopeLimitAngle, stopDamping, centerToBottomHeight;
+    private float frictionWalk, frictionStop, mainWalkInterpolation, otherWalkInterpolation;
 
     public SimpleCharacterControl(Application app, RigidBodyControl rigidBody, float centerToBottomHeight) {
         this.app = app;
@@ -45,6 +45,17 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         moveSlopeSpeed = 0.3f;
         slopeLimitAngle = FastMath.DEG_TO_RAD * 45f;
         stopDamping = 0.8f;
+        
+        stopTimer = 0;
+        jumpTimer = 0;
+        maxStopTimer = 30;
+        maxJumpTimer = 20;
+        
+        frictionWalk = 0.05f;
+        frictionStop = 7f;
+        mainWalkInterpolation = 0.5f;
+        otherWalkInterpolation = 0.9f;
+        
         this.centerToBottomHeight = centerToBottomHeight;
 
         this.rigidBody.getPhysicsSpace().addTickListener(this);
@@ -71,22 +82,28 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         }
 
         if (angleNormals < slopeLimitAngle && physicsClosestTets != null && (!doMove && !doJump && !hasJumped)) {
-            rigidBody.setFriction(7f);
+            rigidBody.setFriction(frictionStop);
         } else {
-            rigidBody.setFriction(0.3f);
+            rigidBody.setFriction(frictionWalk);
         }
 
         if (doMove) {
 
+            Vector3f moveCharVec = walkDirection.mult(moveSpeed * moveSpeedMultiplier);
+            moveCharVec.setY(rigidBody.getLinearVelocity().getY());
+
             if ((angleNormals < slopeLimitAngle && physicsClosestTets != null) || !rigidBody.isActive()) {
-                rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier).setY(rigidBody.getLinearVelocity().getY()));
-//                System.out.println(physicsClosestTets.getHitNormalLocal());
+
+                rigidBody.setLinearVelocity(moveCharVec.interpolate(rigidBody.getLinearVelocity(), mainWalkInterpolation));
+
+
             } else if (angleNormals > slopeLimitAngle && angleNormals < FastMath.DEG_TO_RAD * 80f && physicsClosestTets != null) {
                 rigidBody.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
-                //   rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier * 0.5f).setY(rigidBody.getLinearVelocity().getY()));
+//                rigidBody.setLinearVelocity(moveCharVec.interpolate(rigidBody.getLinearVelocity(), 0.99f));
             } else {
 //                physSp.applyCentralForce((walkDirection.mult(moveSlopeSpeed).setY(0f)));
-                rigidBody.setLinearVelocity(walkDirection.mult(moveSpeed * moveSpeedMultiplier * 0.5f).setY(rigidBody.getLinearVelocity().getY()));
+//                rigidBody.setLinearVelocity(moveCharVec.setY(rigidBody.getLinearVelocity().getY()));
+                rigidBody.setLinearVelocity(moveCharVec.interpolate(rigidBody.getLinearVelocity(), otherWalkInterpolation));
             }
             hasMoved = true;
             hasJumped = false;
@@ -96,7 +113,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         }
 
         if (jumpTimer > 0) {
-            if (jumpTimer > 10) {
+            if (jumpTimer > maxJumpTimer) {
                 jumpTimer = 0;
             } else {
                 jumpTimer++;
@@ -122,7 +139,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
                 jumpTimer = 0;
             }
 
-            if (stopTimer < 30 && jumpTimer == 0) {
+            if (stopTimer < maxStopTimer && jumpTimer == 0) {
 //                rigidBody.setLinearDamping(1f);
 //                rigidBody.setFriction(10f);
                 rigidBody.setLinearVelocity(rigidBody.getLinearVelocity().multLocal(new Vector3f(stopDamping, 1, stopDamping)));
@@ -138,7 +155,7 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
                 }
 
             }
-        } 
+        }
 //        else {
 //            rigidBody.setLinearDamping(0.5f);
 //            rigidBody.setFriction(0.3f);
@@ -263,4 +280,53 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
     public void setMoveSpeedMultiplier(float moveSpeedMultiplier) {
         this.moveSpeedMultiplier = moveSpeedMultiplier;
     }
+
+    public float getFrictionWalk() {
+        return frictionWalk;
+    }
+
+    public void setFrictionWalk(float frictionWalk) {
+        this.frictionWalk = frictionWalk;
+    }
+
+    public float getFrictionStop() {
+        return frictionStop;
+    }
+
+    public void setFrictionStop(float frictionStop) {
+        this.frictionStop = frictionStop;
+    }
+
+    public float getMainWalkInterpolation() {
+        return mainWalkInterpolation;
+    }
+
+    public void setMainWalkInterpolation(float mainWalkInterpolation) {
+        this.mainWalkInterpolation = mainWalkInterpolation;
+    }
+
+    public float getOtherWalkInterpolation() {
+        return otherWalkInterpolation;
+    }
+
+    public void setOtherWalkInterpolation(float otherWalkInterpolation) {
+        this.otherWalkInterpolation = otherWalkInterpolation;
+    }
+
+    public int getMaxStopTimer() {
+        return maxStopTimer;
+    }
+
+    public void setMaxStopTimer(int maxStopTimer) {
+        this.maxStopTimer = maxStopTimer;
+    }
+
+    public int getMaxJumpTimer() {
+        return maxJumpTimer;
+    }
+
+    public void setMaxJumpTimer(int maxJumpTimer) {
+        this.maxJumpTimer = maxJumpTimer;
+    }
+    
 }

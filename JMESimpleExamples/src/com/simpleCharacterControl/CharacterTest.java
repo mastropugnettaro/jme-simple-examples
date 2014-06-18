@@ -59,7 +59,7 @@ public class CharacterTest extends SimpleApplication {
                 physContr.setPhysicsLocation(nd.getWorldTranslation());
                 physContr.setPhysicsRotation(nd.getLocalRotation());
                 physContr.setDamping(0.5f, 0.5f);
-                physContr.setSleepingThresholds(0.8f, 0.8f);
+                physContr.setSleepingThresholds(0.7f, 0.7f);
                 physContr.setFriction(1f);
                 physContr.setAngularFactor(0f); // this is for better collisions
 
@@ -101,9 +101,9 @@ public class CharacterTest extends SimpleApplication {
                 physContr.setFriction(0.1f);
 
                 if (nd.getName().indexOf("Box") == 0) {
-                    physContr.setFriction(0.3f);
-                    physContr.setSleepingThresholds(0.8f, 0.8f);
-                    physContr.setDamping(1.3f, 1.3f);
+                    physContr.setFriction(0.2f);
+                    physContr.setSleepingThresholds(0.7f, 0.7f);
+                    physContr.setDamping(1.0f, 1.0f);
                     physContr.setAngularFactor(0.3f); // this is for better collisions
                 }
 
