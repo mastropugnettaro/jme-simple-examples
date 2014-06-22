@@ -12,6 +12,8 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.RenderManager;
+import com.jme3.scene.Spatial;
 
 public class CharacterController extends AbstractAppState implements ActionListener {
 
@@ -98,31 +100,32 @@ public class CharacterController extends AbstractAppState implements ActionListe
 
     @Override
     public void update(float tpf) {
-        
-            if (forward  ^ backward) {
+
+        if (forward ^ backward) {
 //            float yCoord = charControl.getRigidBody().getLinearVelocity().getY();
             Vector3f charLocation = charControl.getRigidBody().getPhysicsLocation();
             Vector3f walkDir = charLocation.subtract(app.getCamera().getLocation().clone().setY(charLocation.getY())).normalizeLocal();
-            if (backward) walkDir.negateLocal();
-            
+            if (backward) {
+                walkDir.negateLocal();
+            }
+
             charControl.setWalkDirection(walkDir);
             charControl.setMove(true);
-            } else {
-                charControl.setMove(false);
-            }
-            
-            if (jump) {
-                charControl.setJump();
-                jump = false;
-            }
-            
-            Vector3f camdir = app.getCamera().getDirection().clone();
-            Quaternion newRot = new Quaternion();
-            newRot.lookAt(camdir.setY(0), Vector3f.UNIT_Y);
-            charControl.setRotationInUpdate(newRot);
-            
+        } else {
+            charControl.setMove(false);
+        }
+
+        if (jump) {
+            charControl.setJump();
+            jump = false;
+        }
+        Vector3f camdir = app.getCamera().getDirection().clone();
+        Quaternion newRot = new Quaternion();
+        newRot.lookAt(camdir.setY(0), Vector3f.UNIT_Y);
+        charControl.setRotationInUpdate(newRot);
+
     }
-    
+
     @Override
     public void cleanup() {
         super.cleanup();

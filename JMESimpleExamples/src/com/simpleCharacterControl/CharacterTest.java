@@ -55,7 +55,7 @@ public class CharacterTest extends SimpleApplication {
                 nd.setLocalTranslation(nd.getLocalTranslation().addLocal(new Vector3f(0, 20, 0)));
                 Geometry geo = (Geometry) nd.getChild(0);
                 CapsuleCollisionShape enShape = new CapsuleCollisionShape(0.5f, 1, 1);
-                RigidBodyControl physContr = new RigidBodyControl(enShape, 40f);
+                SimpleCharacterControl physContr = new SimpleCharacterControl(this, enShape.getHeight(), enShape, 40f);
                 physContr.setPhysicsLocation(nd.getWorldTranslation());
                 physContr.setPhysicsRotation(nd.getLocalRotation());
                 physContr.setDamping(0.5f, 0.5f);
@@ -69,17 +69,16 @@ public class CharacterTest extends SimpleApplication {
                 physContr.setGravity(Vector3f.UNIT_Y.negate().mult(20));
 
                 System.out.println(enShape.getHeight());
-                SimpleCharacterControl charControl = new SimpleCharacterControl(this, physContr, enShape.getHeight());
 //                charControl.setJumpSpeed(8.0f);
-                charControl.setMoveSpeed(4.5f);
-                charControl.setMoveSlopeSpeed(0.3f);
+                physContr.setMoveSpeed(4.5f);
+                physContr.setMoveSlopeSpeed(0.3f);
 
 
 //                camera.getChState().setSpatialToFollow(sp);
                 ChaseCamera chCam = new ChaseCamera(cam, sp, inputManager);
-                nd.addControl(charControl);
+                nd.addControl(physContr);
 
-                CharacterController charController = new CharacterController(this, charControl);
+                CharacterController charController = new CharacterController(this, physContr);
                 stateManager.attach(charController);
 
             } // setup other objects
