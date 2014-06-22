@@ -224,10 +224,6 @@ public class SimpleCharacterControl extends RigidBodyControl implements PhysicsT
         this.doJump = true;
     }
 
-    public RigidBodyControl getRigidBody() {
-        return this;
-    }
-
     public float getJumpSpeed() {
         return jumpSpeedY;
     }

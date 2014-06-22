@@ -103,7 +103,7 @@ public class CharacterController extends AbstractAppState implements ActionListe
 
         if (forward ^ backward) {
 //            float yCoord = charControl.getRigidBody().getLinearVelocity().getY();
-            Vector3f charLocation = charControl.getRigidBody().getPhysicsLocation();
+            Vector3f charLocation = charControl.getPhysicsLocation();
             Vector3f walkDir = charLocation.subtract(app.getCamera().getLocation().clone().setY(charLocation.getY())).normalizeLocal();
             if (backward) {
                 walkDir.negateLocal();
