@@ -51,9 +51,9 @@ public class SimpleCharacterControl extends AbstractControl implements PhysicsTi
         maxStopTimer = 30;
         maxJumpTimer = 20;
         
-        frictionWalk = 0.05f;
+        frictionWalk = 0.1f;
         frictionStop = 7f;
-        mainWalkInterpolation = 0.5f;
+        mainWalkInterpolation = 0.7f;
         otherWalkInterpolation = 0.9f;
         
         this.centerToBottomHeight = centerToBottomHeight;
